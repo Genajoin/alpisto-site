@@ -1,0 +1,110 @@
+---
+import Page from './Page.astro'
+import type { CollectionEntry } from 'astro:content'
+
+interface Props {
+  caseStudy: CollectionEntry<'case-studies'>
+}
+
+const { caseStudy } = Astro.props
+const {
+  title,
+  client,
+  industry,
+  projectType,
+  duration,
+  year,
+  tech,
+  heroQuote,
+  heroQuoteAttribution,
+  problem,
+} = caseStudy.data
+---
+
+<Page title={title} description={problem}>
+  <article class="max-w-3xl mx-auto px-6 py-16">
+    <!-- Header -->
+    <header class="mb-12">
+      <p class="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-3">Case study</p>
+      <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 mb-6">{title}</h1>
+
+      <!-- Meta grid -->
+      <dl class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8 p-6 bg-slate-50 rounded-2xl text-sm">
+        <div>
+          <dt class="text-slate-500 mb-1">Client</dt>
+          <dd class="font-medium text-slate-900">{client}</dd>
+        </div>
+        <div>
+          <dt class="text-slate-500 mb-1">Industry</dt>
+          <dd class="font-medium text-slate-900">{industry}</dd>
+        </div>
+        {projectType && (
+          <div>
+            <dt class="text-slate-500 mb-1">Project type</dt>
+            <dd class="font-medium text-slate-900">{projectType}</dd>
+          </div>
+        )}
+        <div>
+          <dt class="text-slate-500 mb-1">Duration</dt>
+          <dd class="font-medium text-slate-900">{duration}</dd>
+        </div>
+        {year && (
+          <div>
+            <dt class="text-slate-500 mb-1">Year</dt>
+            <dd class="font-medium text-slate-900">{year}</dd>
+          </div>
+        )}
+        <div class="col-span-2 md:col-span-4">
+          <dt class="text-slate-500 mb-2">Stack</dt>
+          <dd class="flex flex-wrap gap-2">
+            {tech.map(t => (
+              <span class="px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-700">{t}</span>
+            ))}
+          </dd>
+        </div>
+      </dl>
+
+      {heroQuote && (
+        <blockquote class="mt-8 p-6 border-l-4 border-blue-600 bg-blue-50 rounded-r-lg">
+          <p class="text-slate-800 italic">"{heroQuote}"</p>
+          {heroQuoteAttribution && (
+            <footer class="mt-3 text-sm text-slate-600 not-italic">— {heroQuoteAttribution}</footer>
+          )}
+        </blockquote>
+      )}
+    </header>
+
+    <!-- Body -->
+    <div class="prose prose-slate prose-lg max-w-none
+                prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-slate-900
+                prose-h2:mt-12 prose-h2:mb-4 prose-h2:text-2xl
+                prose-h3:mt-8 prose-h3:mb-3 prose-h3:text-xl
+                prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
+                prose-code:before:content-none prose-code:after:content-none
+                prose-code:bg-slate-100 prose-code:text-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-normal
+                prose-pre:bg-slate-900 prose-pre:text-slate-100 prose-pre:rounded-xl
+                prose-blockquote:border-l-blue-600 prose-blockquote:text-slate-700 prose-blockquote:not-italic
+                prose-table:text-sm prose-th:text-slate-900 prose-th:font-semibold
+                prose-img:rounded-xl">
+      <slot />
+    </div>
+
+    <!-- CTA footer -->
+    <footer class="mt-16 pt-8 border-t border-slate-200">
+      <div class="text-center">
+        <h3 class="text-xl font-semibold text-slate-900 mb-3">Working with a similar codebase?</h3>
+        <p class="text-slate-600 mb-6">Let's talk about how we'd approach yours.</p>
+        <a
+          href="/matlab-to-python"
+          class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+        >
+          See our MATLAB → Python migration service →
+        </a>
+      </div>
+    </footer>
+
+    <div class="mt-8 text-center">
+      <a href="/case-studies" class="text-blue-600 hover:underline text-sm">← All case studies</a>
+    </div>
+  </article>
+</Page>
