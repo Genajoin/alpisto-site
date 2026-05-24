@@ -26,3 +26,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# DNS snapshot — local-only rollback reference, contains WP-host IP
+.dns-snapshot-pre-switch.txt
