@@ -1,18 +1,67 @@
 ---
 import Page from '../../layouts/Page.astro'
+import { getCollection } from 'astro:content'
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+
+const formatDate = (d: Date) =>
+  d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
 ---
 
-<Page title="Blog" description="Technical articles on engineering, scientific Python, embedded systems, and power systems. By Evgeny Istomin at Alpisto.">
-  <div class="max-w-3xl mx-auto px-6 py-16">
-    <h1 class="text-3xl font-bold text-slate-900 mb-4">Blog</h1>
-    <p class="text-slate-600 mb-12">
-      Technical writing on engineering topics — Python, embedded, power systems, architecture.
-    </p>
-    <div class="border-t border-slate-200 pt-12 text-center">
-      <p class="text-slate-500 mb-2">Coming soon.</p>
-      <p class="text-sm text-slate-400">
-        Follow on <a href="https://www.linkedin.com/in/evgenyistomin" class="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">LinkedIn</a> for updates.
+<Page
+  title="Blog"
+  description="Engineering writing on MATLAB→Python migration, power systems, embedded BLE, and scientific Python. By Evgeny Istomin at Alpisto."
+>
+  <section class="max-w-3xl mx-auto px-6 py-16">
+    <header class="mb-12">
+      <h1 class="text-4xl font-bold tracking-tight text-slate-900 mb-4">Blog</h1>
+      <p class="text-lg text-slate-600 leading-relaxed">
+        Notes on engineering migrations, scientific Python, embedded BLE, and the math we
+        work with every day.
       </p>
-    </div>
-  </div>
+    </header>
+
+    {posts.length === 0 ? (
+      <p class="text-slate-500">No articles yet. Check back soon.</p>
+    ) : (
+      <ul class="space-y-12">
+        {posts.map(post => (
+          <li>
+            <article>
+              <h2 class="text-2xl font-semibold mb-2">
+                <a href={`/blog/${post.id}/`} class="text-slate-900 hover:text-blue-600 transition-colors">
+                  {post.data.title}
+                </a>
+              </h2>
+              <div class="text-sm text-slate-500 mb-3 flex flex-wrap items-center gap-2">
+                <time>{formatDate(post.data.pubDate)}</time>
+                {post.data.tags.length > 0 && (
+                  <>
+                    <span>·</span>
+                    <div class="flex flex-wrap gap-2">
+                      {post.data.tags.slice(0, 4).map(tag => (
+                        <a href={`/blog/tags/${tag}/`} class="text-blue-600 hover:underline">#{tag}</a>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+              <p class="text-slate-600 leading-relaxed">{post.data.description}</p>
+              <a
+                href={`/blog/${post.id}/`}
+                class="inline-block mt-3 text-blue-600 text-sm font-medium hover:underline"
+              >
+                Read article →
+              </a>
+            </article>
+          </li>
+        ))}
+      </ul>
+    )}
+
+    <p class="mt-16 text-sm text-slate-500">
+      <a href="/rss.xml" class="text-blue-600 hover:underline">RSS feed</a>
+    </p>
+  </section>
 </Page>

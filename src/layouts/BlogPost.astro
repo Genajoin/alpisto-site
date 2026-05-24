@@ -1,44 +1,110 @@
 ---
 import Page from './Page.astro'
+import type { CollectionEntry } from 'astro:content'
 
 interface Props {
-  title: string
-  description: string
-  pubDate: Date
-  updatedDate?: Date
-  tags?: string[]
-  heroImage?: string
+  post: CollectionEntry<'blog'>
+  readingTime: string
+  headings?: Array<{ depth: number; slug: string; text: string }>
 }
 
-const { title, description, pubDate, updatedDate, tags = [], heroImage } = Astro.props
+const { post, readingTime, headings = [] } = Astro.props
+const { title, description, pubDate, updatedDate, tags, heroImage, ctaTarget, toc } = post.data
 
-const formattedPubDate = pubDate.toLocaleDateString('en-GB', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-})
+const formatDate = (d: Date) =>
+  d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+
+const tocHeadings = toc ? headings.filter(h => h.depth === 2 || h.depth === 3) : []
+
+const ctaMap: Record<string, { label: string; href: string }> = {
+  '/matlab-to-python': {
+    label: 'Need help moving MATLAB to Python? →',
+    href: '/matlab-to-python',
+  },
+}
+const ctaLink = ctaTarget && ctaMap[ctaTarget]
 ---
 
-<Page title={title} description={description} ogImage={heroImage}>
+<Page title={title} description={description} ogImage={heroImage ?? '/og-default.png'}>
   <article class="max-w-3xl mx-auto px-6 py-16">
-    <header class="mb-10">
-      <div class="flex flex-wrap gap-2 mb-4">
-        {tags.map(tag => (
-          <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
-            {tag}
-          </span>
-        ))}
-      </div>
-      <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">{title}</h1>
-      <p class="text-slate-500 text-sm">
-        Published <time datetime={pubDate.toISOString()}>{formattedPubDate}</time>
-        {updatedDate && (
-          <span> · Updated <time datetime={updatedDate.toISOString()}>{updatedDate.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}</time></span>
+    <!-- Header -->
+    <header class="mb-10 pb-8 border-b border-slate-200">
+      <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 mb-4">{title}</h1>
+      <p class="text-lg text-slate-600 mb-6 leading-relaxed">{description}</p>
+      <div class="flex flex-wrap items-center gap-3 text-sm text-slate-500">
+        <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+        <span>·</span>
+        <span>{readingTime}</span>
+        {tags.length > 0 && (
+          <>
+            <span>·</span>
+            <div class="flex flex-wrap gap-2">
+              {tags.map(tag => (
+                <a href={`/blog/tags/${tag}/`} class="text-blue-600 hover:underline">#{tag}</a>
+              ))}
+            </div>
+          </>
         )}
-      </p>
+      </div>
+      {updatedDate && (
+        <p class="text-sm text-slate-400 mt-2">Updated {formatDate(updatedDate)}</p>
+      )}
     </header>
-    <div class="prose prose-slate max-w-none">
+
+    {heroImage && (
+      <img src={heroImage} alt="" class="w-full rounded-2xl mb-12" loading="lazy" />
+    )}
+
+    {tocHeadings.length > 0 && (
+      <nav class="mb-12 p-6 bg-slate-50 border border-slate-200 rounded-xl">
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">On this page</p>
+        <ul class="space-y-2 text-sm">
+          {tocHeadings.map(h => (
+            <li class={h.depth === 3 ? 'ml-4' : ''}>
+              <a href={`#${h.slug}`} class="text-slate-700 hover:text-blue-600 hover:underline">
+                {h.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )}
+
+    <!-- Content -->
+    <div class="prose prose-slate prose-lg max-w-none
+                prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-slate-900
+                prose-h2:mt-12 prose-h2:mb-4 prose-h2:text-2xl
+                prose-h3:mt-8 prose-h3:mb-3 prose-h3:text-xl
+                prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
+                prose-code:before:content-none prose-code:after:content-none
+                prose-code:bg-slate-100 prose-code:text-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-normal
+                prose-pre:bg-slate-900 prose-pre:text-slate-100 prose-pre:rounded-xl
+                prose-blockquote:border-l-blue-600 prose-blockquote:text-slate-700 prose-blockquote:not-italic
+                prose-img:rounded-xl
+                prose-table:text-sm prose-th:text-slate-900 prose-th:font-semibold">
       <slot />
+    </div>
+
+    <!-- Footer: author + CTA -->
+    <footer class="mt-16 pt-8 border-t border-slate-200">
+      <div class="flex flex-col md:flex-row gap-6 items-start md:items-center md:justify-between">
+        <div class="text-sm">
+          <p class="font-medium text-slate-900">Evgeny Istomin</p>
+          <p class="text-slate-600">Engineer at Alpisto · 20+ years across power systems, embedded firmware, and ML.</p>
+        </div>
+        {ctaLink && (
+          <a
+            href={ctaLink.href}
+            class="shrink-0 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+          >
+            {ctaLink.label}
+          </a>
+        )}
+      </div>
+    </footer>
+
+    <div class="mt-8 text-center">
+      <a href="/blog" class="text-blue-600 hover:underline text-sm">← Back to all articles</a>
     </div>
   </article>
 </Page>

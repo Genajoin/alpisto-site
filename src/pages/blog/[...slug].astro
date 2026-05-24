@@ -1,0 +1,21 @@
+---
+import { getCollection, render } from 'astro:content'
+import BlogPost from '../../layouts/BlogPost.astro'
+import { calculateReadingTime } from '../../lib/readingTime'
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft)
+  return posts.map(post => ({
+    params: { slug: post.id },
+    props: { post },
+  }))
+}
+
+const { post } = Astro.props
+const { Content, headings } = await render(post)
+const readingTime = calculateReadingTime(post.body ?? '')
+---
+
+<BlogPost post={post} readingTime={readingTime} headings={headings}>
+  <Content />
+</BlogPost>
