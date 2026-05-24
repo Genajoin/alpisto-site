@@ -1,0 +1,403 @@
+---
+import Page from '../layouts/Page.astro'
+
+const title = "MATLAB → Python migration — Alpisto"
+const description = "Production-grade migration of MATLAB code to Python. Any math, any domain. By an engineer with 20+ years across power systems, embedded, and ML."
+
+// TODO: replace with actual Calendly/Cal.com URL when ready
+const calendlyUrl = "#TODO-calendly"
+// TODO: replace with actual Formspree endpoint (https://formspree.io/f/xxxxxx)
+const formspreeUrl = "#TODO-formspree"
+const contactEmail = "info@alpisto.eu"
+---
+
+<Page title={title} description={description} ogImage="/og-default.png">
+
+  <!-- Section 1: Hero -->
+  <section class="max-w-3xl mx-auto px-6 py-20 md:py-32 text-center">
+    <h1 class="text-4xl md:text-6xl font-bold tracking-tight text-slate-900">
+      MATLAB&nbsp;→ Python migration.<br class="hidden md:block" /> Any math, any domain.
+    </h1>
+    <p class="text-lg md:text-xl text-slate-600 mt-6 leading-relaxed">
+      We help R&amp;D and engineering teams move scientific code from MATLAB to a modern
+      Python stack. By an engineer with 20+ years across power systems, embedded firmware,
+      and machine learning — and a portfolio of ported algorithms to back it up.
+    </p>
+    <div class="mt-10 flex flex-wrap gap-4 justify-center">
+      <a
+        href={calendlyUrl}
+        class="inline-block bg-blue-600 text-white font-medium px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+      >
+        Book a 30-minute readiness call →
+      </a>
+      <a
+        href="#engage"
+        class="inline-block border border-slate-300 text-slate-700 font-medium px-6 py-3 rounded-lg hover:border-slate-900 hover:text-slate-900 transition-colors"
+      >
+        See how we work
+      </a>
+    </div>
+  </section>
+
+  <!-- Section 2: Why migrate -->
+  <section id="why-migrate" class="max-w-5xl mx-auto px-6 py-16 border-t border-slate-200">
+    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-4">
+      Why teams move from MATLAB to Python
+    </h2>
+    <p class="text-slate-600 leading-relaxed mb-10 max-w-3xl">
+      The reason rarely starts with "we hate MATLAB." It starts with something practical —
+      a renewed license invoice, a new hire who doesn't know the toolboxes, a need to ship
+      the algorithm to a cloud backend. These are the recurring pressures.
+    </p>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="bg-white border border-slate-200 rounded-xl p-6">
+        <h3 class="font-semibold text-slate-900 mb-2">Cost</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          MATLAB licenses run €2,000–5,000 per seat per year — for the base product alone.
+          Add specialized toolboxes (Optimization, Signal Processing, Simulink) and a small
+          R&amp;D team easily spends €30,000–100,000/year on tooling. Python is free.
+        </p>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-6">
+        <h3 class="font-semibold text-slate-900 mb-2">Deployment</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Python containers deploy to Docker, Kubernetes, and any cloud without licensing
+          dance. MATLAB Runtime ships, but adds an install step, version-matching, and
+          platform constraints at every deployment.
+        </p>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-6">
+        <h3 class="font-semibold text-slate-900 mb-2">Hiring</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Engineers graduating today know Python from their first ML course. MATLAB is a
+          learnable but extra skill — and finding senior MATLAB engineers in Europe gets
+          harder each year.
+        </p>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-6">
+        <h3 class="font-semibold text-slate-900 mb-2">Integration</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Modern systems — ML pipelines, web APIs, real-time backends, IoT data ingestion
+          — are Python-native. Calling out to MATLAB from a FastAPI service or a PyTorch
+          training loop becomes the weakest link in the stack.
+        </p>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-6 md:col-span-2">
+        <h3 class="font-semibold text-slate-900 mb-2">Vendor independence</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Open-source numerical Python (NumPy, SciPy, pandas, JAX, PyTorch) has no surprise
+          license terms, no forced subscription model, no single vendor that can change the
+          rules. For research that needs to outlive a budget cycle, this matters.
+        </p>
+      </div>
+    </div>
+
+    <p class="mt-8 text-sm text-slate-500 italic max-w-3xl">
+      A note on speed: we don't promise raw performance gains. Well-tuned MATLAB often
+      matches or beats naive NumPy. The win from migration is in everything around the math:
+      deployment, integration, hiring, license freedom.
+    </p>
+  </section>
+
+  <!-- Section 3: Three ways to engage -->
+  <section id="engage" class="max-w-5xl mx-auto px-6 py-16 border-t border-slate-200">
+    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-4">
+      Three ways to engage
+    </h2>
+    <p class="text-slate-600 leading-relaxed mb-10 max-w-3xl">
+      We start small. Most clients begin with a free readiness call, then move to a paid
+      assessment, and only then commit to a full migration. This keeps risk low on both sides.
+    </p>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- Tier 1 -->
+      <div class="bg-white border border-slate-200 rounded-xl p-6 flex flex-col">
+        <div class="mb-4">
+          <h3 class="font-bold text-slate-900 text-lg">Readiness call</h3>
+          <p class="text-sm text-blue-600 font-medium mt-1">Free · 30 minutes</p>
+        </div>
+        <p class="text-slate-600 text-sm leading-relaxed flex-grow">
+          Walk through your codebase together. Honest assessment: is migration the right
+          move? Rough sense of scope.
+        </p>
+        <p class="text-slate-500 text-sm italic mt-3">No pitch. No commitment.</p>
+        <a
+          href={calendlyUrl}
+          class="mt-6 inline-block text-center border border-blue-600 text-blue-600 font-medium px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors text-sm"
+        >
+          Book a call
+        </a>
+      </div>
+
+      <!-- Tier 2 -->
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 flex flex-col">
+        <div class="mb-4">
+          <h3 class="font-bold text-slate-900 text-lg">Migration assessment</h3>
+          <p class="text-sm text-blue-600 font-medium mt-1">€5,000–8,000 · 1–2 weeks</p>
+        </div>
+        <p class="text-slate-600 text-sm leading-relaxed flex-grow">
+          Written report on your codebase. Risk matrix per module. One pilot module ported
+          as proof of approach. Budgetary estimate for full migration.
+        </p>
+        <p class="text-slate-500 text-sm mt-3">
+          Deliverables: report + working Jupyter notebook with tests.
+        </p>
+        <a
+          href="#contact"
+          class="mt-6 inline-block text-center bg-blue-600 text-white font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+        >
+          Discuss your project
+        </a>
+      </div>
+
+      <!-- Tier 3 -->
+      <div class="bg-white border border-slate-200 rounded-xl p-6 flex flex-col">
+        <div class="mb-4">
+          <h3 class="font-bold text-slate-900 text-lg">Full migration project</h3>
+          <p class="text-sm text-blue-600 font-medium mt-1">Custom quote · weeks to months</p>
+        </div>
+        <p class="text-slate-600 text-sm leading-relaxed flex-grow">
+          Module-by-module port with side-by-side validation against MATLAB outputs. CI/CD,
+          Docker, documentation. Optional team onboarding and code review.
+        </p>
+        <p class="text-slate-500 text-sm mt-3">
+          Typical: €25,000–100,000 depending on scope.
+        </p>
+        <a
+          href="#contact"
+          class="mt-6 inline-block text-center border border-blue-600 text-blue-600 font-medium px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors text-sm"
+        >
+          Discuss your project
+        </a>
+      </div>
+    </div>
+
+    <p class="text-sm text-slate-600 mt-12 max-w-2xl mx-auto text-center">
+      <strong>Risk reversal:</strong> if after day 1 of an assessment we agree your code
+      isn't a good fit for migration, you pay only that day's rate and we part ways.
+      No further obligation.
+    </p>
+  </section>
+
+  <!-- Section 4: Work and writing -->
+  <section id="work" class="max-w-3xl mx-auto px-6 py-16 border-t border-slate-200">
+    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-4">Work and writing</h2>
+    <p class="text-slate-600 leading-relaxed mb-10">
+      We don't disclose client names. Here's what we've actually built and written about —
+      the things that prove we know how to move math from one stack to another.
+    </p>
+
+    <div class="space-y-10">
+      <div>
+        <h3 class="font-semibold text-slate-900 mb-3">
+          Ported MATLAB algorithms to Python (anonymized clients)
+        </h3>
+        <ul class="space-y-2 text-slate-600 text-sm leading-relaxed">
+          <li class="flex gap-2"><span class="text-slate-400 mt-0.5">—</span><span>Power-system state estimation (multi-substation, weighted least squares)</span></li>
+          <li class="flex gap-2"><span class="text-slate-400 mt-0.5">—</span><span>Optimal power flow (DC and AC formulations)</span></li>
+          <li class="flex gap-2"><span class="text-slate-400 mt-0.5">—</span><span>Transient stability simulation</span></li>
+          <li class="flex gap-2"><span class="text-slate-400 mt-0.5">—</span><span>Short-circuit calculation with fault analysis</span></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="font-semibold text-slate-900 mb-3">Open-source projects</h3>
+        <ul class="space-y-2 text-slate-600 text-sm leading-relaxed">
+          <li class="flex gap-2">
+            <span class="text-slate-400 mt-0.5">—</span>
+            <span>
+              <a href="https://github.com/Genajoin/paraglideml" class="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">paraglideml</a>
+              — paragliding weather prediction with PyTorch
+            </span>
+          </li>
+          <li class="flex gap-2">
+            <span class="text-slate-400 mt-0.5">—</span>
+            <span>
+              <a href="https://github.com/Genajoin/flybeeper" class="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">FlyBeeper</a>
+              — BLE wearables firmware on Zephyr RTOS (nRF52)
+            </span>
+          </li>
+          <li class="flex gap-2">
+            <span class="text-slate-400 mt-0.5">—</span>
+            <span>
+              <a href="https://blog.regimov.net" class="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">regimov.net blog</a>
+              — 11 long-form articles on engineering and math
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="font-semibold text-slate-900 mb-3">Domains we've written about in depth</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Power systems &amp; grid analysis · Quadcopter motor parameter estimation ·
+          Bicycle electrification &amp; energy conservation · Atmospheric modeling &amp;
+          paragliding weather · Real-time sensor fusion · Deep learning for N-1 contingency
+          analysis · Embedded BLE protocols
+        </p>
+      </div>
+    </div>
+
+    <p class="mt-10 text-slate-600 leading-relaxed">
+      This breadth matters. MATLAB code lives in many domains, and the migration questions
+      repeat: numerical precision, vectorization patterns, toolbox replacements, validation
+      strategies. We don't have to be domain experts in your specific field — we are experts
+      in moving math from one stack to another.
+    </p>
+  </section>
+
+  <!-- Section 5: FAQ -->
+  <section id="faq" class="max-w-3xl mx-auto px-6 py-16 border-t border-slate-200">
+    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-10">FAQ</h2>
+
+    <div class="space-y-8">
+      <div>
+        <h3 class="font-semibold text-slate-900 mb-2">
+          Which MATLAB toolboxes are hardest to migrate?
+        </h3>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Signal Processing and Control System toolboxes have good SciPy/python-control
+          equivalents. Simulink and Stateflow are harder — they typically require partial
+          rewrite rather than mechanical translation. Specialized toolboxes (RF, 5G,
+          Powertrain Blockset) may need custom development of equivalent functions.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="font-semibold text-slate-900 mb-2">
+          Can we do it gradually — keep some MATLAB, add Python?
+        </h3>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Yes. Most successful migrations are gradual: identify low-risk modules first,
+          port them with side-by-side validation, then expand. We can also set up
+          Python-MATLAB bridges (the MATLAB Engine API) so both coexist during the
+          transition period.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="font-semibold text-slate-900 mb-2">What about Simulink?</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          Simulink models are simulations plus visual logic, not just code. Migration
+          options: (a) rewrite in Python with SciPy and python-control; (b) use OpenModelica
+          or SimuPy as a Simulink-like alternative; (c) keep Simulink for what's working and
+          migrate only the computational kernels that need Python integration. We assess this
+          in the readiness call.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="font-semibold text-slate-900 mb-2">
+          What about compiled .p files or proprietary toolboxes?
+        </h3>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          .p files are obfuscated MATLAB — they can sometimes be reverse-engineered from
+          documentation and behavior, but it's slow and risky. The pragmatic path is to
+          re-implement from the algorithm spec, not from the .p binary. For proprietary
+          toolboxes we evaluate licensing constraints case-by-case.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="font-semibold text-slate-900 mb-2">How do you handle NDAs and IP?</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">
+          We sign mutual NDAs as part of every engagement. Code stays on your systems; we
+          never move it without explicit written agreement. For highly sensitive projects we
+          can work in an air-gapped setup on hardware you provide.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6: Contact -->
+  <section id="contact" class="border-t border-slate-200 bg-slate-50">
+    <div class="max-w-5xl mx-auto px-6 py-16">
+      <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-4">Have a project?</h2>
+      <p class="text-slate-600 leading-relaxed mb-10 max-w-2xl">
+        Tell us about your codebase. We'll reply within two business days with either
+        questions, a suggested call time, or — if it's clear we're not the right fit —
+        a referral to someone who is.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-12 items-start">
+        <!-- Form -->
+        <!-- TODO: replace action with actual Formspree URL (https://formspree.io/f/xxxxxx) -->
+        <form action={formspreeUrl} method="POST" class="space-y-4">
+          <div>
+            <label for="name" class="block text-sm font-medium text-slate-700">Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              required
+              class="mt-1 w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label for="email" class="block text-sm font-medium text-slate-700">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              class="mt-1 w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label for="project" class="block text-sm font-medium text-slate-700">
+              Tell us about your project
+            </label>
+            <textarea
+              id="project"
+              name="project"
+              rows="5"
+              required
+              placeholder="Roughly: codebase size, toolboxes used, what you've already considered..."
+              class="mt-1 w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
+            ></textarea>
+          </div>
+          <input type="hidden" name="_subject" value="alpisto.eu — MATLAB landing inquiry" />
+          <button
+            type="submit"
+            class="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+          >
+            Send →
+          </button>
+        </form>
+
+        <!-- Alt contact -->
+        <div class="text-sm text-slate-600 space-y-3">
+          <p class="font-medium text-slate-900">Or reach out directly:</p>
+          <ul class="space-y-2">
+            <li>
+              →&nbsp;<a href={`mailto:${contactEmail}`} class="text-blue-600 hover:underline">
+                {contactEmail}
+              </a>
+            </li>
+            <li>
+              →&nbsp;<a
+                href="https://linkedin.com/in/evgenyistomin"
+                class="text-blue-600 hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >linkedin.com/in/evgenyistomin</a>
+            </li>
+            <li>
+              <!-- TODO: replace with actual Calendly URL -->
+              →&nbsp;<a href={calendlyUrl} class="text-blue-600 hover:underline">
+                Book a call
+              </a>
+            </li>
+          </ul>
+          <p class="pt-4 text-slate-500 leading-relaxed">
+            Alpisto d.o.o. — Slovenian LLC, EU VAT registered.<br />
+            We invoice in EUR via standard reverse-charge for B2B clients within the EU.
+            NDAs welcome.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</Page>
