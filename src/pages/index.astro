@@ -1,0 +1,131 @@
+---
+import Page from '../layouts/Page.astro'
+import ServiceCard from '../components/ServiceCard.astro'
+---
+
+<Page
+  title="Alpisto"
+  description="Engineering consulting for R&D teams. MATLAB→Python migration, power-systems algorithms, embedded BLE firmware, IoT backends. By an engineer with 20+ years across power systems, embedded, and ML."
+>
+  <!-- Hero -->
+  <section class="py-20 md:py-28">
+    <div class="max-w-3xl mx-auto px-6 text-center">
+      <h1 class="text-4xl sm:text-5xl font-bold text-slate-900 leading-tight mb-6">
+        Engineering consulting<br class="hidden sm:block" /> for R&D teams
+      </h1>
+      <p class="text-lg text-slate-600 leading-relaxed mb-8 max-w-2xl mx-auto">
+        We help scientific and engineering teams move from legacy code to modern stacks —
+        Python, embedded firmware, event-driven backends. By an engineer with 20+ years
+        across power systems, embedded hardware, and scientific software.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a
+          href="#services"
+          class="inline-block bg-blue-600 text-white font-medium px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          See services
+        </a>
+        <a
+          href="/about"
+          class="inline-block border border-slate-300 text-slate-700 font-medium px-6 py-3 rounded-lg hover:border-slate-900 hover:text-slate-900 transition-colors"
+        >
+          About us
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section id="services" class="py-16 bg-slate-50">
+    <div class="max-w-5xl mx-auto px-6">
+      <h2 class="text-2xl font-bold text-slate-900 mb-2">What we do</h2>
+      <p class="text-slate-600 mb-8">
+        Project-based engagements. We work hands-on — you get working code, not slide decks.
+      </p>
+      <div class="grid md:grid-cols-2 gap-5">
+        <ServiceCard
+          title="MATLAB → Python migration"
+          description="Any math, any domain. Audit, risk matrix, pilot module, full migration. From science to production-grade Python with proper testing and CI."
+          href="/matlab-to-python"
+          available={false}
+        />
+        <ServiceCard
+          title="Power-systems algorithms"
+          description="State estimation, OPF, transient stability, short-circuit analysis. Custom development in Python with pandapower, PowerFactory API, and proprietary solvers."
+          href="/power-systems-algos"
+          available={false}
+        />
+        <ServiceCard
+          title="Embedded BLE devices"
+          description="ESP32, nRF52, Zephyr RTOS. From prototype to production-ready firmware. We build our own FlyBeeper paragliding devices — we know this stack in production."
+          href="/embedded"
+          available={false}
+        />
+        <ServiceCard
+          title="Backends for IoT/BLE fleets"
+          description="FastAPI, NATS, MQTT, event-driven architecture. For hardware teams that need a reliable, scalable cloud side without hiring a full backend team."
+          href="/embedded-backend"
+          available={false}
+        />
+        <ServiceCard
+          title="R&D advisory"
+          description="Algorithm prototyping, technical due diligence, scientific Python coaching. Short paid engagements that prove fit before scaling. No PowerPoint consulting."
+          href="/advisory"
+          available={false}
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Who we are teaser -->
+  <section class="py-16">
+    <div class="max-w-3xl mx-auto px-6">
+      <h2 class="text-2xl font-bold text-slate-900 mb-6">Who we are</h2>
+      <div class="space-y-4 text-slate-600 leading-relaxed">
+        <p>
+          Alpisto is a small engineering practice based in Slovenia. We focus on the technical
+          problems that sit between research code and production systems — the gap where
+          scientific computing meets real-world constraints.
+        </p>
+        <p>
+          We work hands-on. Every engagement is led by a senior engineer, not delegated to
+          juniors. Our own product, <a href="https://market.flybeeper.com" class="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">FlyBeeper</a> — a line of BLE variometers for paragliding —
+          is proof that we ship hardware, firmware, and backends together in production.
+        </p>
+        <p>
+          We prefer short, well-scoped engagements that prove fit before scaling. If the
+          problem is interesting and the timeline is realistic, we want to hear about it.
+        </p>
+      </div>
+      <a href="/about" class="inline-block mt-6 text-blue-600 font-medium hover:underline">
+        More about us →
+      </a>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-16 bg-slate-900 text-white">
+    <div class="max-w-3xl mx-auto px-6 text-center">
+      <h2 class="text-2xl font-bold mb-4">Have a project?</h2>
+      <p class="text-slate-400 mb-8">
+        Tell us what you're building. We'll tell you honestly if we can help.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a
+          href="mailto:info@alpisto.eu"
+          class="inline-block bg-white text-slate-900 font-medium px-6 py-3 rounded-lg hover:bg-slate-100 transition-colors"
+        >
+          info@alpisto.eu
+        </a>
+        <a
+          href="https://www.linkedin.com/in/evgenyistomin"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-block border border-slate-600 text-slate-300 font-medium px-6 py-3 rounded-lg hover:border-slate-400 hover:text-white transition-colors"
+        >
+          LinkedIn
+        </a>
+      </div>
+    </div>
+  </section>
+</Page>

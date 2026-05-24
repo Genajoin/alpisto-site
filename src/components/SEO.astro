@@ -1,0 +1,32 @@
+---
+interface Props {
+  title: string
+  description: string
+  ogImage?: string
+  canonicalURL?: string
+}
+
+const {
+  title,
+  description,
+  ogImage = '/og-default.png',
+  canonicalURL = new URL(Astro.url.pathname, Astro.site).toString(),
+} = Astro.props
+
+const fullTitle = title === 'Alpisto' ? title : `${title} — Alpisto`
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalURL} />
+
+<meta property="og:type" content="website" />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={new URL(ogImage, Astro.site).toString()} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={new URL(ogImage, Astro.site).toString()} />

@@ -1,0 +1,130 @@
+---
+import Page from '../layouts/Page.astro'
+---
+
+<Page
+  title="About"
+  description="About Alpisto d.o.o. — a small engineering practice in Slovenia, and Evgeny Istomin, the engineer behind it."
+>
+  <div class="max-w-3xl mx-auto px-6 py-16">
+
+    <!-- About the company -->
+    <section class="mb-16">
+      <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-8">About</h1>
+
+      <h2 class="text-xl font-semibold text-slate-900 mb-4">Alpisto d.o.o.</h2>
+      <div class="space-y-4 text-slate-600 leading-relaxed">
+        <p>
+          Alpisto d.o.o. is a Slovenian engineering company founded in Tolmin. We operate as
+          a boutique consulting practice focused on R&D engineering problems — specifically the
+          kind that sit at the boundary between scientific computing and production software.
+        </p>
+        <p>
+          Our business model is simple: project-based engagements billed in EUR, plus our own
+          hardware product line, <a href="https://market.flybeeper.com" class="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">FlyBeeper</a> (BLE variometers and flight computers for
+          paragliding pilots). Building FlyBeeper end-to-end — from nRF52 firmware to FastAPI
+          backends to the web shop — keeps our production skills sharp.
+        </p>
+        <p>
+          We are EU VAT registered (SI91102227) and invoice in EUR. We work with teams across
+          Europe and beyond on remote engagements.
+        </p>
+      </div>
+    </section>
+
+    <!-- About the engineer -->
+    <section class="mb-16">
+      <h2 class="text-xl font-semibold text-slate-900 mb-4">Evgeny Istomin — the engineer</h2>
+      <div class="space-y-4 text-slate-600 leading-relaxed">
+        <p>
+          20+ years in electrical power systems engineering, followed by a deliberate move
+          into software. I've worked on state estimation, OPF, and protection relay logic in
+          legacy MATLAB and C++ codebases — and I've been on the other side, migrating those
+          systems to Python.
+        </p>
+        <p>
+          Since 2020, my stack has expanded to embedded firmware (ESP32, nRF52, Zephyr RTOS),
+          event-driven backends (FastAPI, NATS, MQTT), scientific Python (NumPy, SciPy,
+          pandapower), and BLE sensor fusion. All of this runs in FlyBeeper, which ships to
+          real customers.
+        </p>
+        <p>
+          I'm based in Slovenia. I work in English and Slovenian. I take on a small number
+          of consulting clients at a time to keep quality high.
+        </p>
+      </div>
+
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a
+          href="https://github.com/Genajoin"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 text-sm font-medium text-slate-700 border border-slate-200 px-4 py-2 rounded-lg hover:border-slate-900 hover:text-slate-900 transition-colors"
+        >
+          GitHub: Genajoin
+        </a>
+        <a
+          href="https://www.linkedin.com/in/evgenyistomin"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 text-sm font-medium text-slate-700 border border-slate-200 px-4 py-2 rounded-lg hover:border-slate-900 hover:text-slate-900 transition-colors"
+        >
+          LinkedIn
+        </a>
+        <a
+          href="https://blog.regimov.net"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 text-sm font-medium text-slate-700 border border-slate-200 px-4 py-2 rounded-lg hover:border-slate-900 hover:text-slate-900 transition-colors"
+        >
+          Technical blog (RU)
+        </a>
+      </div>
+    </section>
+
+    <!-- Working principles -->
+    <section class="mb-16">
+      <h2 class="text-xl font-semibold text-slate-900 mb-4">How we work</h2>
+      <ul class="space-y-3">
+        {[
+          'We work hands-on. No PowerPoint consulting, no offshore handoffs.',
+          'We ship working code — tests, CI, documentation if the scope calls for it.',
+          'We prefer short paid engagements that prove fit before scaling up.',
+          'We respect NDAs, IP boundaries, and your existing team dynamics.',
+          'If we can\'t help, we\'ll tell you so instead of taking the money.',
+        ].map(principle => (
+          <li class="flex gap-3 text-slate-600 leading-relaxed">
+            <span class="text-blue-600 font-bold shrink-0 mt-0.5">—</span>
+            <span>{principle}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- Contact -->
+    <section class="border-t border-slate-200 pt-10">
+      <h2 class="text-xl font-semibold text-slate-900 mb-4">Get in touch</h2>
+      <p class="text-slate-600 mb-6">
+        The best way to start is a short email describing the problem. No RFPs, no NDAs before
+        hello.
+      </p>
+      <div class="flex flex-wrap gap-4">
+        <a
+          href="mailto:info@alpisto.eu"
+          class="inline-block bg-blue-600 text-white font-medium px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          info@alpisto.eu
+        </a>
+        <a
+          href="https://www.linkedin.com/in/evgenyistomin"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-block border border-slate-300 text-slate-700 font-medium px-6 py-3 rounded-lg hover:border-slate-900 hover:text-slate-900 transition-colors"
+        >
+          LinkedIn
+        </a>
+      </div>
+    </section>
+
+  </div>
+</Page>
