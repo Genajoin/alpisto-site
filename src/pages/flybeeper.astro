@@ -1,0 +1,305 @@
+---
+import Page from '../layouts/Page.astro'
+import PressIntegrations from '../components/PressIntegrations.astro'
+
+const title = "FlyBeeper — indie BLE wearables for paraglider pilots"
+const description = "Seven BLE wearables for paraglider pilots, designed and shipped by Alpisto's founder. Firmware on Nordic nRF52, KiCad PCBs, mobile apps, web backend — end-to-end."
+
+const contactEmail = "gena@alpisto.eu"
+const linkedinUrl = "https://www.linkedin.com/in/evgenyistomin"
+
+type Status = 'shipping' | 'in-development' | 'discontinued' | 'prototype'
+
+interface Device {
+  slug: string
+  name: string
+  status: Status
+  statusLabel: string
+  image: string | null
+  summary: string
+  specs: { label: string; value: string }[]
+  blogTag?: string
+}
+
+const devices: Device[] = [
+  {
+    slug: 'mini-bt',
+    name: 'FlyBeeper mini BT',
+    status: 'shipping',
+    statusLabel: 'Currently shipping',
+    image: '/img/flybeeper/mini-bt/main.jpg',
+    summary:
+      "Pocket-sized acoustic variometer with Bluetooth LE. The current production model in the FlyBeeper line — battery-powered, configurable from a web app over BLE, fits in a closed fist.",
+    specs: [
+      { label: 'MCU', value: 'Nordic nRF52 (Zephyr RTOS)' },
+      { label: 'Radio', value: 'Bluetooth LE' },
+      { label: 'Sensor', value: 'Barometric pressure' },
+      { label: 'Power', value: 'CR2032 lithium' },
+      { label: 'Update', value: 'OTA DFU' },
+    ],
+    blogTag: 'mini-bt',
+  },
+  {
+    slug: 'pressure-sensor',
+    name: 'FlyBeeper Pressure Sensor (PS1)',
+    status: 'in-development',
+    statusLabel: 'In development',
+    image: '/img/flybeeper/pressure-sensor/main.jpg',
+    summary:
+      "External Bluetooth barometer. High sensitivity and stability with minimal latency — turns any smartphone into a usable variometer when paired with xcTrack, SeeYou Navigator, Flyskyhy or LK8000.",
+    specs: [
+      { label: 'Sensitivity', value: '±2 cm' },
+      { label: 'BLE stream', value: '10 Hz pressure, 0.1 Pa accuracy' },
+      { label: 'Battery', value: 'CR2032 — 400 h active / 4 years standby' },
+      { label: 'Dimensions', value: '34 × 30 × 9 mm, 8 g' },
+      { label: 'Apps', value: 'xcTrack, SeeYou, Flyskyhy, LK8000' },
+    ],
+    blogTag: 'ps1',
+  },
+  {
+    slug: 'remote-control-4',
+    name: 'FlyBeeper Remote Control 4 (RC4)',
+    status: 'in-development',
+    statusLabel: 'In development',
+    image: '/img/flybeeper/remote-control-4/main.jpg',
+    summary:
+      "Four external Bluetooth buttons mounted on the brake toggles so the pilot can drive their flight app without letting go of the lines. HID keyboard or AOIS profile — chosen per app.",
+    specs: [
+      { label: 'Inputs', value: '4 tactile buttons' },
+      { label: 'BLE profiles', value: 'HID keyboard or AOIS' },
+      { label: 'Battery', value: 'CR2032 — 1000 h active / 5 years standby' },
+      { label: 'Dimensions', value: '34 × 30 × 9 mm, 8 g' },
+      { label: 'Apps', value: 'xcTrack, xcSoar, LK8000, maps.flybeeper.com' },
+    ],
+    blogTag: 'rc4',
+  },
+  {
+    slug: 'tas',
+    name: 'FlyBeeper TAS',
+    status: 'in-development',
+    statusLabel: 'In development',
+    image: '/img/flybeeper/tas/main.jpg',
+    summary:
+      "Autonomous true-airspeed sensor with Bluetooth. Streams TAS, IAS, EAS, pressure and temperature to phone apps. Built-in Li-ion with fast USB-C charging (0–80% in 60 s).",
+    specs: [
+      { label: 'Range', value: '4–107 km/h IAS' },
+      { label: 'BLE streams', value: 'TAS / IAS / EAS / pressure / temperature' },
+      { label: 'Battery', value: '200 mAh Li-ion, USB Type-C' },
+      { label: 'Enclosure', value: '115 × 65 × 25 mm nylon, 40 g' },
+      { label: 'Apps', value: 'xcTrack, SeeYou, LK8000, maps.flybeeper.com' },
+    ],
+    blogTag: 'tas',
+  },
+  {
+    slug: 'sun-vario',
+    name: 'FlyBeeper Solar Vario',
+    status: 'in-development',
+    statusLabel: 'In development',
+    image: '/img/flybeeper/sun-vario/main.jpg',
+    summary:
+      "Super-lightweight variometer with Bluetooth, solar panel and supercapacitor instead of a battery. Operates from −15 to +70 °C. Solar covers 100% of consumption — effectively no battery degradation, always ready.",
+    specs: [
+      { label: 'Storage', value: 'Supercapacitor — 50,000 cycles' },
+      { label: 'Solar', value: '100% of consumption covered' },
+      { label: 'Fallback charge', value: '0–80% in 60 s via USB-C' },
+      { label: 'Operating temp', value: '−15 to +70 °C' },
+      { label: 'Weight', value: '< 8 g · 32 × 27 × 12 mm' },
+    ],
+    blogTag: 'sun-vario',
+  },
+  {
+    slug: 'fanet',
+    name: 'FlyBeeper FANET ecosystem',
+    status: 'in-development',
+    statusLabel: 'In development (Base shipping)',
+    image: '/img/flybeeper/fanet/main.jpg',
+    summary:
+      "Three-plus devices that together form a FANET radio ecosystem on 868 MHz. Base — an ESP32 + SX1276 ground station — is operational today and feeds live traffic into maps.flybeeper.com.",
+    specs: [
+      { label: 'Base', value: 'ESP32 + SX1276 ground station — shipping' },
+      { label: 'FANET radio', value: 'External 860–930 MHz LoRa bridge with BLE' },
+      { label: 'FANET Vario', value: 'Solar-powered FANET radio + variometer' },
+      { label: 'F0 tracker', value: 'Standalone solar FANET tracker (Cortex-M0+, GPS+GLONASS)' },
+      { label: 'Live feed', value: 'maps.flybeeper.com (real-time)' },
+    ],
+    blogTag: 'fanet',
+  },
+  {
+    slug: 'f1',
+    name: 'FlyBeeper F1',
+    status: 'discontinued',
+    statusLabel: 'Discontinued (2023)',
+    image: '/img/flybeeper/f1/main.jpg',
+    summary:
+      "Compact FANET-capable flight instrument. 50 g of GPS + barometer + LoRa + BLE + OLED that doubles as a smartphone companion and a standalone flight computer. Software stack carried forward into the next generation.",
+    specs: [
+      { label: 'MCU', value: 'ASR6502 (LoRa + Cortex-M0 single die)' },
+      { label: 'Sensors', value: 'GPS + GLONASS + barometer' },
+      { label: 'Radio', value: '868 MHz LoRa, up to 22 dBm' },
+      { label: 'Display / IO', value: 'OLED 23 × 13 mm, 3 buttons, RGB LED' },
+      { label: 'Storage / battery', value: '16 Mb flash (68 h tracks) · 1000 mAh LiPo' },
+    ],
+    blogTag: 'f1',
+  },
+]
+
+const badgeClasses: Record<Status, string> = {
+  'shipping': 'bg-emerald-100 text-emerald-800 border border-emerald-200',
+  'in-development': 'bg-amber-100 text-amber-800 border border-amber-200',
+  'discontinued': 'bg-slate-200 text-slate-700 border border-slate-300',
+  'prototype': 'bg-slate-200 text-slate-700 border border-slate-300',
+}
+---
+
+<Page title={title} description={description} ogImage="/og-default.png">
+
+  <!-- Section 1: Hero -->
+  <section class="max-w-3xl mx-auto px-6 py-20 md:py-28 text-center">
+    <p class="text-sm uppercase tracking-wider text-blue-600 font-medium mb-4">
+      Alpisto portfolio · own products
+    </p>
+    <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-slate-900">
+      FlyBeeper — indie BLE wearables for paraglider pilots
+    </h1>
+    <p class="text-lg md:text-xl text-slate-600 mt-6 leading-relaxed">
+      FlyBeeper is an indie product line of Bluetooth-LE wearables for paraglider pilots,
+      built by Alpisto's founder. Seven devices designed end-to-end — firmware on Nordic nRF52,
+      KiCad PCBs, mobile apps, web backend, and the small-batch fulfilment that goes with them.
+    </p>
+    <div class="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-slate-500">
+      <span><strong class="text-slate-900">7</strong> devices</span>
+      <span class="hidden sm:inline text-slate-300">·</span>
+      <span><strong class="text-slate-900">2018 → 2026</strong></span>
+      <span class="hidden sm:inline text-slate-300">·</span>
+      <span><strong class="text-slate-900">Firmware to fulfilment</strong></span>
+    </div>
+  </section>
+
+  <!-- Section 2: Grid of 7 devices -->
+  <section id="devices" class="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200">
+    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-4">The line-up</h2>
+    <p class="text-slate-600 leading-relaxed mb-10 max-w-3xl">
+      Seven devices designed and built since 2018 — from a single shipping product today,
+      through a queue of in-development sensors, to two earlier projects that taught everything
+      the current generation knows.
+    </p>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {devices.map(device => (
+        <a
+          href={`#${device.slug}`}
+          class="group bg-white border border-slate-200 rounded-xl overflow-hidden flex flex-col hover:border-slate-400 transition-colors"
+        >
+          <div class="aspect-[4/3] bg-slate-100 flex items-center justify-center overflow-hidden">
+            {device.image ? (
+              <img
+                src={device.image}
+                alt={device.name}
+                loading="lazy"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            ) : (
+              <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
+                <span class="text-slate-400 text-sm font-medium">No archive photo</span>
+              </div>
+            )}
+          </div>
+          <div class="p-5 flex flex-col flex-grow">
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <h3 class="font-semibold text-slate-900 leading-snug">{device.name}</h3>
+            </div>
+            <span class={`inline-block self-start text-xs font-medium px-2 py-0.5 rounded-full mb-3 ${badgeClasses[device.status]}`}>
+              {device.statusLabel}
+            </span>
+            <p class="text-slate-600 text-sm leading-relaxed flex-grow">
+              {device.summary}
+            </p>
+            <p class="mt-4 text-sm text-blue-600 font-medium group-hover:underline">
+              Specs →
+            </p>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Section 3: Deep section per device -->
+  <section id="details" class="max-w-4xl mx-auto px-6 py-16 border-t border-slate-200">
+    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-4">Device details</h2>
+    <p class="text-slate-600 leading-relaxed mb-12 max-w-3xl">
+      Specs were extracted from archived product-page sources and project blog posts.
+      Anything marked "in development" still has open work — wording matches current
+      market.flybeeper.com status.
+    </p>
+
+    <div class="space-y-12">
+      {devices.map(device => (
+        <div id={device.slug} class="scroll-mt-20">
+          <div class="flex flex-wrap items-baseline gap-3 mb-3">
+            <h3 class="text-xl font-semibold text-slate-900">{device.name}</h3>
+            <span class={`text-xs font-medium px-2 py-0.5 rounded-full ${badgeClasses[device.status]}`}>
+              {device.statusLabel}
+            </span>
+          </div>
+          <p class="text-slate-600 text-sm leading-relaxed mb-5 max-w-3xl">
+            {device.summary}
+          </p>
+          <dl class="grid sm:grid-cols-2 gap-x-8 gap-y-2 text-sm max-w-3xl">
+            {device.specs.map(spec => (
+              <div class="flex gap-3 border-b border-slate-100 py-2">
+                <dt class="font-medium text-slate-700 shrink-0 w-32">{spec.label}</dt>
+                <dd class="text-slate-600">{spec.value}</dd>
+              </div>
+            ))}
+          </dl>
+          {device.blogTag && (
+            <p class="mt-4 text-sm">
+              Read more:&nbsp;<a
+                href={`/blog/tags/${device.blogTag}/`}
+                class="text-blue-600 hover:underline"
+              >articles tagged #{device.blogTag} →</a>
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Section 4: Press & Integrations -->
+  <PressIntegrations />
+
+  <!-- Section 5: CTA -->
+  <section id="contact" class="border-t border-slate-200 bg-slate-50">
+    <div class="max-w-3xl mx-auto px-6 py-16 text-center">
+      <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-4">
+        Want to talk firmware, BLE, or end-to-end product work?
+      </h2>
+      <p class="text-slate-600 leading-relaxed mb-8">
+        FlyBeeper is what Alpisto's founder builds for fun and proof. The same hands
+        are available for client work — Nordic nRF52 firmware, BLE protocols, KiCad PCBs,
+        Python and web back-ends behind the device fleet.
+      </p>
+      <div class="flex flex-wrap items-center justify-center gap-4">
+        <a
+          href={`mailto:${contactEmail}`}
+          class="inline-block bg-blue-600 text-white font-medium px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          {contactEmail}
+        </a>
+        <a
+          href={linkedinUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-block border border-slate-300 text-slate-700 font-medium px-6 py-3 rounded-lg hover:border-slate-900 hover:text-slate-900 transition-colors"
+        >
+          LinkedIn
+        </a>
+      </div>
+      <p class="mt-10 text-sm text-slate-500">
+        Looking for the MATLAB-to-Python migration practice instead?
+        &nbsp;<a href="/matlab-to-python" class="text-blue-600 hover:underline">See /matlab-to-python →</a>
+      </p>
+    </div>
+  </section>
+
+</Page>

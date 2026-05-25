@@ -21,11 +21,16 @@ const ctaMap: Record<string, { label: string; href: string }> = {
     label: 'Need help moving MATLAB to Python? →',
     href: '/matlab-to-python',
   },
+  '/flybeeper': {
+    label: 'See the full FlyBeeper line-up →',
+    href: '/flybeeper',
+  },
 }
 const ctaLink = ctaTarget && ctaMap[ctaTarget]
 ---
 
 <Page title={title} description={description} ogImage={heroImage ?? '/og-default.png'}>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous" slot="head" />
   <article class="max-w-3xl mx-auto px-6 py-16">
     <!-- Header -->
     <header class="mb-10 pb-8 border-b border-slate-200">

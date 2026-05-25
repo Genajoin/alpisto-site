@@ -1,0 +1,5 @@
+# Legacy alpisto.eu WooCommerce product URLs → FlyBeeper showcase
+/product/* /flybeeper 301
+/shop/* /flybeeper 301
+/cart/* /flybeeper 301
+/my-account/* /flybeeper 301

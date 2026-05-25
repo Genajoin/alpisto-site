@@ -1,4 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <circle cx="32" cy="32" r="32" fill="#2563eb"/>
-  <text x="32" y="44" font-family="Inter, system-ui, sans-serif" font-size="32" font-weight="700" text-anchor="middle" fill="white">A</text>
+  <rect width="64" height="64" rx="14" fill="#2563eb"/>
+  <!-- Two alpine peaks, white silhouette -->
+  <path d="M 6 52 L 24 18 L 42 52 Z" fill="#ffffff"/>
+  <path d="M 28 52 L 46 10 L 60 52 Z" fill="#ffffff"/>
+  <!-- Snow cap on the taller peak -->
+  <path d="M 41 23 L 46 10 L 51 23 Z" fill="#dbeafe"/>
 </svg>
