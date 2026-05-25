@@ -1,43 +1,84 @@
-# Astro Starter Kit: Minimal
+# alpisto-site
 
-```sh
-pnpm create astro@latest -- --template minimal
+Corporate site for **[Alpisto d.o.o.](https://alpisto.eu)** — an engineering consultancy based in Slovenia, focused on MATLAB → Python migrations, power-systems algorithms, embedded BLE devices, and event-driven backends.
+
+Live: **[alpisto.eu](https://alpisto.eu)**
+
+## Stack
+
+- **[Astro](https://astro.build)** — static site generator
+- **[Tailwind CSS](https://tailwindcss.com)** + `@tailwindcss/typography` for blog and case studies
+- **Markdown content collections** (zod-typed schemas) for blog posts and case studies
+- **[Cloudflare Pages](https://pages.cloudflare.com)** — hosting, auto-deploy on push to `main`
+- **[Formspree](https://formspree.io)** — contact form backend (no own server)
+- **Cal.com** — booking widget for free 30-minute readiness calls
+- **Cloudflare Web Analytics** — cookie-free, GDPR-friendly
+
+Zero JavaScript on static pages by default.
+
+## Local development
+
+```bash
+pnpm install
+pnpm dev          # http://localhost:4321
+pnpm build        # static build → dist/
+pnpm preview      # preview built output
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Requires Node 20+ and pnpm 9+.
 
-## 🚀 Project Structure
+## Project structure
 
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```
+src/
+├── content/
+│   ├── config.ts              # collection schemas (blog, case-studies)
+│   ├── blog/                  # markdown articles
+│   └── case-studies/          # anonymous case studies
+├── layouts/
+│   ├── Base.astro             # HTML shell, meta, fonts
+│   ├── Page.astro             # standard page wrapper (header + footer)
+│   ├── BlogPost.astro         # article layout with typography
+│   └── CaseStudyLayout.astro  # case study with meta grid
+├── components/
+│   ├── Header.astro
+│   ├── Footer.astro
+│   ├── ServiceCard.astro
+│   └── SEO.astro
+├── pages/
+│   ├── index.astro            # services hub
+│   ├── matlab-to-python.astro # MATLAB → Python landing
+│   ├── about.astro
+│   ├── blog/
+│   ├── case-studies/
+│   ├── thanks.astro           # post-submit confirmation
+│   └── 404.astro
+└── styles/
+    └── globals.css
+public/
+├── favicon.svg
+├── robots.txt
+└── og-default.png
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Adding content
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+**New blog post:** create `src/content/blog/<slug>.md` with frontmatter (`title`, `description`, `pubDate`, `tags`, `draft`). See existing posts for examples.
 
-Any static assets, like images, can be placed in the `public/` directory.
+**New case study:** create `src/content/case-studies/<slug>.md` with frontmatter (`title`, `client`, `industry`, `duration`, `tech`, `pubDate`, `problem`, `result`). Keep anonymous — no client names, no proprietary code.
 
-## 🧞 Commands
+## Deploy
 
-All commands are run from the root of the project, from a terminal:
+Push to `main` → Cloudflare Pages builds and deploys automatically. Build command: `pnpm build`, output directory: `dist`.
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
+DNS is managed via Cloudflare. Custom domain `alpisto.eu` and `www.alpisto.eu` configured in CF Pages settings.
 
-## 👀 Want to learn more?
+## Notes
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- Brand decisions (accent color, legal names, etc.) live in local `.brand.json` — gitignored.
+- DNS rollback snapshot kept in `.dns-snapshot-pre-switch.txt` — gitignored.
+- Local drafts (LinkedIn posts, outreach templates) kept under `drafts/` if used — gitignored.
+
+## License
+
+Source code: MIT. Content (blog posts, case studies) © Alpisto d.o.o.
