@@ -1,19 +1,20 @@
 ---
 import Page from '../layouts/Page.astro'
-import PressIntegrations from '../components/PressIntegrations.astro'
+import Eyebrow from '../components/v5/Eyebrow.astro'
+import Status from '../components/v5/Status.astro'
+import Btn from '../components/v5/Btn.astro'
 
-const title = "FlyBeeper — indie BLE wearables for paraglider pilots"
-const description = "Seven BLE wearables for paraglider pilots, designed and shipped by Alpisto's founder. Firmware on Nordic nRF52, KiCad PCBs, mobile apps, web backend — end-to-end."
+const title = 'FlyBeeper — indie BLE wearables for paraglider pilots'
+const description =
+  "Seven BLE wearables for paraglider pilots, designed and shipped by Alpisto's founder. Firmware on Nordic nRF52, KiCad PCBs, mobile apps, web backend — end-to-end."
 
-const contactEmail = "gena@alpisto.eu"
-const linkedinUrl = "https://www.linkedin.com/in/evgenyistomin"
-
-type Status = 'shipping' | 'in-development' | 'discontinued' | 'prototype'
+type StatusKind = 'shipping' | 'dev' | 'discontinued'
 
 interface Device {
+  n: string
   slug: string
   name: string
-  status: Status
+  status: StatusKind
   statusLabel: string
   image: string | null
   summary: string
@@ -23,13 +24,14 @@ interface Device {
 
 const devices: Device[] = [
   {
+    n: '01',
     slug: 'mini-bt',
     name: 'FlyBeeper mini BT',
     status: 'shipping',
     statusLabel: 'Currently shipping',
     image: '/img/flybeeper/mini-bt/main.jpg',
     summary:
-      "Pocket-sized acoustic variometer with Bluetooth LE. The current production model in the FlyBeeper line — battery-powered, configurable from a web app over BLE, fits in a closed fist.",
+      'Pocket-sized acoustic variometer with Bluetooth LE. Battery-powered, configurable from a web app over BLE, fits in a closed fist.',
     specs: [
       { label: 'MCU', value: 'Nordic nRF52 (Zephyr RTOS)' },
       { label: 'Radio', value: 'Bluetooth LE' },
@@ -40,66 +42,70 @@ const devices: Device[] = [
     blogTag: 'mini-bt',
   },
   {
+    n: '02',
     slug: 'pressure-sensor',
     name: 'FlyBeeper Pressure Sensor (PS1)',
-    status: 'in-development',
+    status: 'dev',
     statusLabel: 'In development',
     image: '/img/flybeeper/pressure-sensor/main.jpg',
     summary:
-      "External Bluetooth barometer. High sensitivity and stability with minimal latency — turns any smartphone into a usable variometer when paired with xcTrack, SeeYou Navigator, Flyskyhy or LK8000.",
+      'External Bluetooth barometer. Turns any smartphone into a usable variometer when paired with xcTrack, SeeYou, Flyskyhy or LK8000.',
     specs: [
       { label: 'Sensitivity', value: '±2 cm' },
-      { label: 'BLE stream', value: '10 Hz pressure, 0.1 Pa accuracy' },
-      { label: 'Battery', value: 'CR2032 — 400 h active / 4 years standby' },
-      { label: 'Dimensions', value: '34 × 30 × 9 mm, 8 g' },
-      { label: 'Apps', value: 'xcTrack, SeeYou, Flyskyhy, LK8000' },
+      { label: 'BLE stream', value: '10 Hz pressure · 0.1 Pa accuracy' },
+      { label: 'Battery', value: 'CR2032 — 400 h active / 4 yrs standby' },
+      { label: 'Size', value: '34 × 30 × 9 mm · 8 g' },
+      { label: 'Apps', value: 'xcTrack · SeeYou · Flyskyhy · LK8000' },
     ],
     blogTag: 'ps1',
   },
   {
+    n: '03',
     slug: 'remote-control-4',
     name: 'FlyBeeper Remote Control 4 (RC4)',
-    status: 'in-development',
+    status: 'dev',
     statusLabel: 'In development',
     image: '/img/flybeeper/remote-control-4/main.jpg',
     summary:
-      "Four external Bluetooth buttons mounted on the brake toggles so the pilot can drive their flight app without letting go of the lines. HID keyboard or AOIS profile — chosen per app.",
+      'Four external Bluetooth buttons mounted on brake toggles. Drive your flight app without letting go of the lines. HID or AOIS profile.',
     specs: [
       { label: 'Inputs', value: '4 tactile buttons' },
       { label: 'BLE profiles', value: 'HID keyboard or AOIS' },
-      { label: 'Battery', value: 'CR2032 — 1000 h active / 5 years standby' },
-      { label: 'Dimensions', value: '34 × 30 × 9 mm, 8 g' },
-      { label: 'Apps', value: 'xcTrack, xcSoar, LK8000, maps.flybeeper.com' },
+      { label: 'Battery', value: 'CR2032 — 1000 h active / 5 yrs standby' },
+      { label: 'Size', value: '34 × 30 × 9 mm · 8 g' },
+      { label: 'Apps', value: 'xcTrack · xcSoar · LK8000 · maps.flybeeper.com' },
     ],
     blogTag: 'rc4',
   },
   {
+    n: '04',
     slug: 'tas',
     name: 'FlyBeeper TAS',
-    status: 'in-development',
+    status: 'dev',
     statusLabel: 'In development',
     image: '/img/flybeeper/tas/main.jpg',
     summary:
-      "Autonomous true-airspeed sensor with Bluetooth. Streams TAS, IAS, EAS, pressure and temperature to phone apps. Built-in Li-ion with fast USB-C charging (0–80% in 60 s).",
+      'Autonomous true-airspeed sensor with Bluetooth. Streams TAS / IAS / EAS / pressure / temperature. USB-C 0–80% in 60 s.',
     specs: [
       { label: 'Range', value: '4–107 km/h IAS' },
-      { label: 'BLE streams', value: 'TAS / IAS / EAS / pressure / temperature' },
-      { label: 'Battery', value: '200 mAh Li-ion, USB Type-C' },
-      { label: 'Enclosure', value: '115 × 65 × 25 mm nylon, 40 g' },
-      { label: 'Apps', value: 'xcTrack, SeeYou, LK8000, maps.flybeeper.com' },
+      { label: 'BLE streams', value: 'TAS / IAS / EAS / pressure / temp' },
+      { label: 'Battery', value: '200 mAh Li-ion · USB Type-C' },
+      { label: 'Enclosure', value: '115 × 65 × 25 mm nylon · 40 g' },
+      { label: 'Apps', value: 'xcTrack · SeeYou · LK8000' },
     ],
     blogTag: 'tas',
   },
   {
+    n: '05',
     slug: 'sun-vario',
     name: 'FlyBeeper Solar Vario',
-    status: 'in-development',
+    status: 'dev',
     statusLabel: 'In development',
     image: '/img/flybeeper/sun-vario/main.jpg',
     summary:
-      "Super-lightweight variometer with Bluetooth, solar panel and supercapacitor instead of a battery. Operates from −15 to +70 °C. Solar covers 100% of consumption — effectively no battery degradation, always ready.",
+      'Super-lightweight variometer with solar panel and supercapacitor instead of a battery. Operates from −15 to +70 °C. <8 g.',
     specs: [
-      { label: 'Storage', value: 'Supercapacitor — 50,000 cycles' },
+      { label: 'Storage', value: 'Supercapacitor — 50 000 cycles' },
       { label: 'Solar', value: '100% of consumption covered' },
       { label: 'Fallback charge', value: '0–80% in 60 s via USB-C' },
       { label: 'Operating temp', value: '−15 to +70 °C' },
@@ -108,198 +114,404 @@ const devices: Device[] = [
     blogTag: 'sun-vario',
   },
   {
+    n: '06',
     slug: 'fanet',
     name: 'FlyBeeper FANET ecosystem',
-    status: 'in-development',
+    status: 'dev',
     statusLabel: 'In development (Base shipping)',
     image: '/img/flybeeper/fanet/main.jpg',
     summary:
-      "Three-plus devices that together form a FANET radio ecosystem on 868 MHz. Base — an ESP32 + SX1276 ground station — is operational today and feeds live traffic into maps.flybeeper.com.",
+      'Three-plus devices forming a 868 MHz FANET radio ecosystem. ESP32 + SX1276 base is shipping and feeds maps.flybeeper.com.',
     specs: [
       { label: 'Base', value: 'ESP32 + SX1276 ground station — shipping' },
-      { label: 'FANET radio', value: 'External 860–930 MHz LoRa bridge with BLE' },
-      { label: 'FANET Vario', value: 'Solar-powered FANET radio + variometer' },
+      { label: 'Radio', value: 'External 860–930 MHz LoRa bridge + BLE' },
+      { label: 'FANET Vario', value: 'Solar-powered FANET radio + vario' },
       { label: 'F0 tracker', value: 'Standalone solar FANET tracker (Cortex-M0+, GPS+GLONASS)' },
       { label: 'Live feed', value: 'maps.flybeeper.com (real-time)' },
     ],
     blogTag: 'fanet',
   },
   {
+    n: '07',
     slug: 'f1',
     name: 'FlyBeeper F1',
     status: 'discontinued',
     statusLabel: 'Discontinued (2023)',
     image: '/img/flybeeper/f1/main.jpg',
     summary:
-      "Compact FANET-capable flight instrument. 50 g of GPS + barometer + LoRa + BLE + OLED that doubles as a smartphone companion and a standalone flight computer. Software stack carried forward into the next generation.",
+      'Compact FANET-capable flight instrument. 50 g of GPS + barometer + LoRa + BLE + OLED. Stack carried forward to the next generation.',
     specs: [
       { label: 'MCU', value: 'ASR6502 (LoRa + Cortex-M0 single die)' },
       { label: 'Sensors', value: 'GPS + GLONASS + barometer' },
-      { label: 'Radio', value: '868 MHz LoRa, up to 22 dBm' },
-      { label: 'Display / IO', value: 'OLED 23 × 13 mm, 3 buttons, RGB LED' },
+      { label: 'Radio', value: '868 MHz LoRa · up to 22 dBm' },
+      { label: 'Display / IO', value: 'OLED 23 × 13 mm · 3 buttons · RGB LED' },
       { label: 'Storage / battery', value: '16 Mb flash (68 h tracks) · 1000 mAh LiPo' },
     ],
     blogTag: 'f1',
   },
 ]
 
-const badgeClasses: Record<Status, string> = {
-  'shipping': 'bg-emerald-100 text-emerald-800 border border-emerald-200',
-  'in-development': 'bg-amber-100 text-amber-800 border border-amber-200',
-  'discontinued': 'bg-slate-200 text-slate-700 border border-slate-300',
-  'prototype': 'bg-slate-200 text-slate-700 border border-slate-300',
+const heroStats: [string, string][] = [
+  ['7', 'devices designed'],
+  ['1', 'currently shipping'],
+  ['5', 'in development'],
+  ['1', 'retired · stack carried forward'],
+]
+
+interface Review {
+  who: string
+  what: string
+  badge: string
+  url?: string
 }
+
+const reviews: Review[] = [
+  {
+    who: 'testfly.me',
+    what: 'Review of FlyBeeper mini BT — score',
+    badge: '8.38 / 10',
+    url: 'https://testfly.me/en/reports/devices/flybeeper-mini-bt/',
+  },
+  {
+    who: 'paraglidingforum.com',
+    what: 'Community thread — mini BT & PS1',
+    badge: 't=110815',
+    url: 'https://www.paraglidingforum.com/viewtopic.php?t=110815',
+  },
+  {
+    who: 'paraglidingforum.com',
+    what: 'Community thread — Remote Control 4',
+    badge: 't=112916',
+    url: 'https://www.paraglidingforum.com/viewtopic.php?t=112916',
+  },
+]
+
+interface Integration {
+  app: string
+  note: string
+  url?: string
+}
+
+const integrations: Integration[] = [
+  {
+    app: 'XCSoar',
+    note: 'Open-source flight computer · issue #1502 — BLE PS1 support',
+    url: 'https://github.com/XCSoar/XCSoar/issues/1502',
+  },
+  {
+    app: 'XCTrack',
+    note: 'Android · issue #1018 — FANET integration request',
+    url: 'https://gitlab.com/xcontest-public/xctrack-public/-/issues/1018',
+  },
+  {
+    app: 'XCTrack',
+    note: 'Issue #1016 — RC4 button support request',
+    url: 'https://gitlab.com/xcontest-public/xctrack-public/-/issues/1016',
+  },
+  {
+    app: 'SeeYou Navigator',
+    note: 'Naviter cross-country app · supports FlyBeeper protocol',
+  },
+  {
+    app: 'LK8000',
+    note: 'Open-source flight instrument app · FlyBeeper compatible',
+  },
+  {
+    app: 'Flyskyhy',
+    note: 'iOS flight app · FlyBeeper BLE support',
+  },
+]
 ---
 
 <Page title={title} description={description} ogImage="/og-default.png">
+  {/* HERO */}
+  <section class="relative px-5 sm:px-10 pt-10 sm:pt-10 pb-8">
+    <Eyebrow>
+      <span class="flex items-center gap-3"><span>●</span><span>Alpisto portfolio</span></span>
+      <span class="flex items-center gap-3"><span>●</span><span>Own products</span></span>
+      <span class="flex items-center gap-3"><span>●</span><span>2018 → 2026</span></span>
+    </Eyebrow>
 
-  <!-- Section 1: Hero -->
-  <section class="max-w-3xl mx-auto px-6 py-20 md:py-28 text-center">
-    <p class="text-sm uppercase tracking-wider text-blue-600 font-medium mb-4">
-      Alpisto portfolio · own products
-    </p>
-    <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-slate-900">
-      FlyBeeper — indie BLE wearables for paraglider pilots
-    </h1>
-    <p class="text-lg md:text-xl text-slate-600 mt-6 leading-relaxed">
-      FlyBeeper is an indie product line of Bluetooth-LE wearables for paraglider pilots,
-      built by Alpisto's founder. Seven devices designed end-to-end — firmware on Nordic nRF52,
-      KiCad PCBs, mobile apps, web backend, and the small-batch fulfilment that goes with them.
-    </p>
-    <div class="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-slate-500">
-      <span><strong class="text-slate-900">7</strong> devices</span>
-      <span class="hidden sm:inline text-slate-300">·</span>
-      <span><strong class="text-slate-900">2018 → 2026</strong></span>
-      <span class="hidden sm:inline text-slate-300">·</span>
-      <span><strong class="text-slate-900">Firmware to fulfilment</strong></span>
+    <div class="grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:gap-10 lg:items-end mt-[14px]">
+      <h1
+        class="font-display font-bold leading-[0.82] tracking-[-0.06em] m-0 text-ink text-[56px] sm:text-[96px] md:text-[128px] lg:text-[168px]"
+      >
+        FLYBEEPER<span class="text-accent">.</span><br />
+        INDIE BLE<br />
+        <span class="text-accent">WEARABLES.</span>
+      </h1>
+      <div class="lg:pb-3">
+        <p class="font-display text-[17px] sm:text-[19px] leading-[1.45] text-ink m-0 font-medium">
+          An indie product line of Bluetooth-LE wearables for paraglider pilots,
+          built by Alpisto's founder. Seven devices designed end-to-end —
+          firmware on Nordic nRF52, KiCad PCBs, mobile apps, web backend,
+          and the small-batch fulfilment that goes with them.
+        </p>
+        <div class="flex flex-wrap gap-3 mt-[22px]">
+          <Btn kind="ink" href="https://market.flybeeper.com" target="_blank" rel="noopener noreferrer">
+            market.flybeeper.com →
+          </Btn>
+          <Btn kind="ghost" href="#devices">SEE LINE-UP ↓</Btn>
+        </div>
+      </div>
     </div>
-  </section>
 
-  <!-- Section 2: Grid of 7 devices -->
-  <section id="devices" class="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200">
-    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-4">The line-up</h2>
-    <p class="text-slate-600 leading-relaxed mb-10 max-w-3xl">
-      Seven devices designed and built since 2018 — from a single shipping product today,
-      through a queue of in-development sensors, to two earlier projects that taught everything
-      the current generation knows.
-    </p>
-
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {devices.map(device => (
-        <a
-          href={`#${device.slug}`}
-          class="group bg-white border border-slate-200 rounded-xl overflow-hidden flex flex-col hover:border-slate-400 transition-colors"
+    {/* stat strip */}
+    <div class="mt-10 border-2 border-ink grid grid-cols-2 lg:grid-cols-4 bg-ink text-paper">
+      {heroStats.map(([n, l], i) => (
+        <div
+          class:list={[
+            'px-6 py-[22px]',
+            i < 3 ? 'lg:border-r-2 border-accent' : '',
+            i % 2 === 0 ? 'border-r-2 border-accent lg:border-r-2' : '',
+            i >= 2 ? 'border-t-2 border-accent lg:border-t-0' : '',
+          ]}
         >
-          <div class="aspect-[4/3] bg-slate-100 flex items-center justify-center overflow-hidden">
-            {device.image ? (
-              <img
-                src={device.image}
-                alt={device.name}
-                loading="lazy"
-                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-            ) : (
-              <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
-                <span class="text-slate-400 text-sm font-medium">No archive photo</span>
-              </div>
-            )}
+          <div class="font-display font-bold tracking-[-0.04em] leading-none text-accent text-[44px] sm:text-[60px]">
+            {n}
           </div>
-          <div class="p-5 flex flex-col flex-grow">
-            <div class="flex items-start justify-between gap-3 mb-2">
-              <h3 class="font-semibold text-slate-900 leading-snug">{device.name}</h3>
-            </div>
-            <span class={`inline-block self-start text-xs font-medium px-2 py-0.5 rounded-full mb-3 ${badgeClasses[device.status]}`}>
-              {device.statusLabel}
-            </span>
-            <p class="text-slate-600 text-sm leading-relaxed flex-grow">
-              {device.summary}
-            </p>
-            <p class="mt-4 text-sm text-blue-600 font-medium group-hover:underline">
-              Specs →
-            </p>
-          </div>
-        </a>
-      ))}
-    </div>
-  </section>
-
-  <!-- Section 3: Deep section per device -->
-  <section id="details" class="max-w-4xl mx-auto px-6 py-16 border-t border-slate-200">
-    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-4">Device details</h2>
-    <p class="text-slate-600 leading-relaxed mb-12 max-w-3xl">
-      Specs were extracted from archived product-page sources and project blog posts.
-      Anything marked "in development" still has open work — wording matches current
-      market.flybeeper.com status.
-    </p>
-
-    <div class="space-y-12">
-      {devices.map(device => (
-        <div id={device.slug} class="scroll-mt-20">
-          <div class="flex flex-wrap items-baseline gap-3 mb-3">
-            <h3 class="text-xl font-semibold text-slate-900">{device.name}</h3>
-            <span class={`text-xs font-medium px-2 py-0.5 rounded-full ${badgeClasses[device.status]}`}>
-              {device.statusLabel}
-            </span>
-          </div>
-          <p class="text-slate-600 text-sm leading-relaxed mb-5 max-w-3xl">
-            {device.summary}
-          </p>
-          <dl class="grid sm:grid-cols-2 gap-x-8 gap-y-2 text-sm max-w-3xl">
-            {device.specs.map(spec => (
-              <div class="flex gap-3 border-b border-slate-100 py-2">
-                <dt class="font-medium text-slate-700 shrink-0 w-32">{spec.label}</dt>
-                <dd class="text-slate-600">{spec.value}</dd>
-              </div>
-            ))}
-          </dl>
-          {device.blogTag && (
-            <p class="mt-4 text-sm">
-              Read more:&nbsp;<a
-                href={`/blog/tags/${device.blogTag}/`}
-                class="text-blue-600 hover:underline"
-              >articles tagged #{device.blogTag} →</a>
-            </p>
-          )}
+          <div class="font-mono text-[11px] tracking-[0.08em] uppercase text-paper mt-2">{l}</div>
         </div>
       ))}
     </div>
   </section>
 
-  <!-- Section 4: Press & Integrations -->
-  <PressIntegrations />
-
-  <!-- Section 5: CTA -->
-  <section id="contact" class="border-t border-slate-200 bg-slate-50">
-    <div class="max-w-3xl mx-auto px-6 py-16 text-center">
-      <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-4">
-        Want to talk firmware, BLE, or end-to-end product work?
-      </h2>
-      <p class="text-slate-600 leading-relaxed mb-8">
-        FlyBeeper is what Alpisto's founder builds for fun and proof. The same hands
-        are available for client work — Nordic nRF52 firmware, BLE protocols, KiCad PCBs,
-        Python and web back-ends behind the device fleet.
-      </p>
-      <div class="flex flex-wrap items-center justify-center gap-4">
-        <a
-          href={`mailto:${contactEmail}`}
-          class="inline-block bg-blue-600 text-white font-medium px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+  {/* LINE-UP — card grid */}
+  <section id="devices" class="px-5 sm:px-10 pt-14 sm:pt-[60px]">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between mb-6">
+      <div>
+        <Eyebrow>● 02 — The line-up</Eyebrow>
+        <h2
+          class="font-display font-bold tracking-[-0.04em] leading-[0.95] mt-[14px] text-[40px] sm:text-[56px] lg:text-[72px]"
         >
-          {contactEmail}
-        </a>
-        <a
-          href={linkedinUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-block border border-slate-300 text-slate-700 font-medium px-6 py-3 rounded-lg hover:border-slate-900 hover:text-slate-900 transition-colors"
-        >
-          LinkedIn
-        </a>
+          SEVEN DEVICES<span class="text-accent">.</span>
+        </h2>
       </div>
-      <p class="mt-10 text-sm text-slate-500">
-        Looking for the MATLAB-to-Python migration practice instead?
-        &nbsp;<a href="/matlab-to-python" class="text-blue-600 hover:underline">See /matlab-to-python →</a>
-      </p>
+      <div
+        class="font-mono text-[11px] sm:text-[12px] text-ink-3 tracking-[0.06em] border-[1.5px] border-ink px-3 py-2 uppercase self-start"
+      >
+        ◉ shipping · ◌ in dev · × retired
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[14px]">
+      {devices.map((device) => (
+        <a
+          href={`#${device.slug}`}
+          class:list={[
+            'block no-underline text-ink border-2 border-ink p-5 relative min-h-[280px] flex flex-col',
+            device.status === 'shipping' ? 'bg-accent' : 'bg-paper-card',
+          ]}
+        >
+          <div class="flex justify-between items-start gap-2">
+            <div class="font-mono text-[11px] tracking-[0.12em] text-ink uppercase">FB / {device.n}</div>
+            <Status live={device.status} />
+          </div>
+          <div class="mt-3 h-[120px] border-2 border-ink overflow-hidden bg-white">
+            {device.image ? (
+              <img
+                src={device.image}
+                alt={device.name}
+                loading="lazy"
+                class="w-full h-full object-contain"
+              />
+            ) : (
+              <div class="w-full h-full flex items-center justify-center font-mono text-[11px] text-ink-3 uppercase tracking-[0.1em]">
+                device shot
+              </div>
+            )}
+          </div>
+          <h3 class="font-display text-[20px] sm:text-[22px] font-bold leading-[1.05] tracking-[-0.02em] mt-[14px] text-ink">
+            {device.name}
+          </h3>
+          <p class="font-display text-[13px] leading-[1.5] text-ink-2 mt-2">{device.summary}</p>
+        </a>
+      ))}
+      {/* CTA filler */}
+      <div
+        class="border-2 border-dashed border-ink p-5 bg-transparent flex flex-col justify-between min-h-[280px]"
+      >
+        <div>
+          <div class="font-mono text-[11px] tracking-[0.12em] text-ink-3 uppercase">FB / NEXT</div>
+          <h3 class="font-display text-[24px] sm:text-[28px] font-bold tracking-[-0.025em] leading-[1.0] mt-[14px]">
+            Tell us what you want next.
+          </h3>
+        </div>
+        <div class="mt-4"><Btn kind="ink" href="mailto:hello@alpisto.eu">hello@alpisto.eu →</Btn></div>
+      </div>
     </div>
   </section>
 
+  {/* DEVICE DETAILS */}
+  <section id="details" class="px-5 sm:px-10 pt-14 sm:pt-[70px]">
+    <Eyebrow>● 03 — Device details</Eyebrow>
+    <h2
+      class="font-display font-bold tracking-[-0.04em] leading-[0.95] mt-[14px] mb-2 text-[40px] sm:text-[56px] lg:text-[72px]"
+    >
+      SPECS, NOT MARKETING<span class="text-accent">.</span>
+    </h2>
+    <p class="font-mono text-[12px] text-ink-3 tracking-[0.04em] max-w-[720px] mb-6">
+      Numbers extracted from archived product-page sources and project blog posts. Anything marked
+      "in development" still has open work — wording matches current market.flybeeper.com status.
+    </p>
+
+    {devices.map((device) => (
+      <div
+        id={device.slug}
+        class="border-t-2 border-ink py-8 grid gap-6 lg:grid-cols-[80px_320px_1fr_280px] scroll-mt-20"
+      >
+        <div class="font-display font-bold leading-[0.9] tracking-[-0.04em] text-ink text-[40px] sm:text-[50px]">
+          {device.n}
+        </div>
+        <div>
+          <div class="border-2 border-ink overflow-hidden bg-white h-[170px]">
+            {device.image ? (
+              <img src={device.image} alt={device.name} loading="lazy" class="w-full h-full object-contain" />
+            ) : (
+              <div class="w-full h-full flex items-center justify-center font-mono text-[11px] text-ink-3 uppercase tracking-[0.1em]">
+                {device.slug}
+              </div>
+            )}
+          </div>
+          <div class="mt-[10px]"><Status live={device.status} /></div>
+        </div>
+        <div>
+          <h3 class="font-display text-[26px] sm:text-[32px] font-bold tracking-[-0.025em] leading-[1.0] m-0">
+            {device.name}
+          </h3>
+          <p class="font-display text-[15px] sm:text-[16px] leading-[1.55] text-ink-2 mt-3 max-w-[520px]">
+            {device.summary}
+          </p>
+          {device.blogTag && (
+            <a
+              href={`/blog/tags/${device.blogTag}/`}
+              class="inline-block font-mono text-[12px] mt-[14px] tracking-[0.06em] uppercase text-ink border-b-[1.5px] border-ink pb-[2px] no-underline hover:text-accent hover:border-accent"
+            >
+              articles tagged #{device.blogTag} →
+            </a>
+          )}
+        </div>
+        <div class="bg-paper-card border-[1.5px] border-ink">
+          {device.specs.map((s, i, arr) => (
+            <div
+              class:list={[
+                'px-[14px] py-[10px] grid grid-cols-[90px_1fr] gap-3',
+                i < arr.length - 1 ? 'border-b border-ink-3' : '',
+              ]}
+            >
+              <div class="font-mono text-[10px] tracking-[0.1em] uppercase text-ink-3">{s.label}</div>
+              <div class="font-mono text-[12px] text-ink leading-[1.4]">{s.value}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </section>
+
+  {/* PRESS & INTEGRATIONS */}
+  <section class="px-5 sm:px-10 pt-14 sm:pt-[70px]">
+    <Eyebrow>● 04 — Press &amp; integrations</Eyebrow>
+    <h2
+      class="font-display font-bold tracking-[-0.04em] leading-[0.95] mt-[14px] mb-6 text-[40px] sm:text-[56px] lg:text-[72px]"
+    >
+      IN THE WILD<span class="text-accent">.</span>
+    </h2>
+
+    <div class="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] border-2 border-ink">
+      {/* Reviews */}
+      <div class="p-6 sm:p-8 lg:border-r-2 border-b-2 lg:border-b-0 border-ink bg-paper-card">
+        <div class="font-mono text-[11px] tracking-[0.12em] uppercase text-ink-3">Reviews &amp; community</div>
+        <h3 class="font-display text-[26px] sm:text-[28px] font-bold tracking-[-0.025em] mt-2 mb-5">
+          Independent voices.
+        </h3>
+
+        <div class="grid gap-[14px]">
+          {reviews.map((r) => (
+            <a
+              href={r.url}
+              target={r.url ? '_blank' : undefined}
+              rel={r.url ? 'noopener noreferrer' : undefined}
+              class="grid grid-cols-[1fr_auto] gap-[14px] border-[1.5px] border-ink p-[14px] bg-paper no-underline text-ink"
+            >
+              <div>
+                <div class="font-mono text-[11px] tracking-[0.06em] text-ink-3 uppercase">{r.who}</div>
+                <div class="font-display text-[15px] sm:text-[17px] font-semibold mt-1">{r.what}</div>
+              </div>
+              <div class="self-center font-mono text-[12px] font-bold text-ink bg-accent px-[10px] py-[6px] whitespace-nowrap">
+                {r.badge}
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      {/* App integrations */}
+      <div class="p-6 sm:p-8 bg-ink text-paper">
+        <div class="font-mono text-[11px] tracking-[0.12em] uppercase text-accent">App integrations</div>
+        <h3 class="font-display text-[26px] sm:text-[28px] font-bold tracking-[-0.025em] mt-2 mb-4">
+          BLE-compatible apps.
+        </h3>
+        <p class="font-mono text-[11px] tracking-[0.04em] leading-[1.5] mb-[14px]" style="color: #cfcabf;">
+          Community integrations and open issue requests, not official endorsements.
+        </p>
+        <ul class="list-none p-0 m-0">
+          {integrations.map((it, i, arr) => (
+            <li
+              class:list={[
+                'grid grid-cols-[120px_1fr] sm:grid-cols-[160px_1fr] gap-[14px] py-[12px] items-baseline',
+                i < arr.length - 1 ? 'border-b border-[#444]' : '',
+              ]}
+            >
+              <div class="font-display text-[15px] sm:text-[16px] font-bold text-accent">
+                {it.url ? (
+                  <a href={it.url} target="_blank" rel="noopener noreferrer" class="text-accent no-underline hover:underline">
+                    → {it.app}
+                  </a>
+                ) : (
+                  <span>→ {it.app}</span>
+                )}
+              </div>
+              <div
+                class="font-mono text-[11px] tracking-[0.02em] leading-[1.5]"
+                style="color: #cfcabf;"
+              >
+                {it.note}
+              </div>
+            </li>
+          ))}
+        </ul>
+        <p class="font-mono text-[10px] tracking-[0.04em] leading-[1.5] mt-[18px]" style="color: #888;">
+          Marketplace: eBay secondary listings. Trademarks property of their respective owners.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* CTA */}
+  <section class="px-5 sm:px-10 pt-14 sm:pt-[60px] pb-14 sm:pb-[60px]">
+    <div
+      class="border-2 border-ink bg-accent p-6 sm:p-10 grid gap-8 lg:grid-cols-[1.5fr_1fr] lg:items-end"
+    >
+      <div>
+        <Eyebrow>● 05 — Hire the same hands</Eyebrow>
+        <h2
+          class="font-display font-bold tracking-[-0.045em] leading-[0.9] mt-[14px] text-ink text-[40px] sm:text-[56px] lg:text-[76px]"
+        >
+          FIRMWARE, BLE,<br />END-TO-END<span class="text-ink">.</span>
+        </h2>
+        <p class="font-display text-[16px] sm:text-[17px] text-ink mt-[18px] max-w-[600px]">
+          FlyBeeper is what Alpisto's founder builds for fun and proof. The same
+          hands are available for client work — Nordic nRF52 firmware, BLE
+          protocols, KiCad PCBs, Python and web back-ends behind a device fleet.
+        </p>
+      </div>
+      <div class="flex flex-col gap-[10px] items-start">
+        <Btn kind="ink" href="mailto:hello@alpisto.eu">hello@alpisto.eu →</Btn>
+        <Btn kind="ghost" href="/matlab-to-python">/matlab-to-python</Btn>
+        <Btn kind="ghost" href="https://www.linkedin.com/in/evgenyistomin" target="_blank" rel="noopener noreferrer">
+          LinkedIn
+        </Btn>
+      </div>
+    </div>
+  </section>
 </Page>

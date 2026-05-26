@@ -1,16 +1,59 @@
 ---
 import Page from '../layouts/Page.astro'
+import Eyebrow from '../components/v5/Eyebrow.astro'
+import Btn from '../components/v5/Btn.astro'
 ---
 
 <Page title="404 — Page not found" description="This page does not exist.">
-  <div class="max-w-3xl mx-auto px-6 py-32 text-center">
-    <p class="text-sm font-medium text-blue-600 mb-4">404</p>
-    <h1 class="text-3xl font-bold text-slate-900 mb-4">Page not found</h1>
-    <p class="text-slate-600 mb-8">
-      The page you're looking for doesn't exist or has been moved.
+  <section class="px-5 sm:px-10 pt-10 sm:pt-16 pb-14 sm:pb-20">
+    <Eyebrow>
+      <span class="flex items-center gap-3"><span>●</span><span>ERR / 404</span></span>
+      <span class="flex items-center gap-3"><span>●</span><span>Page not found</span></span>
+    </Eyebrow>
+    <h1
+      class="font-display font-bold leading-[0.82] tracking-[-0.06em] text-ink mt-4 text-[140px] sm:text-[220px] md:text-[280px] lg:text-[360px]"
+    >
+      404<span class="text-accent">.</span>
+    </h1>
+    <p class="font-display text-[18px] sm:text-[22px] lg:text-[26px] leading-[1.4] text-ink mt-6 max-w-[720px] font-medium">
+      Either we moved this page, or it never existed. Both are possible.
+      <strong class="bg-accent px-2 mx-1 font-medium">No tracking, no funnel.</strong>
+      Pick a link below.
     </p>
-    <a href="/" class="inline-block bg-blue-600 text-white font-medium px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-      Back to home
-    </a>
-  </div>
+
+    <div class="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:max-w-[920px]">
+      <a
+        href="/"
+        class="border-2 border-ink bg-paper-card p-5 no-underline text-ink hover:bg-accent transition-colors"
+      >
+        <div class="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-3">● 01</div>
+        <div class="font-display text-[20px] sm:text-[22px] font-bold tracking-[-0.02em] mt-2">Home →</div>
+      </a>
+      <a
+        href="/blog"
+        class="border-2 border-ink bg-paper-card p-5 no-underline text-ink hover:bg-accent transition-colors"
+      >
+        <div class="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-3">● 02</div>
+        <div class="font-display text-[20px] sm:text-[22px] font-bold tracking-[-0.02em] mt-2">Blog →</div>
+      </a>
+      <a
+        href="/case-studies"
+        class="border-2 border-ink bg-paper-card p-5 no-underline text-ink hover:bg-accent transition-colors"
+      >
+        <div class="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-3">● 03</div>
+        <div class="font-display text-[20px] sm:text-[22px] font-bold tracking-[-0.02em] mt-2">Case studies →</div>
+      </a>
+      <a
+        href="/contact"
+        class="border-2 border-ink bg-ink text-paper p-5 no-underline hover:bg-accent hover:text-ink transition-colors"
+      >
+        <div class="font-mono text-[11px] uppercase tracking-[0.1em] text-accent">● 04</div>
+        <div class="font-display text-[20px] sm:text-[22px] font-bold tracking-[-0.02em] mt-2">Contact →</div>
+      </a>
+    </div>
+
+    <div class="mt-10 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-3">
+      ↳ alpisto.eu · Tolmin, SI
+    </div>
+  </section>
 </Page>

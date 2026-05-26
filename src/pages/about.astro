@@ -1,128 +1,316 @@
 ---
 import Page from '../layouts/Page.astro'
+import Eyebrow from '../components/v5/Eyebrow.astro'
+import Tag from '../components/v5/Tag.astro'
+import Btn from '../components/v5/Btn.astro'
+import Slot from '../components/v5/Slot.astro'
+
+const title = 'About'
+const description =
+  'About Alpisto d.o.o. — a small engineering practice in Slovenia, and Evgeny Istomin, the engineer behind it.'
+
+const companyFacts: [string, string][] = [
+  ['Founded', '2017'],
+  ['Form', 'd.o.o. (Slovenian Ltd.)'],
+  ['VAT', 'SI91102227'],
+  ['Currency', 'EUR · invoiced monthly'],
+  ['Address', 'Rutarjeva 15, 5220 Tolmin, SI'],
+  ['Scope', 'Remote · EU & beyond'],
+]
+
+const principles: [string, string][] = [
+  [
+    'HANDS-ON',
+    'No PowerPoint consulting, no offshore handoffs. The engineer named on the proposal is the engineer writing the commits.',
+  ],
+  [
+    'WORKING CODE',
+    'We ship tests, CI, and documentation when the scope calls for it. The handover survives our last invoice.',
+  ],
+  [
+    'SHORT FIRST',
+    'We prefer short paid engagements that prove fit before scaling up. One-week audit before anything bigger.',
+  ],
+  [
+    'IP RESPECT',
+    'We respect NDAs, IP boundaries, and your existing team dynamics. We do not subcontract without telling you.',
+  ],
+  [
+    'HONEST NO',
+    "If we can't help, we'll tell you so instead of taking the money. The pipeline is full enough to be picky.",
+  ],
+]
+
+const trajectory: [string, string, string][] = [
+  [
+    '2003–2017',
+    'POWER SYSTEMS',
+    'Substation automation, state estimation, OPF, protection relay logic. MATLAB and C++ codebases for utility-scale grids.',
+  ],
+  [
+    '2017',
+    'ALPISTO FOUNDED',
+    'd.o.o. registered in Tolmin. First independent consulting engagements — MATLAB-to-Python ports.',
+  ],
+  [
+    '2018',
+    'FLYBEEPER F1',
+    'First own hardware. 50 g GPS + LoRa + BLE flight instrument. Discontinued 2023, but the software stack lives on.',
+  ],
+  [
+    '2020',
+    'EMBEDDED + BACKENDS',
+    'Stack expansion: nRF52, Zephyr RTOS, FastAPI, NATS, MQTT. Hardware + cloud, in production.',
+  ],
+  [
+    '2023',
+    'FLYBEEPER MINI BT',
+    'Current shipping product. Reviewed 8.38/10 by testfly.me. Validates the end-to-end stack.',
+  ],
+  [
+    '2026',
+    'BOOKING',
+    'MATLAB → Python practice open. Other lines listed as coming soon to keep quality controllable.',
+  ],
+]
+
+const stack: [string, string[]][] = [
+  [
+    'Power systems',
+    ['MATLAB', 'C++', 'pandapower', 'PowerFactory API', 'state estimation', 'OPF', 'short-circuit'],
+  ],
+  ['Embedded', ['nRF52', 'ESP32', 'Zephyr RTOS', 'ESP-IDF', 'KiCad', 'BLE GATT', 'OTA DFU']],
+  [
+    'Scientific Python',
+    ['NumPy', 'SciPy', 'pandas', 'numba', 'PyTorch', 'pytest', 'hypothesis'],
+  ],
+  ['Backends', ['FastAPI', 'NATS', 'MQTT', 'Postgres', 'TimescaleDB', 'Docker', 'GH Actions']],
+]
 ---
 
-<Page
-  title="About"
-  description="About Alpisto d.o.o. — a small engineering practice in Slovenia, and Evgeny Istomin, the engineer behind it."
->
-  <div class="max-w-3xl mx-auto px-6 py-16">
-
-    <!-- About the company -->
-    <section class="mb-16">
-      <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-8">About</h1>
-
-      <h2 class="text-xl font-semibold text-slate-900 mb-4">Alpisto d.o.o.</h2>
-      <div class="space-y-4 text-slate-600 leading-relaxed">
-        <p>
-          Alpisto d.o.o. is a Slovenian engineering company founded in Tolmin. We operate as
-          a boutique consulting practice focused on R&D engineering problems — specifically the
-          kind that sit at the boundary between scientific computing and production software.
-        </p>
-        <p>
-          Our business model is simple: project-based engagements billed in EUR, plus our own
-          hardware product line, <a href="https://market.flybeeper.com" class="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">FlyBeeper</a> (BLE variometers and flight computers for
-          paragliding pilots). Building FlyBeeper end-to-end — from nRF52 firmware to FastAPI
-          backends to the web shop — keeps our production skills sharp.
-        </p>
-        <p>
-          We are EU VAT registered (SI91102227) and invoice in EUR. We work with teams across
-          Europe and beyond on remote engagements.
+<Page title={title} description={description}>
+  {/* HERO */}
+  <section class="relative px-5 sm:px-10 pt-10 sm:pt-[54px] pb-8">
+    <Eyebrow>
+      <span class="flex items-center gap-3"><span>●</span><span>PAGE / 05 — About</span></span>
+      <span class="flex items-center gap-3"><span>●</span><span>Founded 2017</span></span>
+      <span class="flex items-center gap-3"><span>●</span><span>SI91102227</span></span>
+    </Eyebrow>
+    <div class="grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:gap-10 lg:items-end mt-[18px]">
+      <h1
+        class="font-display font-bold leading-[0.82] tracking-[-0.06em] m-0 text-ink text-[72px] sm:text-[120px] md:text-[160px] lg:text-[220px]"
+      >
+        ABOUT<br />
+        <span class="text-accent">ALPISTO.</span>
+      </h1>
+      <div class="lg:pb-[18px]">
+        <p class="font-display text-[18px] sm:text-[22px] leading-[1.35] text-ink m-0 font-medium">
+          A small engineering practice founded in Tolmin, Slovenia.
+          Boutique by choice — one senior engineer, a small roster, billed in EUR.
         </p>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- About the engineer -->
-    <section class="mb-16">
-      <h2 class="text-xl font-semibold text-slate-900 mb-4">Evgeny Istomin — the engineer</h2>
-      <div class="space-y-4 text-slate-600 leading-relaxed">
-        <p>
-          20+ years in electrical power systems engineering, followed by a deliberate move
-          into software. I've worked on state estimation, OPF, and protection relay logic in
-          legacy MATLAB and C++ codebases — and I've been on the other side, migrating those
-          systems to Python.
+  {/* COMPANY + ENGINEER */}
+  <section class="px-5 sm:px-10 pt-10">
+    <div class="border-2 border-ink grid grid-cols-1 lg:grid-cols-2 bg-paper">
+      <div class="p-7 sm:p-9 lg:border-r-2 border-b-2 lg:border-b-0 border-ink bg-paper-card">
+        <Eyebrow>● 01 — Alpisto d.o.o.</Eyebrow>
+        <h2 class="font-display font-bold tracking-[-0.03em] leading-none mt-[14px] text-[36px] sm:text-[48px]">
+          The company.
+        </h2>
+        <p class="font-display text-[16px] sm:text-[17px] leading-[1.55] text-ink-2 mt-[18px]">
+          Alpisto d.o.o. is a Slovenian engineering company founded in Tolmin. We operate
+          as a boutique consulting practice focused on R&amp;D engineering problems —
+          specifically the kind that sit at the boundary between scientific computing
+          and production software.
         </p>
-        <p>
-          Since 2020, my stack has expanded to embedded firmware (ESP32, nRF52, Zephyr RTOS),
-          event-driven backends (FastAPI, NATS, MQTT), scientific Python (NumPy, SciPy,
-          pandapower), and BLE sensor fusion. All of this runs in FlyBeeper, which ships to
-          real customers.
+        <p class="font-display text-[16px] sm:text-[17px] leading-[1.55] text-ink-2 mt-[14px]">
+          Our business model is simple: project-based engagements billed in EUR, plus
+          our own hardware product line, <strong class="bg-accent px-[6px] font-medium">FlyBeeper</strong>.
+          Building it end-to-end — nRF52 firmware to FastAPI backends to the web shop —
+          keeps our production skills sharp.
         </p>
-        <p>
-          I'm based in Slovenia. I work in English and Slovenian. I take on a small number
+
+        <div class="mt-7 grid grid-cols-2 border-[1.5px] border-ink">
+          {companyFacts.map(([k, v], i) => (
+            <div
+              class:list={[
+                'px-[14px] py-[12px]',
+                i % 2 === 0 ? 'border-r-[1.5px] border-ink' : '',
+                i > 1 ? 'border-t-[1.5px] border-ink' : '',
+              ]}
+            >
+              <div class="font-mono text-[10px] tracking-[0.12em] uppercase text-ink-3">{k}</div>
+              <div class="font-display text-[14px] sm:text-[15px] font-semibold mt-1">{v}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="p-7 sm:p-9 bg-ink text-paper relative overflow-hidden">
+        <Eyebrow color="accent">● 02 — Evgeny Istomin</Eyebrow>
+        <h2 class="font-display font-bold tracking-[-0.03em] leading-none mt-[14px] text-[36px] sm:text-[48px]">
+          The engineer.
+        </h2>
+
+        <div class="mt-[22px] grid gap-5 sm:grid-cols-[160px_1fr] items-start">
+          <Slot label="portrait / 1:1" h="160px" dark={true} />
+          <div>
+            <p class="font-display text-[15px] sm:text-[16px] leading-[1.55] m-0" style="color: #dad6c9;">
+              20+ years in electrical power-systems engineering, followed by a deliberate
+              move into software. Worked on state estimation, OPF, and protection relay
+              logic in legacy MATLAB and C++ — then on the other side, migrating those
+              systems to Python.
+            </p>
+          </div>
+        </div>
+
+        <p class="font-display text-[15px] sm:text-[16px] leading-[1.55] mt-[18px]" style="color: #dad6c9;">
+          Since 2020 the stack has expanded to embedded firmware (ESP32, nRF52, Zephyr
+          RTOS), event-driven backends (FastAPI, NATS, MQTT), scientific Python
+          (NumPy, SciPy, pandapower) and BLE sensor fusion. All of this runs in
+          <strong class="text-accent"> FlyBeeper</strong>, which ships to real customers.
+        </p>
+
+        <p class="font-display text-[14px] sm:text-[15px] leading-[1.5] mt-[14px]" style="color: #cfcabf;">
+          Based in Slovenia. Works in English and Slovenian. Takes on a small number
           of consulting clients at a time to keep quality high.
         </p>
-      </div>
 
-      <div class="mt-6 flex flex-wrap gap-3">
-        <a
-          href="https://github.com/Genajoin"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 text-sm font-medium text-slate-700 border border-slate-200 px-4 py-2 rounded-lg hover:border-slate-900 hover:text-slate-900 transition-colors"
-        >
-          GitHub: Genajoin
-        </a>
-        <a
-          href="https://www.linkedin.com/in/evgenyistomin"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 text-sm font-medium text-slate-700 border border-slate-200 px-4 py-2 rounded-lg hover:border-slate-900 hover:text-slate-900 transition-colors"
-        >
-          LinkedIn
-        </a>
-        <a
-          href="/blog"
-          class="inline-flex items-center gap-2 text-sm font-medium text-slate-700 border border-slate-200 px-4 py-2 rounded-lg hover:border-slate-900 hover:text-slate-900 transition-colors"
-        >
-          Blog
-        </a>
+        <div class="mt-[22px] flex flex-wrap gap-[10px]">
+          <a href="https://github.com/Genajoin" target="_blank" rel="noopener noreferrer" class="no-underline">
+            <Tag dark>GitHub / Genajoin</Tag>
+          </a>
+          <a href="https://www.linkedin.com/in/evgenyistomin" target="_blank" rel="noopener noreferrer" class="no-underline">
+            <Tag dark>LinkedIn / evgenyistomin</Tag>
+          </a>
+          <a href="/blog" class="no-underline">
+            <Tag dark>alpisto.eu/blog</Tag>
+          </a>
+        </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Working principles -->
-    <section class="mb-16">
-      <h2 class="text-xl font-semibold text-slate-900 mb-4">How we work</h2>
-      <ul class="space-y-3">
-        {[
-          'We work hands-on. No PowerPoint consulting, no offshore handoffs.',
-          'We ship working code — tests, CI, documentation if the scope calls for it.',
-          'We prefer short paid engagements that prove fit before scaling up.',
-          'We respect NDAs, IP boundaries, and your existing team dynamics.',
-          'If we can\'t help, we\'ll tell you so instead of taking the money.',
-        ].map(principle => (
-          <li class="flex gap-3 text-slate-600 leading-relaxed">
-            <span class="text-blue-600 font-bold shrink-0 mt-0.5">—</span>
-            <span>{principle}</span>
-          </li>
+  {/* TIMELINE */}
+  <section class="px-5 sm:px-10 pt-14 sm:pt-[60px]">
+    <Eyebrow>● 03 — Trajectory</Eyebrow>
+    <h2
+      class="font-display font-bold tracking-[-0.04em] leading-[0.95] mt-[14px] mb-7 text-[40px] sm:text-[56px] lg:text-[72px]"
+    >
+      TWENTY YEARS,<br />FOUR DOMAINS<span class="text-accent">.</span>
+    </h2>
+
+    <div class="border-2 border-ink bg-paper-card">
+      {trajectory.map(([year, label, body], i, arr) => (
+        <div
+          class:list={[
+            'grid gap-4 sm:gap-7 lg:grid-cols-[160px_240px_1fr] px-5 sm:px-6 py-5 items-start',
+            i < arr.length - 1 ? 'border-b-[1.5px] border-ink' : '',
+          ]}
+        >
+          <div class="font-mono text-[13px] sm:text-[14px] font-bold text-accent tracking-[0.04em]">{year}</div>
+          <div class="font-display text-[18px] sm:text-[22px] font-bold tracking-[-0.02em]">{label}</div>
+          <div class="font-display text-[14px] sm:text-[15px] leading-[1.5] text-ink-2">{body}</div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  {/* HOW WE WORK */}
+  <section class="px-5 sm:px-10 pt-14 sm:pt-[60px]">
+    <div class="grid gap-8 lg:grid-cols-[1fr_1.4fr] lg:gap-10">
+      <div>
+        <Eyebrow>● 04 — How we work</Eyebrow>
+        <h2
+          class="font-display font-bold tracking-[-0.04em] leading-[0.95] mt-[14px] text-[40px] sm:text-[56px] lg:text-[72px]"
+        >
+          FIVE<br />RULES<span class="text-accent">.</span>
+        </h2>
+        <p class="font-display text-[15px] sm:text-[16px] text-ink-2 mt-[18px] max-w-[360px]">
+          These are not aspirations. They are how engagements actually run.
+          If a rule is going to be broken on your project, we tell you up front.
+        </p>
+      </div>
+      <div>
+        {principles.map(([k, v], i) => (
+          <div
+            class="grid gap-4 sm:gap-[18px] grid-cols-[40px_1fr] sm:grid-cols-[60px_180px_1fr] lg:grid-cols-[60px_200px_1fr] border-t-2 border-ink py-[22px] items-start"
+          >
+            <div class="font-display text-[24px] sm:text-[28px] font-bold text-accent leading-none tracking-[-0.02em]">
+              0{i + 1}
+            </div>
+            <div class="font-display text-[20px] sm:text-[24px] font-bold tracking-[-0.02em] col-span-1">{k}</div>
+            <div class="font-display text-[15px] sm:text-[16px] leading-[1.55] text-ink-2 col-span-2 sm:col-span-1">{v}</div>
+          </div>
         ))}
-      </ul>
-    </section>
-
-    <!-- Contact -->
-    <section class="border-t border-slate-200 pt-10">
-      <h2 class="text-xl font-semibold text-slate-900 mb-4">Get in touch</h2>
-      <p class="text-slate-600 mb-6">
-        The best way to start is a short email describing the problem. No RFPs, no NDAs before
-        hello.
-      </p>
-      <div class="flex flex-wrap gap-4">
-        <a
-          href="mailto:info@alpisto.eu"
-          class="inline-block bg-blue-600 text-white font-medium px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          info@alpisto.eu
-        </a>
-        <a
-          href="https://www.linkedin.com/in/evgenyistomin"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-block border border-slate-300 text-slate-700 font-medium px-6 py-3 rounded-lg hover:border-slate-900 hover:text-slate-900 transition-colors"
-        >
-          LinkedIn
-        </a>
       </div>
-    </section>
+    </div>
+  </section>
 
-  </div>
+  {/* STACK */}
+  <section class="px-5 sm:px-10 pt-14 sm:pt-[60px]">
+    <Eyebrow>● 05 — Stack we actually ship</Eyebrow>
+    <h2
+      class="font-display font-bold tracking-[-0.04em] leading-[0.95] mt-[14px] mb-6 text-[40px] sm:text-[56px] lg:text-[72px]"
+    >
+      THINGS WE'VE PUT<br />INTO PRODUCTION<span class="text-accent">.</span>
+    </h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-2 border-ink">
+      {stack.map(([label, items], i) => (
+        <div
+          class:list={[
+            'p-[22px]',
+            i < 3 ? 'lg:border-r-2 border-ink' : '',
+            i % 2 === 1 ? 'sm:border-l-2 lg:border-l-0 border-ink' : '',
+            i > 1 ? 'sm:border-t-2 lg:border-t-0 border-ink' : '',
+            i % 2 === 0 ? 'bg-paper-card' : 'bg-paper',
+          ]}
+        >
+          <div class="font-mono text-[11px] tracking-[0.12em] uppercase text-ink-3">0{i + 1}</div>
+          <h3 class="font-display text-[20px] sm:text-[22px] font-bold tracking-[-0.02em] mt-[6px] mb-[14px]">
+            {label}
+          </h3>
+          <div class="flex flex-wrap gap-[6px]">
+            {items.map((t) => <Tag>{t}</Tag>)}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  {/* GET IN TOUCH */}
+  <section class="px-5 sm:px-10 pt-14 sm:pt-[60px] pb-14 sm:pb-[60px]">
+    <div
+      class="border-2 border-ink bg-ink text-paper p-6 sm:p-10 grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:gap-10 lg:items-end"
+    >
+      <div>
+        <Eyebrow color="accent">● 06 — Get in touch</Eyebrow>
+        <h2
+          class="font-display font-bold tracking-[-0.045em] leading-[0.9] mt-[18px] text-[44px] sm:text-[64px] lg:text-[88px]"
+        >
+          A SHORT EMAIL<br />IS PLENTY<span class="text-accent">.</span>
+        </h2>
+        <p
+          class="font-display text-[16px] sm:text-[17px] leading-[1.55] mt-[18px] max-w-[600px]"
+          style="color: #cfcabf;"
+        >
+          The best way to start is a short email describing the problem. No RFPs,
+          no NDAs before hello. If we can't help, we'll tell you so.
+        </p>
+      </div>
+      <div class="flex flex-col gap-3 items-start">
+        <Btn kind="accent" href="mailto:hello@alpisto.eu">hello@alpisto.eu →</Btn>
+        <Btn kind="onDark" href="https://cal.eu/evgenyistomin" target="_blank" rel="noopener noreferrer">
+          cal.eu/evgenyistomin
+        </Btn>
+        <Btn kind="onDark" href="https://www.linkedin.com/in/evgenyistomin" target="_blank" rel="noopener noreferrer">
+          LinkedIn
+        </Btn>
+      </div>
+    </div>
+  </section>
 </Page>

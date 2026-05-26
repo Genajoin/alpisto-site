@@ -1,8 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#2563eb"/>
-  <!-- Two alpine peaks, white silhouette -->
-  <path d="M 6 52 L 24 18 L 42 52 Z" fill="#ffffff"/>
-  <path d="M 28 52 L 46 10 L 60 52 Z" fill="#ffffff"/>
-  <!-- Snow cap on the taller peak -->
-  <path d="M 41 23 L 46 10 L 51 23 Z" fill="#dbeafe"/>
+  <!-- Black ink square (matches Header brand mark) -->
+  <rect width="64" height="64" rx="6" fill="#0c0c0c"/>
+  <!-- Acid orange "A" — geometric, bold, brutalist -->
+  <path d="M 16 50 L 28 14 L 36 14 L 48 50 L 40 50 L 37.4 42 L 26.6 42 L 24 50 Z M 29 35 L 35 35 L 32 25.5 Z"
+        fill="#ff5b1f"/>
 </svg>

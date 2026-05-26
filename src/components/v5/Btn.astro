@@ -1,0 +1,55 @@
+---
+/**
+ * V5 Btn — brutalist button / link with 2px ink border.
+ * Mirrors `V5Btn` from v5-shared.jsx.
+ *
+ * Variants:
+ *   ink    — black bg, paper fg                (primary CTA)
+ *   accent — orange bg, ink fg                 (hot CTA)
+ *   ghost  — transparent bg, ink fg            (secondary)
+ *   onDark — transparent bg, paper fg/border   (CTA on dark sections)
+ *
+ * Renders as <a> by default; pass `as="button"` to get a <button>.
+ */
+type Kind = 'ink' | 'accent' | 'ghost' | 'onDark'
+
+interface Props {
+  kind?: Kind
+  href?: string
+  as?: 'a' | 'button'
+  type?: 'button' | 'submit' | 'reset'
+  target?: string
+  rel?: string
+  class?: string
+}
+
+const {
+  kind = 'ink',
+  href,
+  as = href ? 'a' : 'button',
+  type = 'button',
+  target,
+  rel,
+  class: className = '',
+} = Astro.props
+
+const variants: Record<Kind, string> = {
+  ink: 'bg-ink text-paper border-ink',
+  accent: 'bg-accent text-ink border-ink',
+  ghost: 'bg-transparent text-ink border-ink',
+  onDark: 'bg-transparent text-paper border-paper',
+}
+
+const base =
+  'inline-flex items-center gap-[10px] font-display font-bold text-[14px] tracking-[0.02em] px-5 py-3 border-2 no-underline'
+---
+
+{as === 'a' ? (
+  <a href={href} target={target} rel={rel} class:list={[base, variants[kind], className]}>
+    <slot />
+  </a>
+) : (
+  <button type={type} class:list={[base, variants[kind], className]}>
+    <slot />
+  </button>
+)}

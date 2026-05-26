@@ -1,5 +1,8 @@
 ---
 import Page from './Page.astro'
+import Eyebrow from '../components/v5/Eyebrow.astro'
+import Tag from '../components/v5/Tag.astro'
+import Btn from '../components/v5/Btn.astro'
 import type { CollectionEntry } from 'astro:content'
 
 interface Props {
@@ -14,102 +17,161 @@ const { title, description, pubDate, updatedDate, tags, heroImage, ctaTarget, to
 const formatDate = (d: Date) =>
   d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
 
+const isoDate = (d: Date) => d.toISOString().slice(0, 10)
+
 const tocHeadings = toc ? headings.filter(h => h.depth === 2 || h.depth === 3) : []
 
-const ctaMap: Record<string, { label: string; href: string }> = {
+const ctaMap: Record<string, { eyebrow: string; title: string; body: string; label: string; href: string }> = {
   '/matlab-to-python': {
-    label: 'Need help moving MATLAB to Python? →',
+    eyebrow: '● Related service',
+    title: 'Moving a MATLAB codebase to Python?',
+    body:
+      'Fixed-fee audit, then a numerically-equivalent port with CI tolerance gates. Same pattern we used on the case study linked above.',
+    label: 'See the migration service →',
     href: '/matlab-to-python',
   },
   '/flybeeper': {
-    label: 'See the full FlyBeeper line-up →',
+    eyebrow: '● Related product line',
+    title: 'See the full FlyBeeper line-up.',
+    body:
+      'Seven BLE wearables built end-to-end — firmware, PCB, mobile, backend. One shipping, five in development, one retired.',
+    label: 'Browse devices →',
     href: '/flybeeper',
   },
 }
-const ctaLink = ctaTarget && ctaMap[ctaTarget]
+const ctaLink = ctaTarget ? ctaMap[ctaTarget] : undefined
 ---
 
 <Page title={title} description={description} ogImage={heroImage ?? '/og-default.png'}>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous" slot="head" />
-  <article class="max-w-3xl mx-auto px-6 py-16">
-    <!-- Header -->
-    <header class="mb-10 pb-8 border-b border-slate-200">
-      <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 mb-4">{title}</h1>
-      <p class="text-lg text-slate-600 mb-6 leading-relaxed">{description}</p>
-      <div class="flex flex-wrap items-center gap-3 text-sm text-slate-500">
-        <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
-        <span>·</span>
-        <span>{readingTime}</span>
-        {tags.length > 0 && (
-          <>
-            <span>·</span>
-            <div class="flex flex-wrap gap-2">
-              {tags.map(tag => (
-                <a href={`/blog/tags/${tag}/`} class="text-blue-600 hover:underline">#{tag}</a>
-              ))}
-            </div>
-          </>
-        )}
-      </div>
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+    integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV"
+    crossorigin="anonymous"
+    slot="head"
+  />
+
+  {/* HERO */}
+  <section class="px-5 sm:px-10 pt-8 sm:pt-10 pb-6">
+    <Eyebrow>
+      <span class="flex items-center gap-3"><span>●</span><span>BLOG / POST</span></span>
+      <span class="flex items-center gap-3"><span>●</span><time datetime={isoDate(pubDate)}>{formatDate(pubDate)}</time></span>
+      <span class="flex items-center gap-3"><span>●</span><span>{readingTime}</span></span>
       {updatedDate && (
-        <p class="text-sm text-slate-400 mt-2">Updated {formatDate(updatedDate)}</p>
+        <span class="flex items-center gap-3"><span>●</span><span>Updated {formatDate(updatedDate)}</span></span>
       )}
-    </header>
+    </Eyebrow>
 
-    {heroImage && (
-      <img src={heroImage} alt="" class="w-full rounded-2xl mb-12" loading="lazy" />
-    )}
+    <h1
+      class="font-display font-bold tracking-[-0.04em] leading-[0.95] text-ink mt-4 max-w-[1100px] text-[36px] sm:text-[56px] md:text-[72px] lg:text-[88px]"
+    >
+      {title}
+    </h1>
 
-    {tocHeadings.length > 0 && (
-      <nav class="mb-12 p-6 bg-slate-50 border border-slate-200 rounded-xl">
-        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">On this page</p>
-        <ul class="space-y-2 text-sm">
-          {tocHeadings.map(h => (
-            <li class={h.depth === 3 ? 'ml-4' : ''}>
-              <a href={`#${h.slug}`} class="text-slate-700 hover:text-blue-600 hover:underline">
-                {h.text}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    )}
+    <p class="font-display text-[17px] sm:text-[20px] lg:text-[22px] leading-[1.45] text-ink-2 mt-6 max-w-[820px] font-medium">
+      {description}
+    </p>
 
-    <!-- Content -->
-    <div class="prose prose-slate prose-lg max-w-none
-                prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-slate-900
-                prose-h2:mt-12 prose-h2:mb-4 prose-h2:text-2xl
-                prose-h3:mt-8 prose-h3:mb-3 prose-h3:text-xl
-                prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
-                prose-code:before:content-none prose-code:after:content-none
-                prose-code:bg-slate-100 prose-code:text-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-normal
-                prose-pre:bg-slate-900 prose-pre:text-slate-100 prose-pre:rounded-xl
-                prose-blockquote:border-l-blue-600 prose-blockquote:text-slate-700 prose-blockquote:not-italic
-                prose-img:rounded-xl
-                prose-table:text-sm prose-th:text-slate-900 prose-th:font-semibold">
-      <slot />
-    </div>
-
-    <!-- Footer: author + CTA -->
-    <footer class="mt-16 pt-8 border-t border-slate-200">
-      <div class="flex flex-col md:flex-row gap-6 items-start md:items-center md:justify-between">
-        <div class="text-sm">
-          <p class="font-medium text-slate-900">Evgeny Istomin</p>
-          <p class="text-slate-600">Engineer at Alpisto · 20+ years across power systems, embedded firmware, and ML.</p>
-        </div>
-        {ctaLink && (
-          <a
-            href={ctaLink.href}
-            class="shrink-0 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-          >
-            {ctaLink.label}
+    {tags.length > 0 && (
+      <div class="mt-6 flex flex-wrap items-center gap-2">
+        {tags.map(tag => (
+          <a href={`/blog/tags/${tag}/`} class="no-underline">
+            <Tag>#{tag}</Tag>
           </a>
-        )}
+        ))}
       </div>
-    </footer>
+    )}
 
-    <div class="mt-8 text-center">
-      <a href="/blog" class="text-blue-600 hover:underline text-sm">← Back to all articles</a>
+    <div class="mt-7 pt-5 border-t-2 border-ink flex flex-wrap items-baseline gap-x-6 gap-y-2 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-3">
+      <span class="text-ink font-bold">↳ Evgeny Istomin</span>
+      <span>Engineer · Alpisto d.o.o.</span>
+      <span class="ml-auto">{readingTime}</span>
     </div>
-  </article>
+  </section>
+
+  {heroImage && (
+    <section class="px-5 sm:px-10 pt-6">
+      <figure class="border-2 border-ink bg-paper-card relative overflow-hidden">
+        <img src={heroImage} alt="" class="block w-full h-auto" loading="lazy" />
+      </figure>
+    </section>
+  )}
+
+  {/* TOC + CONTENT */}
+  <section class="px-5 sm:px-10 pt-10 sm:pt-14 pb-10">
+    {tocHeadings.length > 0 ? (
+      <div class="grid gap-8 lg:gap-12 lg:grid-cols-[1fr_220px]">
+        <article class="prose-v5 max-w-[820px] min-w-0">
+          <slot />
+        </article>
+        <aside class="lg:order-last order-first lg:sticky lg:top-8 lg:self-start">
+          <details class="border-2 border-ink bg-paper-card" open>
+            <summary class="cursor-pointer list-none px-4 py-3 border-b-2 border-ink bg-ink text-paper font-mono text-[11px] uppercase tracking-[0.12em] flex items-center justify-between">
+              <span>● On this page</span>
+              <span class="lg:hidden" aria-hidden="true">↕</span>
+            </summary>
+            <nav class="px-4 py-4">
+              <ol class="list-none m-0 p-0 space-y-2 font-mono text-[12px] leading-[1.5]">
+                {tocHeadings.map((h, i) => (
+                  <li class={h.depth === 3 ? 'pl-4' : ''}>
+                    <a
+                      href={`#${h.slug}`}
+                      class="text-ink-2 no-underline hover:text-accent block break-words"
+                    >
+                      <span class="text-ink-3 mr-2">{String(i + 1).padStart(2, '0')}</span>
+                      {h.text}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          </details>
+        </aside>
+      </div>
+    ) : (
+      <article class="prose-v5 max-w-[820px] mx-auto">
+        <slot />
+      </article>
+    )}
+  </section>
+
+  {/* CTA */}
+  {ctaLink && (
+    <section class="px-5 sm:px-10 pt-2 pb-10">
+      <div class="border-2 border-ink bg-accent p-6 sm:p-9 grid gap-6 lg:grid-cols-[1.4fr_1fr] lg:gap-10 lg:items-end">
+        <div>
+          <Eyebrow>{ctaLink.eyebrow}</Eyebrow>
+          <h2
+            class="font-display font-bold tracking-[-0.035em] leading-[0.95] mt-3 text-ink text-[32px] sm:text-[44px] lg:text-[56px]"
+          >
+            {ctaLink.title}
+          </h2>
+          <p class="font-display text-[15px] sm:text-[17px] text-ink mt-4 max-w-[560px] leading-[1.5]">
+            {ctaLink.body}
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-3 lg:justify-end">
+          <Btn kind="ink" href={ctaLink.href}>{ctaLink.label}</Btn>
+        </div>
+      </div>
+    </section>
+  )}
+
+  {/* FOOTER NAV */}
+  <section class="px-5 sm:px-10 pb-14 sm:pb-16">
+    <div class="border-t-2 border-ink pt-6 flex flex-wrap items-center justify-between gap-4">
+      <a
+        href="/blog"
+        class="font-mono text-[12px] uppercase tracking-[0.08em] text-ink no-underline hover:text-accent"
+      >
+        ← Back to all articles
+      </a>
+      <a
+        href="/rss.xml"
+        class="font-mono text-[12px] uppercase tracking-[0.08em] text-ink-3 no-underline hover:text-accent"
+      >
+        RSS / atom.xml
+      </a>
+    </div>
+  </section>
 </Page>

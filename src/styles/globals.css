@@ -1,6 +1,226 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* ---------------------------------------------------------------------------
+ * Alpisto v5 — brutalist design tokens.
+ * Palette: paper-warm background, ink borders, acid-orange accent.
+ * Type   : Space Grotesk (display) + Geist Mono (mono).
+ * Tailwind 4 picks these up via @theme and exposes utilities like
+ *   bg-paper, text-ink, text-accent, border-ink, font-display, font-mono.
+ * ------------------------------------------------------------------------ */
+
 @theme {
-  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Surfaces */
+  --color-paper: #eeeae0;         /* bg — paper-warm, main canvas */
+  --color-paper-alt: #e3ddcd;     /* bg2 — alt section bg */
+  --color-paper-card: #f7f3e8;    /* paper — card / lighter surface */
+
+  /* Ink / text */
+  --color-ink: #0c0c0c;           /* ink — primary text/border */
+  --color-ink-2: #2a2a2a;         /* ink2 — secondary text */
+  --color-ink-3: #5a5a5a;         /* ink3 — muted text */
+
+  /* Accents */
+  --color-accent: #ff5b1f;        /* acid orange — CTAs, status */
+  --color-cool: #3744ff;          /* electric blue — sparing use only */
+
+  /* Type */
+  --font-display: 'Space Grotesk', 'Helvetica Neue', sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* Brutalist background grid — vertical lines every 40px, very faint. */
+.v5-grid {
+  background-image: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.04) 1px,
+    transparent 1px
+  );
+  background-size: 40px 100%;
+}
+
+/* ---------------------------------------------------------------------------
+ * .prose-v5 — brutalist markdown rendering for blog & case-study content.
+ * Replaces the previous Tailwind typography classes with a Space-Grotesk +
+ * Geist-Mono palette over warm paper, with acid-orange accents on links
+ * and code marks. KaTeX classes are left untouched (rendering supplied by
+ * the katex.min.css stylesheet linked in BlogPost.astro).
+ * ------------------------------------------------------------------------ */
+.prose-v5 {
+  font-family: var(--font-display);
+  color: var(--color-ink);
+  font-size: 17px;
+  line-height: 1.65;
+}
+.prose-v5 > * + * { margin-top: 1.1em; }
+.prose-v5 p { margin: 0; }
+.prose-v5 strong { font-weight: 700; color: var(--color-ink); }
+.prose-v5 em { font-style: italic; }
+
+/* Headings */
+.prose-v5 h2,
+.prose-v5 h3,
+.prose-v5 h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--color-ink);
+  line-height: 1.15;
+  scroll-margin-top: 80px;
+}
+.prose-v5 h2 {
+  font-size: 32px;
+  margin-top: 2.2em;
+  margin-bottom: 0.6em;
+  padding-bottom: 0.4em;
+  border-bottom: 2px solid var(--color-ink);
+}
+.prose-v5 h3 {
+  font-size: 22px;
+  margin-top: 1.8em;
+  margin-bottom: 0.5em;
+}
+.prose-v5 h4 {
+  font-size: 17px;
+  margin-top: 1.6em;
+  margin-bottom: 0.4em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-family: var(--font-mono);
+  color: var(--color-ink-3);
+}
+@media (min-width: 640px) {
+  .prose-v5 h2 { font-size: 38px; }
+  .prose-v5 h3 { font-size: 24px; }
+}
+
+/* Links */
+.prose-v5 a {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+.prose-v5 a:hover { color: var(--color-accent); }
+
+/* Lists */
+.prose-v5 ul,
+.prose-v5 ol { padding-left: 1.5em; margin: 0; }
+.prose-v5 ul { list-style: none; padding-left: 1.6em; }
+.prose-v5 ul > li { position: relative; }
+.prose-v5 ul > li::before {
+  content: '→';
+  position: absolute;
+  left: -1.4em;
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+.prose-v5 ol { list-style: decimal; }
+.prose-v5 ol > li::marker { color: var(--color-ink-3); font-family: var(--font-mono); font-weight: 700; }
+.prose-v5 li + li { margin-top: 0.4em; }
+.prose-v5 li > ul,
+.prose-v5 li > ol { margin-top: 0.4em; }
+
+/* Inline code */
+.prose-v5 code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--color-paper-card);
+  color: var(--color-ink);
+  padding: 2px 6px;
+  border: 1px solid var(--color-ink);
+}
+/* Code blocks */
+.prose-v5 pre {
+  font-family: var(--font-mono);
+  background: var(--color-ink);
+  color: #eeeae0;
+  border: 2px solid var(--color-ink);
+  padding: 18px 20px;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.prose-v5 pre code {
+  background: transparent;
+  color: inherit;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* Blockquote */
+.prose-v5 blockquote {
+  border-left: 4px solid var(--color-accent);
+  background: var(--color-paper-card);
+  padding: 14px 20px;
+  margin: 0;
+  color: var(--color-ink-2);
+  font-style: normal;
+}
+.prose-v5 blockquote p { margin: 0; }
+.prose-v5 blockquote p + p { margin-top: 0.6em; }
+
+/* HR */
+.prose-v5 hr {
+  border: 0;
+  border-top: 2px solid var(--color-ink);
+  margin: 2.4em 0;
+}
+
+/* Images */
+.prose-v5 img {
+  border: 2px solid var(--color-ink);
+  background: var(--color-paper-card);
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+.prose-v5 figure { margin: 0; }
+.prose-v5 figcaption {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+  margin-top: 8px;
+}
+
+/* Tables */
+.prose-v5 table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  border: 2px solid var(--color-ink);
+}
+.prose-v5 thead {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+.prose-v5 th,
+.prose-v5 td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-ink);
+  border-right: 1px solid var(--color-ink);
+  vertical-align: top;
+}
+.prose-v5 th:last-child,
+.prose-v5 td:last-child { border-right: 0; }
+.prose-v5 tbody tr:last-child td { border-bottom: 0; }
+.prose-v5 th {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+/* KaTeX display blocks — give them a little breathing room. */
+.prose-v5 .katex-display {
+  margin: 1.4em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
 }

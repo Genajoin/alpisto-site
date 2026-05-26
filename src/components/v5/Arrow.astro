@@ -1,0 +1,45 @@
+---
+/**
+ * V5 Arrow — square-cap SVG arrow used as a hard pointer through the UI.
+ * Mirrors `V5Arrow` from v5-shared.jsx.
+ *
+ * Props:
+ *   size   — width/height in px (default 70)
+ *   color  — stroke color, any valid CSS color (default ink #0c0c0c)
+ *   rot    — rotation in degrees, applied via CSS transform (default 0)
+ *   stroke — stroke width in px (default 6)
+ */
+interface Props {
+  size?: number
+  color?: string
+  rot?: number
+  stroke?: number
+  class?: string
+}
+
+const {
+  size = 70,
+  color = '#0c0c0c',
+  rot = 0,
+  stroke = 6,
+  class: className = '',
+} = Astro.props
+---
+
+<svg
+  width={size}
+  height={size}
+  viewBox="0 0 70 70"
+  style={`transform: rotate(${rot}deg); display: block;`}
+  class={className}
+  aria-hidden="true"
+>
+  <path
+    d="M8 35 H56 M40 18 L58 35 L40 52"
+    fill="none"
+    stroke={color}
+    stroke-width={stroke}
+    stroke-linecap="square"
+    stroke-linejoin="miter"
+  />
+</svg>

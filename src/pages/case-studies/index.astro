@@ -1,5 +1,7 @@
 ---
 import Page from '../../layouts/Page.astro'
+import Eyebrow from '../../components/v5/Eyebrow.astro'
+import Btn from '../../components/v5/Btn.astro'
 import { getCollection } from 'astro:content'
 
 const cases = (await getCollection('case-studies', ({ data }) => !data.draft))
@@ -10,43 +12,232 @@ const cases = (await getCollection('case-studies', ({ data }) => !data.draft))
   title="Case Studies"
   description="Anonymous case studies from Alpisto consulting engagements — MATLAB migration, power systems, embedded firmware, IoT backends."
 >
-  <section class="max-w-3xl mx-auto px-6 py-16">
-    <header class="mb-12">
-      <h1 class="text-4xl font-bold tracking-tight text-slate-900 mb-4">Case studies</h1>
-      <p class="text-lg text-slate-600 leading-relaxed">
-        Anonymous summaries of real engineering work. Client names withheld under NDA;
-        technical details generalised but representative.
-      </p>
-    </header>
+  {/* HERO */}
+  <section class="px-5 sm:px-10 pt-8 sm:pt-10 pb-6">
+    <Eyebrow>
+      <span class="flex items-center gap-3"><span>●</span><span>PAGE / 06 — Case studies</span></span>
+      <span class="flex items-center gap-3"><span>●</span><span>Public summaries</span></span>
+      <span class="flex items-center gap-3"><span>●</span><span>Anonymised on request</span></span>
+    </Eyebrow>
+    <div class="mt-4 grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:gap-10 lg:items-end">
+      <h1
+        class="font-display font-bold leading-[0.82] tracking-[-0.06em] text-ink text-[64px] sm:text-[120px] md:text-[160px] lg:text-[200px]"
+      >
+        WORK,<br /><span class="text-accent">NOT DECKS.</span>
+      </h1>
+      <div class="lg:pb-5">
+        <p class="font-display text-[17px] sm:text-[19px] leading-[1.45] text-ink font-medium">
+          A few engagements we are allowed to talk about. Names redacted where the client
+          asked. Numbers are the ones that mattered to them — not the ones that look best
+          on a slide.
+        </p>
+      </div>
+    </div>
+  </section>
 
+  {/* INDEX BAR */}
+  {cases.length > 0 && (
+    <section class="px-5 sm:px-10 pt-4">
+      <div
+        class="border-2 border-ink bg-paper hidden lg:grid lg:grid-cols-[60px_1.4fr_1fr_1.2fr_1fr_90px] gap-4 px-5 py-3.5 font-mono text-[11px] uppercase tracking-[0.06em] text-ink-3"
+      >
+        <div>● Index</div>
+        <div>Client</div>
+        <div>Domain</div>
+        <div>Outcome</div>
+        <div>Stack</div>
+        <div class="text-right">Year</div>
+      </div>
+      {cases.map((c, i) => {
+        const n = String(i + 1).padStart(2, '0')
+        const bg = i % 2 === 0 ? 'bg-paper' : 'bg-paper-card'
+        return (
+          <a
+            href={`/case-studies/${c.id}/`}
+            class:list={[
+              'no-underline text-ink block border-x-2 border-t-[1.5px] border-ink hover:bg-accent transition-colors',
+              i === cases.length - 1 ? 'border-b-2' : '',
+              bg,
+            ]}
+          >
+            <div class="grid gap-4 lg:grid-cols-[60px_1.4fr_1fr_1.2fr_1fr_90px] px-5 py-4 items-baseline">
+              <div class="font-mono text-[13px] font-bold tracking-[0.06em] text-accent">{n} ↓</div>
+              <div class="font-display text-[15px] sm:text-[16px] font-semibold">{c.data.client}</div>
+              <div class="font-display text-[14px] sm:text-[15px] text-ink-2">{c.data.industry}</div>
+              <div class="font-display text-[14px] sm:text-[15px] text-ink-2">{c.data.projectType ?? '—'}</div>
+              <div class="font-mono text-[11px] text-ink-3 tracking-[0.04em] flex flex-wrap gap-x-2">
+                {c.data.tech.slice(0, 3).map(t => <span>#{t.toLowerCase().replace(/\s+/g, '-')}</span>)}
+              </div>
+              <div class="font-mono text-[12px] text-ink tracking-[0.04em] lg:text-right">{c.data.year ?? c.data.duration}</div>
+            </div>
+          </a>
+        )
+      })}
+    </section>
+  )}
+
+  {/* CASE BLOCKS */}
+  <section class="px-5 sm:px-10 pt-10 sm:pt-14">
+    <Eyebrow>● The work</Eyebrow>
     {cases.length === 0 ? (
-      <div class="border-t border-slate-200 pt-12 text-center">
-        <p class="text-slate-500 mb-2">First case study coming soon.</p>
-        <p class="text-sm text-slate-400">
-          In the meantime, <a href="mailto:info@alpisto.eu" class="text-blue-600 hover:underline">get in touch</a> and we'll walk you through relevant past work.
+      <div class="mt-4 border-2 border-dashed border-ink p-8 sm:p-10 text-center">
+        <p class="font-display text-[18px] text-ink-2 mb-3">First case study coming soon.</p>
+        <p class="font-mono text-[12px] uppercase tracking-[0.06em] text-ink-3">
+          In the meantime,{' '}
+          <a href="/contact" class="text-ink underline decoration-accent">get in touch</a>
+          {' '}and we'll walk you through relevant past work.
         </p>
       </div>
     ) : (
-      <ul class="space-y-6">
-        {cases.map(c => (
-          <li>
-            <a
-              href={`/case-studies/${c.id}/`}
-              class="block p-6 border border-slate-200 rounded-2xl hover:border-slate-900 transition-colors"
-            >
-              <p class="text-xs font-medium text-blue-600 uppercase tracking-wider mb-2">
-                {c.data.industry}{c.data.projectType ? ` · ${c.data.projectType}` : ''}
-              </p>
-              <h2 class="text-2xl font-semibold text-slate-900 mb-3">{c.data.title}</h2>
-              <p class="text-slate-600 leading-relaxed mb-4">{c.data.problem}</p>
-              <p class="text-sm text-slate-700">
-                <span class="font-medium text-slate-900">Result:</span> {c.data.result}
-              </p>
-              <p class="text-sm text-blue-600 mt-4">Read case study →</p>
-            </a>
-          </li>
-        ))}
+      <ul class="list-none p-0 m-0 mt-4 space-y-4">
+        {cases.map((c, i) => {
+          const n = String(i + 1).padStart(2, '0')
+          const isDark = i % 3 === 1
+          const isAccent = i % 3 === 2
+          const surface = isDark
+            ? 'bg-ink text-paper'
+            : isAccent
+              ? 'bg-accent text-ink'
+              : 'bg-paper-card text-ink'
+          return (
+            <li>
+              <article class:list={['border-2 border-ink relative overflow-hidden', surface]}>
+                <a
+                  href={`/case-studies/${c.id}/`}
+                  class:list={[
+                    'block no-underline p-6 sm:p-9 grid gap-6 lg:grid-cols-[120px_1fr_280px] lg:gap-8',
+                    isDark ? 'text-paper' : 'text-ink',
+                  ]}
+                >
+                  <div>
+                    <div
+                      class:list={[
+                        'font-display font-bold leading-[0.85] tracking-[-0.04em] text-[64px] sm:text-[84px]',
+                        isDark ? 'text-accent' : 'text-ink',
+                      ]}
+                    >
+                      {n}
+                    </div>
+                    <div
+                      class:list={[
+                        'font-mono uppercase text-[11px] tracking-[0.1em] mt-2',
+                        isDark ? 'text-accent' : 'text-ink-3',
+                      ]}
+                    >
+                      {c.data.projectType ?? c.data.industry}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div
+                      class:list={[
+                        'font-mono uppercase text-[11px] tracking-[0.1em] flex flex-wrap gap-x-4 gap-y-1',
+                        isDark ? '' : 'text-ink-3',
+                      ]}
+                      style={isDark ? 'color: #aaa;' : ''}
+                    >
+                      <span>● Client: {c.data.client}</span>
+                      {c.data.year && <span>● {c.data.year}</span>}
+                    </div>
+                    <h3
+                      class:list={[
+                        'font-display font-bold tracking-[-0.025em] leading-[1.0] mt-3 text-[26px] sm:text-[32px] lg:text-[36px]',
+                        isDark ? 'text-paper' : 'text-ink',
+                      ]}
+                    >
+                      {c.data.title}
+                    </h3>
+                    <p
+                      class:list={[
+                        'font-display text-[15px] sm:text-[16px] leading-[1.55] mt-4 max-w-[640px]',
+                        isDark ? '' : 'text-ink-2',
+                      ]}
+                      style={isDark ? 'color: #cfcabf;' : ''}
+                    >
+                      {c.data.problem}
+                    </p>
+                    <div class="mt-5 flex flex-wrap gap-2">
+                      {c.data.tech.slice(0, 7).map(t => (
+                        <span
+                          class:list={[
+                            'font-mono text-[11px] uppercase tracking-[0.04em] px-[9px] py-[5px] border-[1.5px] whitespace-nowrap',
+                            isDark ? 'border-paper text-paper' : 'border-ink text-ink',
+                          ]}
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                    <div
+                      class:list={[
+                        'mt-6 font-mono uppercase text-[11px] tracking-[0.08em]',
+                        isDark ? 'text-accent' : 'text-ink',
+                      ]}
+                    >
+                      Read case study →
+                    </div>
+                  </div>
+
+                  <div
+                    class:list={[
+                      'pl-5 border-l-2',
+                      isDark ? 'border-accent' : 'border-ink',
+                    ]}
+                  >
+                    <div class="pb-3 mb-3 border-b" style={isDark ? 'border-color: #444;' : 'border-color: var(--color-ink-3);'}>
+                      <div
+                        class:list={[
+                          'font-display font-bold tracking-[-0.02em] leading-[1.1] text-[20px] sm:text-[22px]',
+                          isDark ? 'text-accent' : 'text-ink',
+                        ]}
+                      >
+                        Result
+                      </div>
+                      <div
+                        class:list={[
+                          'font-display text-[14px] sm:text-[15px] mt-2 leading-[1.5]',
+                          isDark ? '' : 'text-ink-2',
+                        ]}
+                        style={isDark ? 'color: #cfcabf;' : ''}
+                      >
+                        {c.data.result}
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 font-mono text-[10px] uppercase tracking-[0.08em]">
+                      <div>
+                        <div class={isDark ? 'text-accent' : 'text-ink-3'}>Duration</div>
+                        <div class:list={['font-display text-[15px] font-bold mt-1', isDark ? 'text-paper' : 'text-ink']}>{c.data.duration}</div>
+                      </div>
+                      <div>
+                        <div class={isDark ? 'text-accent' : 'text-ink-3'}>Industry</div>
+                        <div class:list={['font-display text-[15px] font-bold mt-1', isDark ? 'text-paper' : 'text-ink']}>{c.data.industry}</div>
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              </article>
+            </li>
+          )
+        })}
       </ul>
     )}
+  </section>
+
+  {/* CTA */}
+  <section class="px-5 sm:px-10 pt-14 sm:pt-16 pb-14 sm:pb-16">
+    <div class="border-2 border-ink bg-accent p-6 sm:p-9 grid gap-6 lg:grid-cols-[1.5fr_1fr] lg:gap-10 lg:items-end">
+      <div>
+        <Eyebrow>● Your project here</Eyebrow>
+        <h2
+          class="font-display font-bold tracking-[-0.045em] leading-[0.9] mt-3 text-ink text-[36px] sm:text-[56px] lg:text-[72px]"
+        >
+          WE'D RATHER SHIP<br />THAN PITCH<span class="text-ink">.</span>
+        </h2>
+      </div>
+      <div class="flex flex-col gap-3 lg:items-end">
+        <Btn kind="ink" href="/contact">hello@alpisto.eu →</Btn>
+        <Btn kind="ghost" href="https://cal.eu/evgenyistomin">cal.eu/evgenyistomin</Btn>
+      </div>
+    </div>
   </section>
 </Page>

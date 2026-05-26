@@ -1,0 +1,28 @@
+---
+/**
+ * V5 Eyebrow — small uppercase mono label above section titles.
+ * Mirrors `V5Eyebrow` from v5-shared.jsx.
+ *
+ * Usage:
+ *   <Eyebrow>Section · 02</Eyebrow>
+ *   <Eyebrow color="ink-3">Muted variant</Eyebrow>
+ */
+interface Props {
+  /** Tailwind color suffix on top of `text-` (e.g. `ink-2`, `ink-3`, `accent`). */
+  color?: 'ink' | 'ink-2' | 'ink-3' | 'accent' | 'paper'
+  class?: string
+}
+
+const { color = 'ink-2', class: className = '' } = Astro.props
+const colorClass = `text-${color}`
+---
+
+<div
+  class:list={[
+    'font-mono uppercase text-[12px] tracking-[0.18em] flex items-center gap-[18px]',
+    colorClass,
+    className,
+  ]}
+>
+  <slot />
+</div>

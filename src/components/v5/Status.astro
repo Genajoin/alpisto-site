@@ -1,0 +1,62 @@
+---
+/**
+ * V5 Status — product / engagement availability pill.
+ * Mirrors `V5Status` from v5-shared.jsx.
+ *
+ * Variants → glyph + label + visual treatment:
+ *   shipping     ◉ Shipping        accent bg
+ *   available    ◉ Booking         accent bg
+ *   soon         ◌ Coming soon     accent border + accent fg
+ *   dev          ◌ In development  ink border + ink fg
+ *   discontinued × Discontinued    dashed ink-3 border
+ */
+type Live = 'shipping' | 'available' | 'soon' | 'dev' | 'discontinued'
+
+interface Props {
+  live: Live
+  class?: string
+}
+
+const { live, class: className = '' } = Astro.props
+
+const map: Record<Live, { glyph: string; label: string; classes: string }> = {
+  shipping: {
+    glyph: '◉',
+    label: 'Shipping',
+    classes: 'bg-accent text-ink font-bold',
+  },
+  available: {
+    glyph: '◉',
+    label: 'Booking',
+    classes: 'bg-accent text-ink font-bold',
+  },
+  soon: {
+    glyph: '◌',
+    label: 'Coming soon',
+    classes: 'text-accent border-[1.5px] border-accent font-semibold',
+  },
+  dev: {
+    glyph: '◌',
+    label: 'In development',
+    classes: 'text-ink border-[1.5px] border-ink font-semibold',
+  },
+  discontinued: {
+    glyph: '×',
+    label: 'Discontinued 2023',
+    classes: 'text-ink-3 border-[1.5px] border-dashed border-ink-3 font-semibold',
+  },
+}
+
+const { glyph, label, classes } = map[live]
+---
+
+<span
+  class:list={[
+    'font-mono uppercase text-[11px] tracking-[0.06em] px-[9px] py-[5px] inline-flex items-center gap-[6px]',
+    classes,
+    className,
+  ]}
+>
+  <span aria-hidden="true">{glyph}</span>
+  <span>{label}</span>
+</span>

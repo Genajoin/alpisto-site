@@ -1,0 +1,51 @@
+---
+/**
+ * V5 Slot — placeholder image swatch (hatched block + mono caption).
+ * Mirrors `V5Slot` from v5-shared.jsx.
+ *
+ * Use anywhere we don't have a real asset yet. Two finishes:
+ *   dark={false} — paper bg, ink hatch       (light placeholder)
+ *   dark={true}  — ink bg, paper hatch       (dark placeholder)
+ */
+import Hatch from './Hatch.astro'
+
+interface Props {
+  label: string
+  /** CSS width — accepts any CSS length, default 100%. */
+  w?: string
+  /** CSS height — accepts any CSS length, default 260px. */
+  h?: string
+  dark?: boolean
+  class?: string
+}
+
+const {
+  label,
+  w = '100%',
+  h = '260px',
+  dark = false,
+  class: className = '',
+} = Astro.props
+
+const surface = dark ? 'bg-ink' : 'bg-paper-card'
+const fg = dark ? '#eeeae0' : '#0c0c0c'
+const hatchOpacity = dark ? 0.18 : 0.12
+const captionBg = dark ? 'bg-ink' : 'bg-paper-card'
+const captionFg = dark ? 'text-paper' : 'text-ink'
+---
+
+<div
+  class:list={['relative overflow-hidden border-2 border-ink', surface, className]}
+  style={`width: ${w}; height: ${h};`}
+>
+  <Hatch rot={-45} color={fg} opacity={hatchOpacity} gap={10} />
+  <div
+    class:list={[
+      'absolute left-[14px] bottom-[12px] font-mono uppercase text-[11px] tracking-[0.1em] px-[8px] py-[4px]',
+      captionBg,
+      captionFg,
+    ]}
+  >
+    {label}
+  </div>
+</div>

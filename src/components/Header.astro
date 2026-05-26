@@ -1,64 +1,149 @@
 ---
-const navLinks = [
-  { href: '/#services', label: 'Services' },
-  { href: '/flybeeper', label: 'FlyBeeper' },
-  { href: '/blog', label: 'Blog' },
-  { href: '/case-studies', label: 'Case Studies' },
-  { href: '/about', label: 'About' },
-  { href: 'mailto:info@alpisto.eu', label: 'Contact' },
+/**
+ * V5 brutalist header.
+ * - 38×38 black square with accent "A" + ALPISTO wordmark + mono suffix
+ * - Mono uppercase nav with 2px accent underline on active item
+ * - "START → / EU" CTA on the right (ink button on paper bg)
+ * - Mobile: <details> burger that mirrors the desktop nav vertically
+ *
+ * Active state is derived from `Astro.url.pathname`. The Services link points
+ * to the home anchor `#services`, so we treat the root path as "services" active.
+ */
+
+interface NavItem {
+  label: string
+  href: string
+  /** Pathname prefix used for active-state detection. */
+  match: string
+}
+
+const navItems: NavItem[] = [
+  { label: 'Services', href: '/#services', match: '/' },
+  { label: 'FlyBeeper', href: '/flybeeper', match: '/flybeeper' },
+  { label: 'Blog', href: '/blog', match: '/blog' },
+  { label: 'Case studies', href: '/case-studies', match: '/case-studies' },
+  { label: 'About', href: '/about', match: '/about' },
+  { label: 'Contact', href: '/contact', match: '/contact' },
 ]
 
 const pathname = Astro.url.pathname
+
+function isActive(match: string): boolean {
+  // Exact root match for the home page (Services); prefix match for everything else.
+  if (match === '/') return pathname === '/'
+  return pathname === match || pathname.startsWith(`${match}/`)
+}
 ---
 
-<header class="border-b border-slate-200">
-  <div class="max-w-5xl mx-auto px-6 py-5">
-    <nav class="flex items-center justify-between gap-4">
-      <a href="/" class="font-semibold text-xl text-slate-900 hover:text-blue-600 transition-colors shrink-0">
-        Alpisto
-      </a>
+<header
+  class="border-b-2 border-ink bg-paper"
+>
+  <div
+    class="flex items-center gap-7 px-5 sm:px-10 py-5 max-w-[1440px] mx-auto"
+  >
+    <!-- Logo lockup -->
+    <a
+      href="/"
+      class="flex items-center gap-3 no-underline text-ink shrink-0"
+      aria-label="Alpisto home"
+    >
+      <span
+        class="w-[38px] h-[38px] bg-ink text-accent flex items-center justify-center font-display font-bold text-[22px] leading-none"
+      >
+        A
+      </span>
+      <span class="font-display font-bold text-[22px] tracking-[-0.02em] text-ink">
+        ALPISTO
+      </span>
+      <span
+        class="hidden md:inline-block font-mono text-[10px] text-ink-2 tracking-[0.06em] pt-[6px]"
+      >
+        / ENGINEERING PRACTICE — SI
+      </span>
+    </a>
 
-      <!-- Desktop nav -->
-      <ul class="hidden sm:flex items-center gap-6 text-sm font-medium text-slate-600">
-        {navLinks.map(({ href, label }) => (
-          <li>
+    <!-- Desktop nav -->
+    <nav
+      class="hidden lg:flex ml-auto gap-6 font-mono text-[12px] uppercase tracking-[0.08em]"
+      aria-label="Primary"
+    >
+      {navItems.map((item) => {
+        const active = isActive(item.match)
+        return (
+          <a
+            href={item.href}
+            class:list={[
+              'no-underline pb-[2px] border-b-2',
+              active
+                ? 'border-accent text-ink font-bold'
+                : 'border-transparent text-ink font-normal hover:border-ink',
+            ]}
+          >
+            {item.label}
+          </a>
+        )
+      })}
+    </nav>
+
+    <!-- Desktop CTA -->
+    <a
+      href="/#contact"
+      class="hidden lg:inline-flex items-center gap-2 font-display font-bold text-[13px] text-paper bg-ink border-2 border-ink px-[18px] py-[10px] no-underline shrink-0"
+    >
+      START → / EU
+    </a>
+
+    <!-- Mobile: burger via <details>, sits flush right -->
+    <details class="lg:hidden ml-auto group relative">
+      <summary
+        class="list-none cursor-pointer p-2 text-ink border-2 border-ink bg-paper"
+        aria-label="Menu"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="square"
+        >
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </summary>
+      <div
+        class="absolute right-0 top-full mt-2 w-60 bg-paper border-2 border-ink z-50"
+      >
+        <ul class="flex flex-col">
+          {navItems.map((item) => {
+            const active = isActive(item.match)
+            return (
+              <li class="border-b-2 border-ink last:border-b-0">
+                <a
+                  href={item.href}
+                  class:list={[
+                    'block px-4 py-3 font-mono uppercase text-[12px] tracking-[0.08em] no-underline',
+                    active ? 'text-ink font-bold bg-paper-card' : 'text-ink font-normal',
+                  ]}
+                >
+                  {item.label}
+                </a>
+              </li>
+            )
+          })}
+          <li class="border-t-2 border-ink">
             <a
-              href={href}
-              class:list={[
-                'hover:text-slate-900 transition-colors',
-                (pathname === href || (href !== '/' && pathname.startsWith(href.replace('/#services', ''))))
-                  ? 'text-slate-900'
-                  : '',
-              ]}
+              href="/#contact"
+              class="block px-4 py-3 font-display font-bold text-[13px] text-paper bg-ink no-underline text-center"
             >
-              {label}
+              START → / EU
             </a>
           </li>
-        ))}
-      </ul>
-
-      <!-- Mobile nav -->
-      <details class="sm:hidden group relative">
-        <summary class="list-none cursor-pointer p-2 text-slate-600 hover:text-slate-900">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-label="Menu">
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <line x1="3" y1="12" x2="21" y2="12" />
-            <line x1="3" y1="18" x2="21" y2="18" />
-          </svg>
-        </summary>
-        <ul class="absolute right-0 top-full mt-1 w-44 bg-white border border-slate-200 rounded-lg shadow-sm py-2 z-50">
-          {navLinks.map(({ href, label }) => (
-            <li>
-              <a
-                href={href}
-                class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
-              >
-                {label}
-              </a>
-            </li>
-          ))}
         </ul>
-      </details>
-    </nav>
+      </div>
+    </details>
   </div>
 </header>

@@ -1,0 +1,33 @@
+---
+/**
+ * V5 Tag — small uppercase mono pill with 1.5px ink border.
+ * Mirrors `V5Tag` from v5-shared.jsx.
+ *
+ * Variants:
+ *   default      — paper bg, ink fg, ink border
+ *   dark={true}  — ink bg,   accent fg
+ *   accent={true}— accent bg, ink fg
+ */
+interface Props {
+  dark?: boolean
+  accent?: boolean
+  class?: string
+}
+
+const { dark = false, accent = false, class: className = '' } = Astro.props
+
+let variant = 'bg-paper-card text-ink border-ink'
+if (accent) variant = 'bg-accent text-ink border-ink'
+else if (dark) variant = 'bg-ink text-accent border-ink'
+---
+
+<span
+  class:list={[
+    'font-mono uppercase text-[11px] tracking-[0.04em] whitespace-nowrap',
+    'px-[9px] py-[5px] border-[1.5px]',
+    variant,
+    className,
+  ]}
+>
+  <slot />
+</span>

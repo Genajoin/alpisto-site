@@ -1,70 +1,143 @@
 ---
+/**
+ * V5 brutalist footer.
+ * Mirrors `V5Footer` from v5-shared.jsx.
+ *
+ * Layout:
+ *   Top: 4-column grid (1.4fr 1fr 1fr 1fr on desktop, stacked on mobile)
+ *     1. Logo + tagline
+ *     2. Company (legal entity, address, VAT)
+ *     3. Contact (email, calendar, reply window)
+ *     4. Links (GitHub, LinkedIn, blog, market)
+ *   Bottom strip (top-bordered 2px): copyright · positioning line
+ */
 const year = new Date().getFullYear()
+const yearRange = year > 2017 ? `2017–${year}` : `${year}`
 ---
 
-<footer class="border-t border-slate-200 mt-auto">
-  <div class="max-w-5xl mx-auto px-6 py-12">
-    <div class="grid sm:grid-cols-3 gap-8 mb-8">
-      <div>
-        <h3 class="text-sm font-semibold text-slate-900 mb-3">Company</h3>
-        <p class="text-sm text-slate-600 leading-relaxed">
-          Alpisto d.o.o.<br />
-          Rutarjeva ulica 15<br />
-          5220 Tolmin, Slovenia
-        </p>
-        <p class="text-xs text-slate-400 mt-2">VAT: SI91102227</p>
+<footer class="border-t-2 border-ink bg-paper mt-auto">
+  <!-- 4-column grid -->
+  <div
+    class="grid gap-9 px-5 sm:px-10 py-9 grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] max-w-[1440px] mx-auto"
+  >
+    <!-- Brand + tagline -->
+    <div>
+      <div class="flex items-center gap-3">
+        <span
+          class="w-8 h-8 bg-ink text-accent flex items-center justify-center font-display font-bold text-[18px] leading-none"
+        >
+          A
+        </span>
+        <span class="font-display font-bold text-[20px] tracking-[-0.02em] text-ink">
+          ALPISTO
+        </span>
       </div>
+      <p class="font-display text-[14px] leading-[1.5] text-ink-2 mt-[14px] max-w-[360px]">
+        A small engineering practice in Tolmin, Slovenia. R&amp;D problems at
+        the boundary of scientific computing and production software.
+      </p>
+    </div>
 
-      <div>
-        <h3 class="text-sm font-semibold text-slate-900 mb-3">Contact</h3>
-        <ul class="space-y-1.5 text-sm text-slate-600">
-          <li>
-            <a href="mailto:info@alpisto.eu" class="hover:text-blue-600 transition-colors">
-              info@alpisto.eu
-            </a>
-          </li>
-          <li>
-            <a href="https://cal.eu/evgenyistomin" class="hover:text-blue-600 transition-colors text-slate-400">
-              Book a call
-            </a>
-          </li>
-        </ul>
+    <!-- Company -->
+    <div>
+      <div class="font-mono uppercase text-[11px] tracking-[0.12em] text-ink-3">
+        Company
       </div>
-
-      <div>
-        <h3 class="text-sm font-semibold text-slate-900 mb-3">Links</h3>
-        <ul class="space-y-1.5 text-sm text-slate-600">
-          <li>
-            <a href="https://github.com/Genajoin" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 transition-colors">
-              GitHub
-            </a>
-          </li>
-          <li>
-            <a href="https://www.linkedin.com/in/evgenyistomin" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 transition-colors">
-              LinkedIn
-            </a>
-          </li>
-          <li>
-            <a href="/blog" class="hover:text-blue-600 transition-colors">
-              Blog
-            </a>
-          </li>
-          <li>
-            <a href="https://market.flybeeper.com" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 transition-colors">
-              FlyBeeper
-            </a>
-          </li>
-        </ul>
+      <div class="font-display text-[14px] leading-[1.6] text-ink mt-[10px]">
+        Alpisto d.o.o.<br />
+        Rutarjeva ulica 15<br />
+        5220 Tolmin, Slovenia<br />
+        VAT: SI91102227
       </div>
     </div>
 
-    <div class="border-t border-slate-100 pt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-      <p class="text-xs text-slate-400">
-        &copy; 2017–{year} Alpisto d.o.o. All rights reserved.
-      </p>
-      <p class="text-xs text-slate-400">
-        Engineering consulting · Slovenia · EU
-      </p>
+    <!-- Contact -->
+    <div>
+      <div class="font-mono uppercase text-[11px] tracking-[0.12em] text-ink-3">
+        Contact
+      </div>
+      <ul class="list-none p-0 mt-[10px] font-display text-[14px] leading-[1.7] text-ink">
+        <li>
+          →{' '}
+          <a href="mailto:hello@alpisto.eu" class="text-ink no-underline hover:text-accent">
+            hello@alpisto.eu
+          </a>
+        </li>
+        <li>
+          →{' '}
+          <a
+            href="https://cal.eu/evgenyistomin"
+            class="text-ink no-underline hover:text-accent"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            cal.eu/evgenyistomin
+          </a>
+        </li>
+        <li>→ ≤ 2 working days</li>
+      </ul>
+    </div>
+
+    <!-- Links -->
+    <div>
+      <div class="font-mono uppercase text-[11px] tracking-[0.12em] text-ink-3">
+        Links
+      </div>
+      <ul class="list-none p-0 mt-[10px] font-display text-[14px] leading-[1.7] text-ink">
+        <li>
+          →{' '}
+          <a
+            href="https://github.com/Genajoin"
+            class="text-ink no-underline hover:text-accent"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            GitHub / Genajoin
+          </a>
+        </li>
+        <li>
+          →{' '}
+          <a
+            href="https://www.linkedin.com/in/evgenyistomin"
+            class="text-ink no-underline hover:text-accent"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            LinkedIn / evgenyistomin
+          </a>
+        </li>
+        <li>
+          →{' '}
+          <a href="/blog" class="text-ink no-underline hover:text-accent">
+            alpisto.eu/blog
+          </a>
+        </li>
+        <li>
+          →{' '}
+          <a
+            href="https://market.flybeeper.com"
+            class="text-ink no-underline hover:text-accent"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            market.flybeeper.com
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Bottom strip -->
+  <div class="border-t-2 border-ink">
+    <div
+      class="px-5 sm:px-10 py-4 flex flex-col sm:flex-row justify-between gap-2 font-mono text-[11px] text-ink-2 tracking-[0.04em] max-w-[1440px] mx-auto"
+    >
+      <div>
+        © {yearRange} ALPISTO D.O.O · ALL RIGHTS RESERVED
+      </div>
+      <div>
+        ENGINEERING CONSULTING · SLOVENIA · EU · ★
+      </div>
     </div>
   </div>
 </footer>

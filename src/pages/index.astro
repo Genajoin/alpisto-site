@@ -1,130 +1,339 @@
 ---
 import Page from '../layouts/Page.astro'
-import ServiceCard from '../components/ServiceCard.astro'
+import Eyebrow from '../components/v5/Eyebrow.astro'
+import Tag from '../components/v5/Tag.astro'
+import Status from '../components/v5/Status.astro'
+import Btn from '../components/v5/Btn.astro'
+import Arrow from '../components/v5/Arrow.astro'
+
+const title = 'Alpisto'
+const description =
+  'Engineering consulting for R&D teams. MATLAB→Python migration, power-systems algorithms, embedded BLE firmware, IoT backends. By an engineer with 20+ years across power systems, embedded, and ML.'
+
+type ServiceStatus = 'available' | 'soon'
+interface Service {
+  n: string
+  title: string
+  body: string
+  tags: string[]
+  status: ServiceStatus
+  href?: string
+}
+
+const services: Service[] = [
+  {
+    n: '01',
+    title: 'MATLAB → Python migration',
+    body:
+      'Any math, any domain. Audit, risk matrix, pilot module, full migration. From science to production-grade Python with proper testing and CI.',
+    tags: ['NumPy', 'SciPy', 'pandas', 'pytest', 'tox', 'GH Actions'],
+    status: 'available',
+    href: '/matlab-to-python',
+  },
+  {
+    n: '02',
+    title: 'Power-systems algorithms',
+    body:
+      'State estimation, OPF, transient stability, short-circuit analysis. Custom development in Python with pandapower, PowerFactory API, and proprietary solvers.',
+    tags: ['pandapower', 'PowerFactory', 'PyPSA', 'GridPACK'],
+    status: 'soon',
+  },
+  {
+    n: '03',
+    title: 'Embedded BLE devices',
+    body:
+      'ESP32 · nRF52 · Zephyr RTOS. From prototype to production-ready firmware. We build our own FlyBeeper paragliding devices — we know this stack in production.',
+    tags: ['nRF52', 'Zephyr', 'ESP-IDF', 'KiCad', 'OTA DFU'],
+    status: 'soon',
+  },
+  {
+    n: '04',
+    title: 'Backends for IoT/BLE fleets',
+    body:
+      'FastAPI, NATS, MQTT, event-driven architecture. For hardware teams that need a reliable, scalable cloud side without hiring a full backend team.',
+    tags: ['FastAPI', 'NATS', 'MQTT', 'Postgres', 'TimescaleDB'],
+    status: 'soon',
+  },
+  {
+    n: '05',
+    title: 'R&D advisory',
+    body:
+      'Algorithm prototyping, technical due diligence, scientific Python coaching. Short paid engagements that prove fit before scaling. No PowerPoint consulting.',
+    tags: ['code review', 'tech DD', '1-week sprints'],
+    status: 'soon',
+  },
+]
+
+const proofStats: [string, string][] = [
+  ['7', 'devices since 2018 — 1 shipping, 5 in dev, 1 retired'],
+  ['8.38 / 10', 'testfly.me independent review · mini BT'],
+  ['5', 'app integrations · xcTrack · SeeYou · LK8000 · Flyskyhy · XCSoar'],
+  ['1', 'engineer · firmware → backend → fulfilment'],
+]
 ---
 
-<Page
-  title="Alpisto"
-  description="Engineering consulting for R&D teams. MATLAB→Python migration, power-systems algorithms, embedded BLE firmware, IoT backends. By an engineer with 20+ years across power systems, embedded, and ML."
->
-  <!-- Hero -->
-  <section class="py-20 md:py-28">
-    <div class="max-w-3xl mx-auto px-6 text-center">
-      <h1 class="text-4xl sm:text-5xl font-bold text-slate-900 leading-tight mb-6">
-        Engineering consulting<br class="hidden sm:block" /> for R&D teams
-      </h1>
-      <p class="text-lg text-slate-600 leading-relaxed mb-8 max-w-2xl mx-auto">
-        We help scientific and engineering teams move from legacy code to modern stacks —
-        Python, embedded firmware, event-driven backends. By an engineer with 20+ years
-        across power systems, embedded hardware, and scientific software.
-      </p>
-      <div class="flex flex-wrap justify-center gap-4">
-        <a
-          href="#services"
-          class="inline-block bg-blue-600 text-white font-medium px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+<Page title={title} description={description}>
+  {/* HERO */}
+  <section class="relative px-5 sm:px-10 pt-10 sm:pt-14 pb-8">
+    <div class="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-start">
+      <div>
+        <Eyebrow>
+          <span class="flex items-center gap-3"><span>●</span><span>R&amp;D engineering</span></span>
+          <span class="flex items-center gap-3"><span>●</span><span>20+ years</span></span>
+          <span class="flex items-center gap-3"><span>●</span><span>Tolmin, SI · EU</span></span>
+          <span class="flex items-center gap-3"><span>●</span><span>Now booking</span></span>
+        </Eyebrow>
+        <h1
+          class="font-display font-bold text-ink mt-4 text-[64px] sm:text-[96px] md:text-[140px] lg:text-[188px] leading-[0.84] tracking-[-0.055em]"
         >
-          See services
-        </a>
-        <a
-          href="/about"
-          class="inline-block border border-slate-300 text-slate-700 font-medium px-6 py-3 rounded-lg hover:border-slate-900 hover:text-slate-900 transition-colors"
+          ENGINEERING<br />
+          CONSULTING<br />
+          FOR&nbsp;R&amp;D<span class="text-accent">.</span>
+        </h1>
+      </div>
+      <div class="hidden lg:flex flex-col items-end gap-3 pt-9">
+        <Arrow size={140} color="#ff5b1f" rot={45} />
+        <div
+          class="bg-ink text-accent font-mono font-bold text-[12px] px-[18px] py-[14px] text-right tracking-[0.06em] leading-[1.5]"
+          style="transform: rotate(-3deg);"
         >
-          About us
-        </a>
+          NO POWERPOINT<br />
+          NO OFFSHORE HANDOFFS<br />
+          NO JUNIOR DELEGATION<br />
+          YES WORKING CODE
+        </div>
+      </div>
+    </div>
+
+    {/* sub-block split */}
+    <div class="mt-10 sm:mt-14 grid grid-cols-1 lg:grid-cols-[1.4fr_1fr_1fr] border-2 border-ink">
+      <div class="p-6 sm:p-7 lg:border-r-2 border-b-2 lg:border-b-0 border-ink bg-paper-card">
+        <p class="font-display text-ink text-[20px] sm:text-[24px] lg:text-[26px] leading-[1.25] font-medium tracking-[-0.01em] m-0">
+          We help scientific and engineering teams move from
+          <strong class="bg-accent px-2 mx-1 font-medium">legacy code</strong>
+          to modern stacks — Python, embedded firmware, event-driven backends.
+        </p>
+        <p class="font-mono text-[12px] text-ink-3 mt-[18px] tracking-[0.04em] leading-[1.6]">
+          By an engineer with 20+ years across power systems, embedded hardware, and scientific software.
+        </p>
+        <div class="flex flex-wrap gap-3 mt-[22px]">
+          <Btn kind="ink" href="#services">SEE SERVICES ↓</Btn>
+          <Btn kind="ghost" href="/about">ABOUT US</Btn>
+        </div>
+      </div>
+      <div class="p-6 lg:border-r-2 border-b-2 lg:border-b-0 border-ink bg-paper">
+        <Eyebrow>● What you get</Eyebrow>
+        <ul class="list-none p-0 m-0 mt-[14px] font-display text-[16px] leading-[1.5] text-ink font-medium space-y-1">
+          <li>→ Working code, not slide decks</li>
+          <li>→ One senior engineer, hands-on</li>
+          <li>→ Tests, CI, docs to scope</li>
+          <li>→ Short, well-scoped engagements</li>
+          <li>→ Honest no when it isn't fit</li>
+        </ul>
+      </div>
+      <div class="p-6 bg-ink text-paper">
+        <Eyebrow color="accent">● Who runs this</Eyebrow>
+        <div class="font-display text-[24px] sm:text-[26px] font-bold leading-[1.05] mt-[14px] tracking-[-0.02em]">
+          Evgeny Istomin<br /><span class="text-accent">SOLO PRACTICE</span>
+        </div>
+        <p class="font-display text-[13px] leading-[1.55] mt-[14px]" style="color: #cfcabf;">
+          20+ yrs across power systems, embedded, scientific Python. Based in Tolmin. Works in English &amp; Slovenian. Small roster on purpose.
+        </p>
       </div>
     </div>
   </section>
 
-  <!-- Services -->
-  <section id="services" class="py-16 bg-slate-50">
-    <div class="max-w-5xl mx-auto px-6">
-      <h2 class="text-2xl font-bold text-slate-900 mb-2">What we do</h2>
-      <p class="text-slate-600 mb-8">
-        Project-based engagements. We work hands-on — you get working code, not slide decks.
-      </p>
-      <div class="grid md:grid-cols-2 gap-5">
-        <ServiceCard
-          title="MATLAB → Python migration"
-          description="Any math, any domain. Audit, risk matrix, pilot module, full migration. From science to production-grade Python with proper testing and CI."
-          href="/matlab-to-python"
-        />
-        <ServiceCard
-          title="Power-systems algorithms"
-          description="State estimation, OPF, transient stability, short-circuit analysis. Custom development in Python with pandapower, PowerFactory API, and proprietary solvers."
-          href="/power-systems-algos"
-          available={false}
-        />
-        <ServiceCard
-          title="Embedded BLE devices"
-          description="ESP32, nRF52, Zephyr RTOS. From prototype to production-ready firmware. We build our own FlyBeeper paragliding devices — we know this stack in production."
-          href="/embedded"
-          available={false}
-        />
-        <ServiceCard
-          title="Backends for IoT/BLE fleets"
-          description="FastAPI, NATS, MQTT, event-driven architecture. For hardware teams that need a reliable, scalable cloud side without hiring a full backend team."
-          href="/embedded-backend"
-          available={false}
-        />
-        <ServiceCard
-          title="R&D advisory"
-          description="Algorithm prototyping, technical due diligence, scientific Python coaching. Short paid engagements that prove fit before scaling. No PowerPoint consulting."
-          href="/advisory"
-          available={false}
-        />
+  {/* SERVICES */}
+  <section id="services" class="px-5 sm:px-10 pt-14 sm:pt-[70px] pb-8">
+    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-6">
+      <div>
+        <Eyebrow>● SECTION / 02 — What we do</Eyebrow>
+        <h2
+          class="font-display font-bold tracking-[-0.04em] leading-[0.94] mt-[14px] text-[44px] sm:text-[60px] lg:text-[84px]"
+        >
+          FIVE THINGS<br />WE DO<span class="text-accent">.</span>
+        </h2>
+        <p class="font-mono text-[12px] text-ink-3 mt-[14px] tracking-[0.04em]">
+          Project-based engagements. Hands-on. You get working code, not slide decks.
+        </p>
+      </div>
+      <div
+        class="font-mono text-[12px] uppercase tracking-[0.1em] border-2 border-ink px-[14px] py-[10px] bg-accent text-ink font-bold self-start md:self-auto"
+      >
+        ↑ Pick one. Or two. We compose.
+      </div>
+    </div>
+
+    {services.map((svc) => (
+      <div
+        class="border-t-2 border-ink py-7 grid gap-4 sm:gap-6 grid-cols-[40px_1fr] sm:grid-cols-[60px_1fr] lg:grid-cols-[70px_1fr_240px_140px] items-start"
+      >
+        <div class="font-display font-bold text-ink text-[40px] sm:text-[50px] lg:text-[60px] leading-[0.9] tracking-[-0.04em]">
+          {svc.n}
+        </div>
+        <div class="col-span-1">
+          <h3
+            class="font-display font-bold leading-[1.0] m-0 tracking-[-0.025em] text-ink text-[24px] sm:text-[30px] lg:text-[38px]"
+          >
+            {svc.title}
+          </h3>
+          <p class="font-display text-[15px] sm:text-[16px] leading-[1.5] text-ink-2 mt-3 max-w-[560px]">
+            {svc.body}
+          </p>
+          {svc.href && (
+            <a
+              href={svc.href}
+              class="font-mono text-[12px] text-ink mt-3 inline-block tracking-[0.06em] uppercase border-b-[1.5px] border-ink pb-[2px] no-underline hover:text-accent hover:border-accent"
+            >
+              {svc.href} →
+            </a>
+          )}
+          {/* tags + status — inline on mobile, separate cols on lg */}
+          <div class="flex flex-wrap gap-[6px] pt-3 lg:hidden">
+            {svc.tags.map((t) => <Tag>{t}</Tag>)}
+            <span class="ml-1"><Status live={svc.status} /></span>
+          </div>
+        </div>
+        <div class="hidden lg:flex flex-wrap gap-[6px] pt-[14px]">
+          {svc.tags.map((t) => <Tag>{t}</Tag>)}
+        </div>
+        <div class="hidden lg:block pt-[10px]"><Status live={svc.status} /></div>
+      </div>
+    ))}
+  </section>
+
+  {/* PROOF — FlyBeeper slab */}
+  <section class="px-5 sm:px-10 pt-12 sm:pt-[50px]">
+    <div class="bg-ink text-paper p-6 sm:p-10 relative overflow-hidden">
+      <div class="absolute -right-10 -top-5 opacity-[0.12] pointer-events-none hidden md:block">
+        <Arrow size={500} color="#ff5b1f" rot={-20} />
+      </div>
+      <div class="relative grid gap-8 lg:grid-cols-[1.2fr_1fr] lg:gap-12 items-start">
+        <div>
+          <Eyebrow color="accent">● Proof / 03 — Own product line · 2018 → 2026</Eyebrow>
+          <h2
+            class="font-display font-bold tracking-[-0.05em] leading-[0.88] mt-[14px] text-[56px] sm:text-[80px] lg:text-[120px]"
+          >
+            WE EAT<br />OUR OWN<br />
+            <span class="text-accent">FIRMWARE.</span>
+          </h2>
+          <p
+            class="font-display text-[16px] sm:text-[18px] leading-[1.5] max-w-[560px] mt-[22px]"
+            style="color: #cfcabf;"
+          >
+            <strong class="text-paper">FlyBeeper</strong> — seven BLE wearables for paraglider pilots,
+            designed end-to-end by the same engineer doing your consulting.
+            Firmware on nRF52 · KiCad PCBs · mobile apps · web backend · small-batch fulfilment. The same hands.
+          </p>
+          <div class="flex flex-wrap gap-3 mt-[26px]">
+            <Btn kind="accent" href="/flybeeper">SEE LINE-UP →</Btn>
+            <Btn
+              kind="onDark"
+              href="https://market.flybeeper.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              market.flybeeper.com
+            </Btn>
+          </div>
+        </div>
+        <div>
+          {proofStats.map(([n, l]) => (
+            <div
+              class="grid grid-cols-[140px_1fr] sm:grid-cols-[180px_1fr] gap-4 sm:gap-[18px] border-t-[1.5px] border-accent py-[18px] items-baseline"
+            >
+              <div class="font-display font-bold tracking-[-0.03em] leading-[0.9] text-accent text-[40px] sm:text-[54px]">
+                {n}
+              </div>
+              <div class="font-mono text-[11px] sm:text-[12px] text-paper tracking-[0.04em] uppercase leading-[1.5]">
+                {l}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Who we are teaser -->
-  <section class="py-16">
-    <div class="max-w-3xl mx-auto px-6">
-      <h2 class="text-2xl font-bold text-slate-900 mb-6">Who we are</h2>
-      <div class="space-y-4 text-slate-600 leading-relaxed">
-        <p>
-          Alpisto is a small engineering practice based in Slovenia. We focus on the technical
-          problems that sit between research code and production systems — the gap where
-          scientific computing meets real-world constraints.
-        </p>
-        <p>
-          We work hands-on. Every engagement is led by a senior engineer, not delegated to
-          juniors. Our own product line, <a href="/flybeeper" class="text-blue-600 hover:underline">FlyBeeper</a> — seven BLE wearables for paragliding pilots —
-          is proof that we ship hardware, firmware, and backends together in production.
-          See the <a href="/flybeeper" class="text-blue-600 hover:underline">full FlyBeeper line-up →</a>
-        </p>
-        <p>
-          We prefer short, well-scoped engagements that prove fit before scaling. If the
-          problem is interesting and the timeline is realistic, we want to hear about it.
-        </p>
+  {/* WHO WE ARE */}
+  <section class="px-5 sm:px-10 pt-14 sm:pt-[60px] pb-8">
+    <div class="grid gap-8 lg:grid-cols-[1fr_1.4fr] lg:gap-10">
+      <div>
+        <Eyebrow>● SECTION / 04 — Who we are</Eyebrow>
+        <h2
+          class="font-display font-bold tracking-[-0.04em] leading-[0.92] mt-[14px] text-[44px] sm:text-[60px] lg:text-[84px]"
+        >
+          SMALL<br />PRACTICE<span class="text-accent">.</span><br />
+          SLOVENIA<span class="text-accent">.</span>
+        </h2>
       </div>
-      <a href="/about" class="inline-block mt-6 text-blue-600 font-medium hover:underline">
-        More about us →
-      </a>
+      <div>
+        <p class="font-display text-[18px] sm:text-[22px] leading-[1.4] text-ink m-0 font-medium">
+          Alpisto is a small engineering practice based in Slovenia. We focus on
+          the technical problems that sit between research code and production
+          systems — the gap where scientific computing meets real-world constraints.
+        </p>
+        <p class="font-display text-[16px] sm:text-[17px] leading-[1.6] text-ink-2 mt-5">
+          We work hands-on. Every engagement is led by a senior engineer, not
+          delegated to juniors. Our own product line,
+          <a href="/flybeeper" class="underline decoration-accent underline-offset-2 text-ink hover:text-accent">FlyBeeper</a>
+          — seven BLE wearables for paragliding pilots — is proof that we ship
+          hardware, firmware, and backends together in production.
+        </p>
+        <p class="font-display text-[16px] sm:text-[17px] leading-[1.6] text-ink-2 mt-4">
+          We prefer short, well-scoped engagements that prove fit before scaling. If
+          the problem is interesting and the timeline is realistic, we want to hear
+          about it.
+        </p>
+        <div class="mt-6">
+          <Btn kind="ghost" href="/about">MORE ABOUT US →</Btn>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- CTA -->
-  <section class="py-16 bg-slate-900 text-white">
-    <div class="max-w-3xl mx-auto px-6 text-center">
-      <h2 class="text-2xl font-bold mb-4">Have a project?</h2>
-      <p class="text-slate-400 mb-8">
-        Tell us what you're building. We'll tell you honestly if we can help.
-      </p>
-      <div class="flex flex-wrap justify-center gap-4">
-        <a
-          href="mailto:info@alpisto.eu"
-          class="inline-block bg-white text-slate-900 font-medium px-6 py-3 rounded-lg hover:bg-slate-100 transition-colors"
+  {/* CTA */}
+  <section id="contact" class="px-5 sm:px-10 pt-14 sm:pt-[60px] pb-14 sm:pb-[60px]">
+    <div class="border-2 border-ink bg-accent grid grid-cols-1 md:grid-cols-2">
+      <div class="p-6 sm:p-10 md:border-r-2 border-b-2 md:border-b-0 border-ink">
+        <Eyebrow>● Send mail. Get reply. ≤ 2 working days.</Eyebrow>
+        <h2
+          class="font-display font-bold tracking-[-0.045em] leading-[0.9] mt-[18px] text-ink text-[44px] sm:text-[64px] lg:text-[88px]"
         >
-          info@alpisto.eu
-        </a>
-        <a
-          href="https://www.linkedin.com/in/evgenyistomin"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-block border border-slate-600 text-slate-300 font-medium px-6 py-3 rounded-lg hover:border-slate-400 hover:text-white transition-colors"
+          TELL US WHAT<br />YOU'RE BUILDING<span class="text-ink">.</span>
+        </h2>
+        <p class="font-display text-[15px] sm:text-[16px] text-ink-2 mt-[18px] max-w-[480px]">
+          We'll tell you honestly if we can help. If we can't — we'll say so instead of taking the money.
+        </p>
+      </div>
+      <div class="p-6 sm:p-10 bg-ink text-paper flex flex-col justify-between gap-8">
+        <div>
+          <Eyebrow color="accent">● Mail</Eyebrow>
+          <a
+            href="mailto:hello@alpisto.eu"
+            class="font-display font-bold text-paper no-underline tracking-[-0.025em] leading-none block mt-[10px] text-[28px] sm:text-[36px] lg:text-[44px] hover:text-accent"
+          >
+            hello@alpisto.eu
+          </a>
+          <div class="mt-7">
+            <Eyebrow color="accent">● Or book a call</Eyebrow>
+            <a
+              href="https://cal.eu/evgenyistomin"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="font-display font-semibold text-paper no-underline tracking-[-0.01em] block mt-2 text-[18px] sm:text-[22px] lg:text-[24px] hover:text-accent"
+            >
+              cal.eu/evgenyistomin →
+            </a>
+          </div>
+        </div>
+        <div
+          class="mt-2 font-mono text-[11px] tracking-[0.06em] leading-[1.5]"
+          style="color: #bbb;"
         >
-          LinkedIn
-        </a>
+          No RFPs. No NDAs before hello.<br />
+          GitHub: Genajoin · LinkedIn: evgenyistomin
+        </div>
       </div>
     </div>
   </section>

@@ -1,5 +1,7 @@
 ---
 import Page from './Page.astro'
+import Eyebrow from '../components/v5/Eyebrow.astro'
+import Btn from '../components/v5/Btn.astro'
 import type { CollectionEntry } from 'astro:content'
 
 interface Props {
@@ -18,93 +20,141 @@ const {
   heroQuote,
   heroQuoteAttribution,
   problem,
+  result,
 } = caseStudy.data
+
+const specs: [string, string][] = [
+  ['Client', client],
+  ['Industry', industry],
+  ...(projectType ? [['Project', projectType]] as [string, string][] : []),
+  ['Duration', duration],
+  ...(year ? [['Year', year]] as [string, string][] : []),
+]
 ---
 
 <Page title={title} description={problem}>
-  <article class="max-w-3xl mx-auto px-6 py-16">
-    <!-- Header -->
-    <header class="mb-12">
-      <p class="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-3">Case study</p>
-      <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 mb-6">{title}</h1>
-
-      <!-- Meta grid -->
-      <dl class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8 p-6 bg-slate-50 rounded-2xl text-sm">
-        <div>
-          <dt class="text-slate-500 mb-1">Client</dt>
-          <dd class="font-medium text-slate-900">{client}</dd>
-        </div>
-        <div>
-          <dt class="text-slate-500 mb-1">Industry</dt>
-          <dd class="font-medium text-slate-900">{industry}</dd>
-        </div>
-        {projectType && (
-          <div>
-            <dt class="text-slate-500 mb-1">Project type</dt>
-            <dd class="font-medium text-slate-900">{projectType}</dd>
-          </div>
-        )}
-        <div>
-          <dt class="text-slate-500 mb-1">Duration</dt>
-          <dd class="font-medium text-slate-900">{duration}</dd>
-        </div>
-        {year && (
-          <div>
-            <dt class="text-slate-500 mb-1">Year</dt>
-            <dd class="font-medium text-slate-900">{year}</dd>
-          </div>
-        )}
-        <div class="col-span-2 md:col-span-4">
-          <dt class="text-slate-500 mb-2">Stack</dt>
-          <dd class="flex flex-wrap gap-2">
-            {tech.map(t => (
-              <span class="px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-700">{t}</span>
-            ))}
-          </dd>
-        </div>
-      </dl>
-
-      {heroQuote && (
-        <blockquote class="mt-8 p-6 border-l-4 border-blue-600 bg-blue-50 rounded-r-lg">
-          <p class="text-slate-800 italic">"{heroQuote}"</p>
-          {heroQuoteAttribution && (
-            <footer class="mt-3 text-sm text-slate-600 not-italic">— {heroQuoteAttribution}</footer>
-          )}
-        </blockquote>
+  {/* HERO */}
+  <section class="px-5 sm:px-10 pt-8 sm:pt-10 pb-6">
+    <Eyebrow>
+      <span class="flex items-center gap-3"><span>●</span><span>CASE STUDY</span></span>
+      <span class="flex items-center gap-3"><span>●</span><span>{industry}</span></span>
+      {year && (
+        <span class="flex items-center gap-3"><span>●</span><span>{year}</span></span>
       )}
-    </header>
+    </Eyebrow>
 
-    <!-- Body -->
-    <div class="prose prose-slate prose-lg max-w-none
-                prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-slate-900
-                prose-h2:mt-12 prose-h2:mb-4 prose-h2:text-2xl
-                prose-h3:mt-8 prose-h3:mb-3 prose-h3:text-xl
-                prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
-                prose-code:before:content-none prose-code:after:content-none
-                prose-code:bg-slate-100 prose-code:text-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-normal
-                prose-pre:bg-slate-900 prose-pre:text-slate-100 prose-pre:rounded-xl
-                prose-blockquote:border-l-blue-600 prose-blockquote:text-slate-700 prose-blockquote:not-italic
-                prose-table:text-sm prose-th:text-slate-900 prose-th:font-semibold
-                prose-img:rounded-xl">
-      <slot />
-    </div>
+    <h1
+      class="font-display font-bold tracking-[-0.04em] leading-[0.95] text-ink mt-4 max-w-[1100px] text-[36px] sm:text-[56px] md:text-[72px] lg:text-[88px]"
+    >
+      {title}
+    </h1>
+  </section>
 
-    <!-- CTA footer -->
-    <footer class="mt-16 pt-8 border-t border-slate-200">
-      <div class="text-center">
-        <h3 class="text-xl font-semibold text-slate-900 mb-3">Working with a similar codebase?</h3>
-        <p class="text-slate-600 mb-6">Let's talk about how we'd approach yours.</p>
-        <a
-          href="/matlab-to-python"
-          class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+  {/* SPECS */}
+  <section class="px-5 sm:px-10 pt-2">
+    <div class="border-2 border-ink bg-paper-card grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
+      {specs.map(([k, v], i) => (
+        <div
+          class:list={[
+            'p-4 sm:p-5',
+            i < specs.length - 1 ? 'border-b-2 sm:border-b-0 sm:border-r-2 border-ink' : '',
+            // Reset right-border for the last column of each row on each grid size.
+            // (Simpler: just always use borders; minor double-stack at edges is harmless.)
+          ]}
         >
-          See our MATLAB → Python migration service →
-        </a>
-      </div>
-    </footer>
-
-    <div class="mt-8 text-center">
-      <a href="/case-studies" class="text-blue-600 hover:underline text-sm">← All case studies</a>
+          <div class="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-3 mb-2">{k}</div>
+          <div class="font-display text-[15px] sm:text-[17px] font-bold tracking-[-0.01em] text-ink leading-[1.2]">{v}</div>
+        </div>
+      ))}
     </div>
-  </article>
+
+    {/* Tech stack */}
+    <div class="mt-4 border-2 border-ink bg-paper p-4 sm:p-5">
+      <div class="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-3 mb-3">Stack</div>
+      <div class="flex flex-wrap gap-2">
+        {tech.map(t => (
+          <span class="font-mono text-[11px] uppercase tracking-[0.04em] px-[9px] py-[5px] border-[1.5px] border-ink text-ink whitespace-nowrap">
+            {t}
+          </span>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {/* PROBLEM + RESULT slabs */}
+  <section class="px-5 sm:px-10 pt-8 sm:pt-10">
+    <div class="grid gap-4 lg:grid-cols-2">
+      <div class="border-2 border-ink bg-paper-card p-6 sm:p-8">
+        <Eyebrow>● Problem</Eyebrow>
+        <p class="font-display text-[16px] sm:text-[18px] leading-[1.5] text-ink mt-3 font-medium">
+          {problem}
+        </p>
+      </div>
+      <div class="border-2 border-ink bg-accent p-6 sm:p-8">
+        <Eyebrow color="ink">● Result</Eyebrow>
+        <p class="font-display text-[16px] sm:text-[18px] leading-[1.5] text-ink mt-3 font-medium">
+          {result}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* Optional hero quote */}
+  {heroQuote && (
+    <section class="px-5 sm:px-10 pt-8 sm:pt-10">
+      <blockquote class="border-2 border-ink bg-ink text-paper p-6 sm:p-9 m-0">
+        <p class="font-display text-[20px] sm:text-[28px] lg:text-[34px] leading-[1.25] tracking-[-0.02em] text-paper m-0 font-medium">
+          &ldquo;{heroQuote}&rdquo;
+        </p>
+        {heroQuoteAttribution && (
+          <footer class="mt-5 font-mono text-[12px] uppercase tracking-[0.08em] text-accent">
+            ↳ {heroQuoteAttribution}
+          </footer>
+        )}
+      </blockquote>
+    </section>
+  )}
+
+  {/* BODY */}
+  <section class="px-5 sm:px-10 pt-10 sm:pt-14 pb-10">
+    <article class="prose-v5 max-w-[820px] mx-auto">
+      <slot />
+    </article>
+  </section>
+
+  {/* CTA */}
+  <section class="px-5 sm:px-10 pt-2 pb-10">
+    <div class="border-2 border-ink bg-accent p-6 sm:p-9 grid gap-6 lg:grid-cols-[1.4fr_1fr] lg:gap-10 lg:items-end">
+      <div>
+        <Eyebrow>● Working with a similar codebase?</Eyebrow>
+        <h2
+          class="font-display font-bold tracking-[-0.035em] leading-[0.95] mt-3 text-ink text-[28px] sm:text-[40px] lg:text-[52px]"
+        >
+          We'd rather ship than pitch<span class="text-ink">.</span>
+        </h2>
+        <p class="font-display text-[15px] sm:text-[17px] text-ink mt-4 max-w-[560px] leading-[1.5]">
+          Fixed-fee audit, milestone-billed pilot, optional handover. Same recipe we used here.
+        </p>
+      </div>
+      <div class="flex flex-col gap-3 lg:items-end">
+        <Btn kind="ink" href="/matlab-to-python">MATLAB → Python service →</Btn>
+        <Btn kind="ghost" href="/contact">hello@alpisto.eu</Btn>
+      </div>
+    </div>
+  </section>
+
+  {/* FOOTER NAV */}
+  <section class="px-5 sm:px-10 pb-14 sm:pb-16">
+    <div class="border-t-2 border-ink pt-6 flex flex-wrap items-center justify-between gap-4">
+      <a
+        href="/case-studies"
+        class="font-mono text-[12px] uppercase tracking-[0.08em] text-ink no-underline hover:text-accent"
+      >
+        ← All case studies
+      </a>
+      <span class="font-mono text-[12px] uppercase tracking-[0.08em] text-ink-3">
+        Alpisto · {year ?? duration}
+      </span>
+    </div>
+  </section>
 </Page>

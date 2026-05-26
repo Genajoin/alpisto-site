@@ -1,6 +1,9 @@
 ---
 import Page from '../../../layouts/Page.astro'
+import Eyebrow from '../../../components/v5/Eyebrow.astro'
+import Btn from '../../../components/v5/Btn.astro'
 import { getCollection } from 'astro:content'
+import { calculateReadingTime } from '../../../lib/readingTime'
 import type { CollectionEntry } from 'astro:content'
 
 export async function getStaticPaths() {
@@ -25,37 +28,80 @@ interface Props {
 const { tag, posts } = Astro.props
 
 const formatDate = (d: Date) =>
-  d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+  d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+const isoDate = (d: Date) => d.toISOString().slice(0, 10)
 ---
 
 <Page
   title={`#${tag}`}
   description={`Articles tagged ${tag} on the Alpisto engineering blog.`}
 >
-  <section class="max-w-3xl mx-auto px-6 py-16">
-    <header class="mb-12">
-      <p class="text-sm text-slate-500 mb-2">
-        <a href="/blog" class="text-blue-600 hover:underline">← Back to blog</a>
-      </p>
-      <h1 class="text-3xl font-bold tracking-tight text-slate-900">
-        Articles tagged <span class="text-blue-600">#{tag}</span>
-      </h1>
-    </header>
+  {/* HERO */}
+  <section class="px-5 sm:px-10 pt-8 sm:pt-10 pb-6">
+    <Eyebrow>
+      <span class="flex items-center gap-3"><span>●</span><span>BLOG / TAG</span></span>
+      <span class="flex items-center gap-3"><span>●</span><span>{posts.length} article{posts.length === 1 ? '' : 's'}</span></span>
+    </Eyebrow>
+    <h1
+      class="font-display font-bold leading-[0.88] tracking-[-0.05em] text-ink mt-4 text-[44px] sm:text-[72px] md:text-[96px] lg:text-[120px] break-words"
+    >
+      #{tag}<span class="text-accent">.</span>
+    </h1>
+    <p class="font-display text-[16px] sm:text-[18px] leading-[1.45] text-ink-2 mt-5 max-w-[640px] font-medium">
+      Posts on the Alpisto engineering blog filed under
+      <strong class="bg-accent px-2 font-medium">#{tag}</strong>.
+    </p>
+    <div class="mt-6">
+      <Btn kind="ghost" href="/blog">← Back to all articles</Btn>
+    </div>
+  </section>
 
-    <ul class="space-y-10">
-      {posts.map(post => (
-        <li>
-          <article>
-            <h2 class="text-xl font-semibold mb-1">
-              <a href={`/blog/${post.id}/`} class="text-slate-900 hover:text-blue-600 transition-colors">
-                {post.data.title}
-              </a>
-            </h2>
-            <p class="text-sm text-slate-500 mb-2">{formatDate(post.data.pubDate)}</p>
-            <p class="text-slate-600 leading-relaxed">{post.data.description}</p>
-          </article>
-        </li>
-      ))}
+  {/* LIST */}
+  <section class="px-5 sm:px-10 pt-8 pb-14 sm:pb-16">
+    <Eyebrow>● Posts</Eyebrow>
+    <ul class="list-none p-0 m-0 mt-4">
+      {posts.map((post, i) => {
+        const n = String(i + 1).padStart(2, '0')
+        return (
+          <li>
+            <a
+              href={`/blog/${post.id}/`}
+              class="grid gap-3 sm:gap-6 sm:grid-cols-[48px_140px_1fr_80px] border-t-2 border-ink py-5 sm:py-6 no-underline text-ink items-start hover:bg-paper-card transition-colors group"
+            >
+              <div class="font-mono text-[12px] font-bold text-ink-3 tracking-[0.04em] sm:pt-1.5">
+                {n}
+              </div>
+              <div class="flex flex-col gap-2">
+                <time
+                  datetime={isoDate(post.data.pubDate)}
+                  class="font-mono text-[12px] text-ink-3 tracking-[0.04em]"
+                >
+                  {formatDate(post.data.pubDate)}
+                </time>
+                <div class="flex flex-wrap gap-1.5">
+                  {post.data.tags.slice(0, 3).map(t => (
+                    <span class="font-mono text-[10px] uppercase tracking-[0.04em] px-[7px] py-[3px] border-[1px] border-ink-3 text-ink-3 whitespace-nowrap">
+                      #{t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div class="min-w-0">
+                <h2 class="font-display text-[20px] sm:text-[24px] lg:text-[26px] font-bold tracking-[-0.02em] leading-[1.15] text-ink group-hover:text-accent m-0">
+                  {post.data.title}
+                </h2>
+                <p class="font-display text-[14px] sm:text-[15px] leading-[1.55] text-ink-2 mt-2 max-w-[720px]">
+                  {post.data.description}
+                </p>
+              </div>
+              <div class="font-mono text-[11px] uppercase tracking-[0.08em] text-ink sm:text-right sm:pt-2">
+                {calculateReadingTime(post.body ?? '')}
+              </div>
+            </a>
+          </li>
+        )
+      })}
+      <li class="border-t-2 border-ink"></li>
     </ul>
   </section>
 </Page>

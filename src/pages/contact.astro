@@ -1,0 +1,298 @@
+---
+import Page from '../layouts/Page.astro'
+import Eyebrow from '../components/v5/Eyebrow.astro'
+import Btn from '../components/v5/Btn.astro'
+
+const title = 'Contact'
+const description =
+  "Get in touch with Alpisto — a Slovenian engineering practice. Short email is plenty. No RFPs, no NDAs before hello. Reply within 2 working days."
+
+const calendlyUrl = 'https://cal.eu/evgenyistomin'
+const formspreeUrl = 'https://formspree.io/f/meedlkjb'
+const contactEmail = 'hello@alpisto.eu'
+
+const fourLines: [string, string][] = [
+  ['01 · The problem', 'One paragraph. What is broken or missing today.'],
+  [
+    '02 · The math / domain',
+    'Is it MATLAB? Embedded? Power systems? Sensor fusion? Backend? A mix?',
+  ],
+  [
+    '03 · Rough size',
+    'Lines of code, number of modules, number of devices — whatever measure makes sense.',
+  ],
+  [
+    '04 · Timeline & budget shape',
+    'Fixed-bid vs rolling? Audit-first vs full migration? Hard deadline?',
+  ],
+]
+
+const companyDetails: [string, string][] = [
+  ['Address', 'Rutarjeva ulica 15\n5220 Tolmin, Slovenia'],
+  ['VAT', 'SI91102227'],
+  ['Founded', '2017 · d.o.o.'],
+  ['Currency', 'EUR — invoiced monthly'],
+  ['Languages', 'English · Slovenian'],
+  ['Hours', 'CET · Mon–Fri'],
+]
+---
+
+<Page title={title} description={description}>
+  {/* HERO */}
+  <section class="px-5 sm:px-10 pt-10 sm:pt-10 pb-8">
+    <Eyebrow>
+      <span class="flex items-center gap-3"><span>●</span><span>PAGE / 06 — Contact</span></span>
+      <span class="flex items-center gap-3"><span>●</span><span>Reply ≤ 2 working days</span></span>
+      <span class="flex items-center gap-3"><span>●</span><span>Tolmin, SI · CET</span></span>
+    </Eyebrow>
+    <h1
+      class="font-display font-bold leading-[0.82] tracking-[-0.06em] mt-[18px] text-ink text-[80px] sm:text-[140px] md:text-[180px] lg:text-[240px]"
+    >
+      SAY<br />HELLO<span class="text-accent">.</span>
+    </h1>
+    <p class="font-display text-[18px] sm:text-[22px] lg:text-[24px] leading-[1.4] text-ink mt-6 max-w-[760px] font-medium">
+      The best way to start is a short email describing the problem.
+      <strong class="bg-accent px-2 mx-1 font-medium">No RFPs.</strong>
+      No NDAs before hello. If we can't help, we'll say so instead of taking the money.
+    </p>
+  </section>
+
+  {/* CHANNELS */}
+  <section class="px-5 sm:px-10 pt-10">
+    <div class="border-2 border-ink grid grid-cols-1 lg:grid-cols-[1.4fr_1fr_1fr]">
+      {/* Email — primary */}
+      <div class="p-7 sm:p-9 lg:border-r-2 border-b-2 lg:border-b-0 border-ink bg-ink text-paper">
+        <Eyebrow color="accent">● Mail · preferred</Eyebrow>
+        <a
+          href={`mailto:${contactEmail}`}
+          class="font-display font-bold text-paper no-underline tracking-[-0.03em] leading-none mt-[14px] block text-[34px] sm:text-[44px] lg:text-[56px] hover:text-accent break-words"
+        >
+          {contactEmail}
+        </a>
+        <p class="font-display text-[14px] sm:text-[15px] mt-[18px] leading-[1.55] max-w-[460px]" style="color: #cfcabf;">
+          A paragraph is enough. Tell us what you're trying to ship, what's in the way,
+          and roughly when you need it. We reply with a quote, an honest no, or a
+          question if something is unclear.
+        </p>
+        <div class="mt-[22px] font-mono text-[11px] tracking-[0.08em] text-accent uppercase">
+          ↳ Median reply time: under 24h on weekdays.
+        </div>
+      </div>
+
+      {/* Cal.com */}
+      <div class="p-6 sm:p-7 lg:border-r-2 border-b-2 lg:border-b-0 border-ink bg-paper-card">
+        <Eyebrow>● Or book a call</Eyebrow>
+        <a
+          href={calendlyUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="font-display font-bold text-ink no-underline tracking-[-0.015em] leading-[1.15] block mt-[14px] text-[20px] sm:text-[24px] hover:text-accent"
+        >
+          cal.eu/<br />evgenyistomin →
+        </a>
+        <ul class="list-none p-0 m-0 mt-[18px] font-display text-[14px] sm:text-[15px] leading-[1.55] text-ink-2">
+          <li>→ 30 min · video</li>
+          <li>→ CET working hours</li>
+          <li>→ English or Slovenian</li>
+          <li>→ Bring a code link if you have one</li>
+        </ul>
+      </div>
+
+      {/* Social */}
+      <div class="p-6 sm:p-7 bg-paper">
+        <Eyebrow>● Elsewhere</Eyebrow>
+        <ul class="list-none p-0 m-0 mt-[14px] font-display text-[18px] sm:text-[22px] font-semibold leading-[1.5]">
+          <li>
+            →{' '}
+            <a
+              href="https://www.linkedin.com/in/evgenyistomin"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-ink no-underline hover:text-accent"
+            >
+              LinkedIn / evgenyistomin
+            </a>
+          </li>
+          <li>
+            →{' '}
+            <a
+              href="https://github.com/Genajoin"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-ink no-underline hover:text-accent"
+            >
+              GitHub / Genajoin
+            </a>
+          </li>
+          <li>
+            →{' '}
+            <a href="/blog" class="text-ink no-underline hover:text-accent">alpisto.eu/blog</a>
+          </li>
+          <li>
+            →{' '}
+            <a
+              href="https://market.flybeeper.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-ink no-underline hover:text-accent"
+            >
+              market.flybeeper.com
+            </a>
+          </li>
+        </ul>
+        <div class="mt-5 font-mono text-[11px] text-ink-3 tracking-[0.06em] leading-[1.55]">
+          We don't sell on social. Cold DMs go to /dev/null after a polite read.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* WHAT TO INCLUDE */}
+  <section class="px-5 sm:px-10 pt-14 sm:pt-[60px]">
+    <div class="grid gap-8 lg:grid-cols-[1fr_1.4fr] lg:gap-10">
+      <div>
+        <Eyebrow>● 02 — Make our reply faster</Eyebrow>
+        <h2
+          class="font-display font-bold tracking-[-0.04em] leading-[0.95] mt-[14px] text-[40px] sm:text-[56px] lg:text-[72px]"
+        >
+          FOUR LINES,<br />THAT'S IT<span class="text-accent">.</span>
+        </h2>
+        <p class="font-display text-[15px] sm:text-[16px] text-ink-2 mt-[18px] max-w-[360px]">
+          We don't need a brief. A short note that hits these four points lets us
+          reply with a real answer instead of a request for more information.
+        </p>
+      </div>
+      <div class="border-2 border-ink bg-paper-card">
+        {fourLines.map(([k, v], i, arr) => (
+          <div
+            class:list={[
+              'px-5 sm:px-6 py-5 grid gap-3 sm:gap-5 sm:grid-cols-[200px_1fr] lg:grid-cols-[240px_1fr] items-baseline',
+              i < arr.length - 1 ? 'border-b-[1.5px] border-ink' : '',
+            ]}
+          >
+            <div class="font-mono text-[12px] sm:text-[13px] tracking-[0.08em] uppercase text-accent font-bold">
+              {k}
+            </div>
+            <div class="font-display text-[15px] sm:text-[17px] leading-[1.5] text-ink">{v}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {/* OPTIONAL FORM */}
+  <section class="px-5 sm:px-10 pt-14 sm:pt-[60px]">
+    <Eyebrow>● 03 — Prefer a form?</Eyebrow>
+    <h2
+      class="font-display font-bold tracking-[-0.04em] leading-[0.95] mt-[14px] mb-2 text-[36px] sm:text-[48px] lg:text-[56px]"
+    >
+      THE FORM ROUTE<span class="text-accent">.</span>
+    </h2>
+    <p class="font-mono text-[12px] text-ink-3 tracking-[0.04em] mb-6 max-w-[640px]">
+      Same inbox as <a href={`mailto:${contactEmail}`} class="underline decoration-accent">{contactEmail}</a>. Use it if email feels too open-ended.
+    </p>
+    <div class="border-2 border-ink bg-paper-card p-6 sm:p-8 max-w-[820px]">
+      <form action={formspreeUrl} method="POST" class="grid gap-4">
+        <div>
+          <label for="name" class="block font-mono text-[11px] tracking-[0.1em] uppercase text-ink-3 mb-2">
+            Name
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            required
+            class="w-full px-3 py-2 bg-paper border-2 border-ink font-display text-[15px] text-ink focus:outline-none focus:border-accent"
+          />
+        </div>
+        <div>
+          <label for="email" class="block font-mono text-[11px] tracking-[0.1em] uppercase text-ink-3 mb-2">
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            class="w-full px-3 py-2 bg-paper border-2 border-ink font-display text-[15px] text-ink focus:outline-none focus:border-accent"
+          />
+        </div>
+        <div>
+          <label for="message" class="block font-mono text-[11px] tracking-[0.1em] uppercase text-ink-3 mb-2">
+            The four lines (problem / domain / size / timeline)
+          </label>
+          <textarea
+            id="message"
+            name="message"
+            rows="6"
+            required
+            placeholder="One paragraph is plenty."
+            class="w-full px-3 py-2 bg-paper border-2 border-ink font-display text-[15px] text-ink resize-y focus:outline-none focus:border-accent"
+          ></textarea>
+        </div>
+        <input type="hidden" name="_subject" value="alpisto.eu — contact form inquiry" />
+        <div>
+          <Btn kind="ink" as="button" type="submit">SEND →</Btn>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  {/* COMPANY CARD */}
+  <section class="px-5 sm:px-10 pt-14 sm:pt-[60px]">
+    <Eyebrow>● 04 — Where we are</Eyebrow>
+    <div class="mt-[14px] grid grid-cols-1 lg:grid-cols-2 border-2 border-ink">
+      <div class="p-6 sm:p-8 lg:border-r-2 border-b-2 lg:border-b-0 border-ink bg-paper-card">
+        <h3 class="font-display text-[28px] sm:text-[36px] font-bold tracking-[-0.025em] m-0">
+          Alpisto d.o.o.
+        </h3>
+        <div class="mt-5 grid grid-cols-[110px_1fr] gap-y-3 font-mono text-[12px] sm:text-[13px] text-ink tracking-[0.03em] leading-[1.5]">
+          {companyDetails.map(([k, v]) => (
+            <>
+              <div class="text-ink-3 uppercase text-[11px] tracking-[0.1em]">{k}</div>
+              <div class="whitespace-pre-line">{v}</div>
+            </>
+          ))}
+        </div>
+      </div>
+      <div class="p-0 bg-paper relative min-h-[300px] sm:min-h-[360px]">
+        <div class="absolute inset-0 v5-grid"></div>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <div class="font-mono text-[11px] sm:text-[12px] uppercase tracking-[0.1em] text-ink-3 px-4 text-center">
+            map · Tolmin, SI · 46.18°N 13.74°E
+          </div>
+        </div>
+        <div
+          class="absolute top-5 left-5 font-mono text-[11px] tracking-[0.08em] uppercase bg-accent text-ink px-[10px] py-[6px] font-bold"
+        >
+          ◉ HQ
+        </div>
+        <div
+          class="absolute bottom-5 right-5 font-mono text-[11px] tracking-[0.06em] text-ink bg-paper-card px-[10px] py-[6px] border-[1.5px] border-ink"
+        >
+          Soča valley · 1h to Ljubljana · 2h to Venice
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* FINE PRINT */}
+  <section class="px-5 sm:px-10 pt-12 sm:pt-[50px] pb-14 sm:pb-[60px]">
+    <div
+      class="border-2 border-dashed border-ink p-6 grid gap-6 sm:grid-cols-3 font-mono text-[12px] text-ink-2 tracking-[0.04em] leading-[1.55]"
+    >
+      <div>
+        <strong class="text-ink tracking-[0.1em] uppercase">NDAs</strong><br />
+        Signed after the first email exchange. Not before. Mutual or one-way, your template or ours.
+      </div>
+      <div>
+        <strong class="text-ink tracking-[0.1em] uppercase">Recruiters</strong><br />
+        Not hiring engineers. Not selling agency capacity. Genuine procurement requests welcome.
+      </div>
+      <div>
+        <strong class="text-ink tracking-[0.1em] uppercase">If we ghost you</strong><br />
+        Resend after 5 working days. Sometimes hello@ gets buried under FlyBeeper support.
+      </div>
+    </div>
+  </section>
+</Page>

@@ -1,0 +1,37 @@
+---
+/**
+ * V5 Hatch — absolute-positioned diagonal hatched overlay.
+ * Mirrors `V5Hatch` from v5-shared.jsx.
+ *
+ * Drop inside a `relative` parent. Inherits `inset: 0` and is pointer-events
+ * none, so it never steals clicks.
+ *
+ * Props:
+ *   rot     — angle of stripes in deg (default -45)
+ *   color   — stripe color (default ink)
+ *   opacity — overall opacity 0..1 (default 0.08)
+ *   gap     — stripe period in px (default 8)
+ */
+interface Props {
+  rot?: number
+  color?: string
+  opacity?: number
+  gap?: number
+  class?: string
+}
+
+const {
+  rot = -45,
+  color = '#0c0c0c',
+  opacity = 0.08,
+  gap = 8,
+  class: className = '',
+} = Astro.props
+
+const bg = `repeating-linear-gradient(${rot}deg, ${color} 0 1.5px, transparent 1.5px ${gap}px)`
+---
+
+<div
+  class:list={['absolute inset-0 pointer-events-none', className]}
+  style={`background-image: ${bg}; opacity: ${opacity};`}
+></div>

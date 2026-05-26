@@ -1,67 +1,253 @@
 ---
 import Page from '../../layouts/Page.astro'
+import Eyebrow from '../../components/v5/Eyebrow.astro'
+import Tag from '../../components/v5/Tag.astro'
+import Btn from '../../components/v5/Btn.astro'
 import { getCollection } from 'astro:content'
+import { calculateReadingTime } from '../../lib/readingTime'
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
 
 const formatDate = (d: Date) =>
-  d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+  d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+const isoDate = (d: Date) => d.toISOString().slice(0, 10)
+
+// Tag cloud — sized by frequency
+const tagCounts = new Map<string, number>()
+for (const p of posts) {
+  for (const t of p.data.tags) {
+    tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1)
+  }
+}
+const tagCloud = [...tagCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+
+// Year archive counts
+const yearCounts = new Map<string, number>()
+for (const p of posts) {
+  const y = String(p.data.pubDate.getFullYear())
+  yearCounts.set(y, (yearCounts.get(y) ?? 0) + 1)
+}
+const yearArchive = [...yearCounts.entries()].sort((a, b) => Number(b[0]) - Number(a[0]))
+
+// Featured: take latest post for big slab, second-latest for secondary
+const featured = posts[0]
+const secondary = posts[1]
+const featuredReading = featured ? calculateReadingTime(featured.body ?? '') : ''
+const secondaryReading = secondary ? calculateReadingTime(secondary.body ?? '') : ''
+const restPosts = posts.slice(2)
 ---
 
 <Page
   title="Blog"
-  description="Engineering writing on MATLAB→Python migration, power systems, embedded BLE, and scientific Python. By Evgeny Istomin at Alpisto."
+  description="Engineering writing on MATLAB→Python migration, power systems, embedded BLE, scientific Python, and the math we work with every day. By Evgeny Istomin at Alpisto."
 >
-  <section class="max-w-3xl mx-auto px-6 py-16">
-    <header class="mb-12">
-      <h1 class="text-4xl font-bold tracking-tight text-slate-900 mb-4">Blog</h1>
-      <p class="text-lg text-slate-600 leading-relaxed">
-        Notes on engineering migrations, scientific Python, embedded BLE, and the math we
-        work with every day.
-      </p>
-    </header>
-
-    {posts.length === 0 ? (
-      <p class="text-slate-500">No articles yet. Check back soon.</p>
-    ) : (
-      <ul class="space-y-12">
-        {posts.map(post => (
-          <li>
-            <article>
-              <h2 class="text-2xl font-semibold mb-2">
-                <a href={`/blog/${post.id}/`} class="text-slate-900 hover:text-blue-600 transition-colors">
-                  {post.data.title}
-                </a>
-              </h2>
-              <div class="text-sm text-slate-500 mb-3 flex flex-wrap items-center gap-2">
-                <time>{formatDate(post.data.pubDate)}</time>
-                {post.data.tags.length > 0 && (
-                  <>
-                    <span>·</span>
-                    <div class="flex flex-wrap gap-2">
-                      {post.data.tags.slice(0, 4).map(tag => (
-                        <a href={`/blog/tags/${tag}/`} class="text-blue-600 hover:underline">#{tag}</a>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
-              <p class="text-slate-600 leading-relaxed">{post.data.description}</p>
-              <a
-                href={`/blog/${post.id}/`}
-                class="inline-block mt-3 text-blue-600 text-sm font-medium hover:underline"
-              >
-                Read article →
-              </a>
-            </article>
-          </li>
-        ))}
-      </ul>
-    )}
-
-    <p class="mt-16 text-sm text-slate-500">
-      <a href="/rss.xml" class="text-blue-600 hover:underline">RSS feed</a>
-    </p>
+  {/* HERO */}
+  <section class="px-5 sm:px-10 pt-8 sm:pt-10 pb-6">
+    <Eyebrow>
+      <span class="flex items-center gap-3"><span>●</span><span>PAGE / 05 — Blog</span></span>
+      <span class="flex items-center gap-3"><span>●</span><span>Field notes &amp; migration diaries</span></span>
+      <span class="flex items-center gap-3"><span>●</span><span>{posts.length} article{posts.length === 1 ? '' : 's'}</span></span>
+    </Eyebrow>
+    <div class="mt-4 grid gap-8 lg:grid-cols-[1.6fr_1fr] lg:gap-10 lg:items-end">
+      <h1
+        class="font-display font-bold leading-[0.82] tracking-[-0.06em] text-ink text-[88px] sm:text-[160px] md:text-[200px] lg:text-[240px]"
+      >
+        BLOG<span class="text-accent">.</span>
+      </h1>
+      <div class="lg:pb-6">
+        <p class="font-display text-[17px] sm:text-[19px] leading-[1.45] text-ink font-medium">
+          What broke this week. What we learned doing the port. KiCad reviews, BLE protocol
+          traces, OTA rollouts. Reading notes from the papers and standards we actually used.
+        </p>
+        <div class="mt-5 flex flex-wrap gap-3">
+          <Btn kind="ink" href="/rss.xml">RSS / atom.xml</Btn>
+          <Btn kind="ghost" href="/contact">Subscribe by email</Btn>
+        </div>
+      </div>
+    </div>
   </section>
+
+  {posts.length === 0 ? (
+    <section class="px-5 sm:px-10 py-16">
+      <p class="font-mono text-[13px] uppercase tracking-[0.08em] text-ink-3">No articles yet. Check back soon.</p>
+    </section>
+  ) : (
+    <>
+      {/* FEATURED */}
+      {featured && (
+        <section class="px-5 sm:px-10 pt-6">
+          <Eyebrow>● Featured</Eyebrow>
+          <div class="mt-4 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+            {/* Big featured */}
+            <a
+              href={`/blog/${featured.id}/`}
+              class="block no-underline text-ink border-2 border-ink bg-accent p-6 sm:p-8 lg:p-10 relative overflow-hidden hover:bg-ink hover:text-paper transition-colors group"
+            >
+              <Eyebrow color="ink">● Latest · {formatDate(featured.data.pubDate)}</Eyebrow>
+              <h3
+                class="font-display font-bold tracking-[-0.035em] leading-[0.98] text-ink group-hover:text-paper mt-3 text-[28px] sm:text-[40px] lg:text-[48px]"
+              >
+                {featured.data.title}
+              </h3>
+              <p class="font-display text-[15px] sm:text-[16px] leading-[1.55] text-ink group-hover:text-paper mt-4 max-w-[640px]">
+                {featured.data.description}
+              </p>
+              {featured.data.tags.length > 0 && (
+                <div class="mt-5 flex flex-wrap gap-2">
+                  {featured.data.tags.slice(0, 4).map(t => (
+                    <span class="font-mono text-[11px] uppercase tracking-[0.04em] px-[9px] py-[5px] border-[1.5px] border-ink text-ink group-hover:text-paper group-hover:border-paper whitespace-nowrap">
+                      #{t}
+                    </span>
+                  ))}
+                </div>
+              )}
+              <div class="mt-5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink group-hover:text-paper">
+                {featuredReading} · read article →
+              </div>
+            </a>
+
+            {/* Secondary */}
+            {secondary && (
+              <a
+                href={`/blog/${secondary.id}/`}
+                class="flex flex-col no-underline text-ink border-2 border-ink bg-paper-card p-5 sm:p-6 hover:bg-ink hover:text-paper transition-colors group"
+              >
+                <Eyebrow>● {formatDate(secondary.data.pubDate)}</Eyebrow>
+                <h3
+                  class="font-display font-bold tracking-[-0.025em] leading-[1.1] text-ink group-hover:text-paper mt-3 text-[22px] sm:text-[26px]"
+                >
+                  {secondary.data.title}
+                </h3>
+                <p class="font-display text-[14px] leading-[1.55] text-ink-2 group-hover:text-paper mt-2">
+                  {secondary.data.description}
+                </p>
+                {secondary.data.tags.length > 0 && (
+                  <div class="mt-auto pt-4 flex flex-wrap gap-2">
+                    {secondary.data.tags.slice(0, 3).map(t => (
+                      <span class="font-mono text-[11px] uppercase tracking-[0.04em] px-[9px] py-[5px] border-[1.5px] border-ink text-ink group-hover:text-paper group-hover:border-paper whitespace-nowrap">
+                        #{t}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <div class="mt-3 font-mono text-[11px] uppercase tracking-[0.08em] text-ink group-hover:text-paper">
+                  {secondaryReading} →
+                </div>
+              </a>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* LIST */}
+      {restPosts.length > 0 && (
+        <section class="px-5 sm:px-10 pt-12 sm:pt-16">
+          <Eyebrow>● All posts</Eyebrow>
+          <h2
+            class="font-display font-bold tracking-[-0.04em] leading-[0.95] mt-3 mb-4 text-[36px] sm:text-[52px]"
+          >
+            {posts.length} ARTICLE{posts.length === 1 ? '' : 'S'}<span class="text-accent">.</span>
+          </h2>
+          <ul class="list-none p-0 m-0">
+            {restPosts.map((post, i) => {
+              const n = String(i + 3).padStart(2, '0')
+              return (
+                <li>
+                  <a
+                    href={`/blog/${post.id}/`}
+                    class="grid gap-3 sm:gap-6 sm:grid-cols-[48px_140px_1fr_80px] border-t-2 border-ink py-5 sm:py-6 no-underline text-ink items-start hover:bg-paper-card transition-colors group"
+                  >
+                    <div class="font-mono text-[12px] font-bold text-ink-3 tracking-[0.04em] sm:pt-1.5">
+                      {n}
+                    </div>
+                    <div class="flex flex-col gap-2">
+                      <time
+                        datetime={isoDate(post.data.pubDate)}
+                        class="font-mono text-[12px] text-ink-3 tracking-[0.04em]"
+                      >
+                        {formatDate(post.data.pubDate)}
+                      </time>
+                      <div class="flex flex-wrap gap-1.5">
+                        {post.data.tags.slice(0, 3).map(t => (
+                          <span class="font-mono text-[10px] uppercase tracking-[0.04em] px-[7px] py-[3px] border-[1px] border-ink-3 text-ink-3 whitespace-nowrap">
+                            #{t}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div class="min-w-0">
+                      <h3 class="font-display text-[20px] sm:text-[24px] lg:text-[26px] font-bold tracking-[-0.02em] leading-[1.15] text-ink group-hover:text-accent m-0">
+                        {post.data.title}
+                      </h3>
+                      <p class="font-display text-[14px] sm:text-[15px] leading-[1.55] text-ink-2 mt-2 max-w-[720px]">
+                        {post.data.description}
+                      </p>
+                    </div>
+                    <div class="font-mono text-[11px] uppercase tracking-[0.08em] text-ink sm:text-right sm:pt-2">
+                      {calculateReadingTime(post.body ?? '')}
+                    </div>
+                  </a>
+                </li>
+              )
+            })}
+            <li class="border-t-2 border-ink"></li>
+          </ul>
+        </section>
+      )}
+
+      {/* TAG CLOUD + ARCHIVE */}
+      <section class="px-5 sm:px-10 pt-14 sm:pt-16">
+        <div class="grid gap-5 lg:grid-cols-[1.4fr_1fr] lg:gap-7">
+          <div class="border-2 border-ink p-6 sm:p-7 bg-paper-card">
+            <Eyebrow>● Tags</Eyebrow>
+            <div class="mt-4 flex flex-wrap gap-x-3 gap-y-2">
+              {tagCloud.map(([t, n]) => {
+                const size = Math.min(11 + n * 1.6, 22)
+                const isHot = n > 2
+                return (
+                  <a
+                    href={`/blog/tags/${t}/`}
+                    class="font-mono font-semibold no-underline pb-[1px] border-b-[1.5px]"
+                    style={`font-size: ${size}px; color: ${isHot ? 'var(--color-accent)' : 'var(--color-ink)'}; border-color: ${isHot ? 'var(--color-accent)' : 'var(--color-ink)'};`}
+                  >
+                    #{t}
+                    <span class="ml-1 text-[11px]" style="color: var(--color-ink-3);">·{n}</span>
+                  </a>
+                )
+              })}
+            </div>
+          </div>
+          <div class="border-2 border-ink p-6 sm:p-7 bg-ink text-paper">
+            <Eyebrow color="accent">● Archive</Eyebrow>
+            <table class="w-full border-collapse mt-4 font-mono text-[13px]">
+              <tbody>
+                {yearArchive.map(([y, n]) => (
+                  <tr class="border-t border-ink-3">
+                    <td class="py-2.5 text-accent font-bold font-display text-[18px]">{y}</td>
+                    <td class="py-2.5 text-right" style="color: #aaa;">{n} post{n === 1 ? '' : 's'} →</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div class="mt-5 font-mono text-[11px] leading-[1.6] tracking-[0.04em]" style="color: #cfcabf;">
+              Written in English. Occasionally re-published in Slovenian when the topic is local.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SMALL CTA */}
+      <section class="px-5 sm:px-10 pt-14 sm:pt-16 pb-14 sm:pb-16">
+        <div class="border-2 border-ink p-6 sm:p-8 bg-paper flex flex-wrap items-center justify-between gap-5">
+          <h3
+            class="font-display font-bold tracking-[-0.03em] leading-[1.0] text-ink m-0 text-[24px] sm:text-[32px] lg:text-[40px] max-w-[640px]"
+          >
+            Got a topic you want us to dig into?
+          </h3>
+          <Btn kind="ink" href="/contact">hello@alpisto.eu →</Btn>
+        </div>
+      </section>
+    </>
+  )}
 </Page>
