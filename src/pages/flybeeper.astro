@@ -6,7 +6,7 @@ import Btn from '../components/v5/Btn.astro'
 
 const title = 'FlyBeeper — indie BLE wearables for paraglider pilots'
 const description =
-  "Seven BLE wearables for paraglider pilots, designed and shipped by Alpisto's founder. Firmware on Nordic nRF52, KiCad PCBs, mobile apps, web backend — end-to-end."
+  "Eight BLE wearables for paraglider pilots, designed and shipped by Alpisto's founder. Firmware on Nordic nRF52, KiCad PCBs, mobile apps, web backend — end-to-end."
 
 type StatusKind = 'shipping' | 'dev' | 'discontinued'
 
@@ -20,6 +20,8 @@ interface Device {
   summary: string
   specs: { label: string; value: string }[]
   blogTag?: string
+  orderUrl?: string
+  orderPrice?: string
 }
 
 const devices: Device[] = [
@@ -40,45 +42,31 @@ const devices: Device[] = [
       { label: 'Update', value: 'OTA DFU' },
     ],
     blogTag: 'mini-bt',
+    orderUrl: 'https://market.flybeeper.com/device/mini-bt',
+    orderPrice: '€89',
   },
   {
     n: '02',
-    slug: 'pressure-sensor',
-    name: 'FlyBeeper Pressure Sensor (PS1)',
-    status: 'dev',
-    statusLabel: 'In development',
-    image: '/img/flybeeper/pressure-sensor/main.jpg',
+    slug: 'fanet-vario',
+    name: 'FlyBeeper FANET Vario',
+    status: 'shipping',
+    statusLabel: 'Currently shipping',
+    image: '/img/flybeeper/fanet-vario/main.jpg',
     summary:
-      'External Bluetooth barometer. Turns any smartphone into a usable variometer when paired with xcTrack, SeeYou, Flyskyhy or LK8000.',
+      'Solar-charged FANET beacon and barometric variometer in one. Puts you on the map for every pilot in range — and them on yours — and hardly ever needs charging. First batch shipping now, in the order payments come in.',
     specs: [
-      { label: 'Sensitivity', value: '±2 cm' },
-      { label: 'BLE stream', value: '10 Hz pressure · 0.1 Pa accuracy' },
-      { label: 'Battery', value: 'CR2032 — 400 h active / 4 yrs standby' },
-      { label: 'Size', value: '34 × 30 × 9 mm · 8 g' },
-      { label: 'Apps', value: 'xcTrack · SeeYou · Flyskyhy · LK8000' },
+      { label: 'Radio', value: 'FANET (LoRa, 868.2 MHz) · BLE to phone' },
+      { label: 'Vario', value: '±2 cm barometric — same sensor as the line' },
+      { label: 'Power', value: 'Solar + LiPo ~900 mAh · USB-C' },
+      { label: 'Body', value: '29 g · 29 × 92 × 16 mm · antenna inside' },
+      { label: 'Price', value: '€149 · free shipping · first batch ≈ 10 units' },
     ],
-    blogTag: 'ps1',
+    blogTag: 'fanet-vario',
+    orderUrl: 'https://market.flybeeper.com/device/fanet-vario',
+    orderPrice: '€149',
   },
   {
     n: '03',
-    slug: 'remote-control-4',
-    name: 'FlyBeeper Remote Control 4 (RC4)',
-    status: 'dev',
-    statusLabel: 'In development',
-    image: '/img/flybeeper/remote-control-4/main.jpg',
-    summary:
-      'Four external Bluetooth buttons mounted on brake toggles. Drive your flight app without letting go of the lines. HID or AOIS profile.',
-    specs: [
-      { label: 'Inputs', value: '4 tactile buttons' },
-      { label: 'BLE profiles', value: 'HID keyboard or AOIS' },
-      { label: 'Battery', value: 'CR2032 — 1000 h active / 5 yrs standby' },
-      { label: 'Size', value: '34 × 30 × 9 mm · 8 g' },
-      { label: 'Apps', value: 'xcTrack · xcSoar · LK8000 · maps.flybeeper.com' },
-    ],
-    blogTag: 'rc4',
-  },
-  {
-    n: '04',
     slug: 'tas',
     name: 'FlyBeeper TAS',
     status: 'dev',
@@ -96,7 +84,7 @@ const devices: Device[] = [
     blogTag: 'tas',
   },
   {
-    n: '05',
+    n: '04',
     slug: 'sun-vario',
     name: 'FlyBeeper Solar Vario',
     status: 'dev',
@@ -114,25 +102,61 @@ const devices: Device[] = [
     blogTag: 'sun-vario',
   },
   {
-    n: '06',
-    slug: 'fanet',
-    name: 'FlyBeeper FANET ecosystem',
+    n: '05',
+    slug: 'fanet-base',
+    name: 'FlyBeeper FANET Base',
     status: 'dev',
-    statusLabel: 'In development (Base shipping)',
+    statusLabel: 'In development',
     image: '/img/flybeeper/fanet/main.jpg',
     summary:
-      'Three-plus devices forming a 868 MHz FANET radio ecosystem. ESP32 + SX1276 base is shipping and feeds maps.flybeeper.com.',
+      'ESP32 + SX1276 ground station for the 868 MHz FANET network. Receives live traffic and climb data from pilots in range and feeds maps.flybeeper.com in real time.',
     specs: [
-      { label: 'Base', value: 'ESP32 + SX1276 ground station — shipping' },
-      { label: 'Radio', value: 'External 860–930 MHz LoRa bridge + BLE' },
-      { label: 'FANET Vario', value: 'Solar-powered FANET radio + vario' },
-      { label: 'F0 tracker', value: 'Standalone solar FANET tracker (Cortex-M0+, GPS+GLONASS)' },
+      { label: 'MCU', value: 'ESP32 + SX1276' },
+      { label: 'Radio', value: '868 MHz LoRa / FANET receiver' },
+      { label: 'Role', value: 'Fixed ground station' },
+      { label: 'Uplink', value: 'Wi-Fi / internet backhaul' },
       { label: 'Live feed', value: 'maps.flybeeper.com (real-time)' },
     ],
     blogTag: 'fanet',
   },
   {
+    n: '06',
+    slug: 'pressure-sensor',
+    name: 'FlyBeeper Pressure Sensor (PS1)',
+    status: 'discontinued',
+    statusLabel: 'Discontinued (2025)',
+    image: '/img/flybeeper/pressure-sensor/main.jpg',
+    summary:
+      'External Bluetooth barometer. Turns any smartphone into a usable variometer when paired with xcTrack, SeeYou, Flyskyhy or LK8000.',
+    specs: [
+      { label: 'Sensitivity', value: '±2 cm' },
+      { label: 'BLE stream', value: '10 Hz pressure · 0.1 Pa accuracy' },
+      { label: 'Battery', value: 'CR2032 — 400 h active / 4 yrs standby' },
+      { label: 'Size', value: '34 × 30 × 9 mm · 8 g' },
+      { label: 'Apps', value: 'xcTrack · SeeYou · Flyskyhy · LK8000' },
+    ],
+    blogTag: 'ps1',
+  },
+  {
     n: '07',
+    slug: 'remote-control-4',
+    name: 'FlyBeeper Remote Control 4 (RC4)',
+    status: 'discontinued',
+    statusLabel: 'Discontinued (2025)',
+    image: '/img/flybeeper/remote-control-4/main.jpg',
+    summary:
+      'Four external Bluetooth buttons mounted on brake toggles. Drive your flight app without letting go of the lines. HID or AOIS profile.',
+    specs: [
+      { label: 'Inputs', value: '4 tactile buttons' },
+      { label: 'BLE profiles', value: 'HID keyboard or AOIS' },
+      { label: 'Battery', value: 'CR2032 — 1000 h active / 5 yrs standby' },
+      { label: 'Size', value: '34 × 30 × 9 mm · 8 g' },
+      { label: 'Apps', value: 'xcTrack · xcSoar · LK8000 · maps.flybeeper.com' },
+    ],
+    blogTag: 'rc4',
+  },
+  {
+    n: '08',
     slug: 'f1',
     name: 'FlyBeeper F1',
     status: 'discontinued',
@@ -152,10 +176,10 @@ const devices: Device[] = [
 ]
 
 const heroStats: [string, string][] = [
-  ['7', 'devices designed'],
-  ['1', 'currently shipping'],
-  ['5', 'in development'],
-  ['1', 'retired · stack carried forward'],
+  ['8', 'devices designed'],
+  ['2', 'currently shipping'],
+  ['3', 'in development'],
+  ['3', 'retired / discontinued'],
 ]
 
 interface Review {
@@ -243,7 +267,7 @@ const integrations: Integration[] = [
       <div class="lg:pb-3">
         <p class="font-display text-[17px] sm:text-[19px] leading-[1.45] text-ink m-0 font-medium">
           An indie product line of Bluetooth-LE wearables for paraglider pilots,
-          built by Alpisto's founder. Seven devices designed end-to-end —
+          built by Alpisto's founder. Eight devices designed end-to-end —
           firmware on Nordic nRF52, KiCad PCBs, mobile apps, web backend,
           and the small-batch fulfilment that goes with them.
         </p>
@@ -284,7 +308,7 @@ const integrations: Integration[] = [
         <h2
           class="font-display font-bold tracking-[-0.04em] leading-[0.95] mt-[14px] text-[40px] sm:text-[56px] lg:text-[72px]"
         >
-          SEVEN DEVICES<span class="text-accent">.</span>
+          EIGHT DEVICES<span class="text-accent">.</span>
         </h2>
       </div>
       <div
@@ -305,7 +329,7 @@ const integrations: Integration[] = [
         >
           <div class="flex justify-between items-start gap-2">
             <div class="font-mono text-[11px] tracking-[0.12em] text-ink uppercase">FB / {device.n}</div>
-            <Status live={device.status} />
+            <Status live={device.status} label={device.status === 'discontinued' ? device.statusLabel : undefined} />
           </div>
           <div class="mt-3 h-[120px] border-2 border-ink overflow-hidden bg-white">
             {device.image ? (
@@ -373,7 +397,7 @@ const integrations: Integration[] = [
               </div>
             )}
           </div>
-          <div class="mt-[10px]"><Status live={device.status} /></div>
+          <div class="mt-[10px]"><Status live={device.status} label={device.status === 'discontinued' ? device.statusLabel : undefined} /></div>
         </div>
         <div>
           <h3 class="font-display text-[26px] sm:text-[32px] font-bold tracking-[-0.025em] leading-[1.0] m-0">
@@ -382,14 +406,26 @@ const integrations: Integration[] = [
           <p class="font-display text-[15px] sm:text-[16px] leading-[1.55] text-ink-2 mt-3 max-w-[520px]">
             {device.summary}
           </p>
-          {device.blogTag && (
-            <a
-              href={`/blog/tags/${device.blogTag}/`}
-              class="inline-block font-mono text-[12px] mt-[14px] tracking-[0.06em] uppercase text-ink border-b-[1.5px] border-ink pb-[2px] no-underline hover:text-accent hover:border-accent"
-            >
-              articles tagged #{device.blogTag} →
-            </a>
-          )}
+          <div class="mt-[14px] flex flex-wrap items-center gap-x-5 gap-y-2">
+            {device.blogTag && (
+              <a
+                href={`/blog/tags/${device.blogTag}/`}
+                class="inline-block font-mono text-[12px] tracking-[0.06em] uppercase text-ink border-b-[1.5px] border-ink pb-[2px] no-underline hover:text-accent hover:border-accent"
+              >
+                articles tagged #{device.blogTag} →
+              </a>
+            )}
+            {device.orderUrl && (
+              <a
+                href={device.orderUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-block font-mono text-[12px] tracking-[0.06em] uppercase text-ink font-bold bg-accent px-[10px] py-[5px] no-underline hover:bg-ink hover:text-paper"
+              >
+                Order{device.orderPrice ? ` — ${device.orderPrice}` : ''} →
+              </a>
+            )}
+          </div>
         </div>
         <div class="bg-paper-card border-[1.5px] border-ink">
           {device.specs.map((s, i, arr) => (

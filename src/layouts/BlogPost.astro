@@ -34,12 +34,21 @@ const ctaMap: Record<string, { eyebrow: string; title: string; body: string; lab
     eyebrow: '● Related product line',
     title: 'See the full FlyBeeper line-up.',
     body:
-      'Seven BLE wearables built end-to-end — firmware, PCB, mobile, backend. One shipping, five in development, one retired.',
+      'Eight BLE wearables built end-to-end — firmware, PCB, mobile, backend. Two shipping, five in development, one retired.',
     label: 'Browse devices →',
     href: '/flybeeper',
   },
+  'https://market.flybeeper.com/device/fanet-vario': {
+    eyebrow: '● First batch shipping',
+    title: 'Order the FlyBeeper FANET Vario.',
+    body:
+      'A solar FANET beacon and barometric vario in one — €149 with free shipping. A first batch of about ten units, shipped in the order payments come in.',
+    label: 'Order the FlyBeeper FANET Vario →',
+    href: 'https://market.flybeeper.com/device/fanet-vario',
+  },
 }
 const ctaLink = ctaTarget ? ctaMap[ctaTarget] : undefined
+const ctaExternal = ctaLink ? /^https?:\/\//.test(ctaLink.href) : false
 ---
 
 <Page title={title} description={description} ogImage={heroImage ?? '/og-default.png'}>
@@ -151,7 +160,12 @@ const ctaLink = ctaTarget ? ctaMap[ctaTarget] : undefined
           </p>
         </div>
         <div class="flex flex-wrap gap-3 lg:justify-end">
-          <Btn kind="ink" href={ctaLink.href}>{ctaLink.label}</Btn>
+          <Btn
+            kind="ink"
+            href={ctaLink.href}
+            target={ctaExternal ? '_blank' : undefined}
+            rel={ctaExternal ? 'noopener' : undefined}
+          >{ctaLink.label}</Btn>
         </div>
       </div>
     </section>

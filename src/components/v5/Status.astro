@@ -14,10 +14,11 @@ type Live = 'shipping' | 'available' | 'soon' | 'dev' | 'discontinued'
 
 interface Props {
   live: Live
+  label?: string
   class?: string
 }
 
-const { live, class: className = '' } = Astro.props
+const { live, label: labelOverride, class: className = '' } = Astro.props
 
 const map: Record<Live, { glyph: string; label: string; classes: string }> = {
   shipping: {
@@ -47,7 +48,8 @@ const map: Record<Live, { glyph: string; label: string; classes: string }> = {
   },
 }
 
-const { glyph, label, classes } = map[live]
+const { glyph, label: defaultLabel, classes } = map[live]
+const label = labelOverride ?? defaultLabel
 ---
 
 <span
