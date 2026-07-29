@@ -6,15 +6,14 @@
  * an unconfirmed address simply never exists anywhere.
  *
  * Env (Pages project → Settings → Environment variables):
- *   RESEND_API_KEY      re_...                     (secret)
- *   RESEND_AUDIENCE_ID  uuid of the Resend audience
- *   SUBSCRIBE_SECRET    long random string          (secret)
+ *   RESEND_API_KEY      re_...                      (secret)
+ *   SUBSCRIBE_SECRET    long random string           (secret)
  *   FROM_EMAIL          e.g. blog@alpisto.eu (verified domain in Resend)
+ *   RESEND_SEGMENT_ID   optional, set in confirm.ts to file the contact
  */
 
 interface Env {
   RESEND_API_KEY: string
-  RESEND_AUDIENCE_ID: string
   SUBSCRIBE_SECRET: string
   FROM_EMAIL?: string
 }
@@ -73,7 +72,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     return json({ ok: false, error: 'invalid_email' }, 400)
   }
 
-  if (!env.RESEND_API_KEY || !env.SUBSCRIBE_SECRET || !env.RESEND_AUDIENCE_ID) {
+  if (!env.RESEND_API_KEY || !env.SUBSCRIBE_SECRET) {
     console.error('subscribe: missing environment configuration')
     return json({ ok: false, error: 'not_configured' }, 500)
   }

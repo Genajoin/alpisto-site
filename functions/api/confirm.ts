@@ -7,8 +7,9 @@
 
 interface Env {
   RESEND_API_KEY: string
-  RESEND_AUDIENCE_ID: string
   SUBSCRIBE_SECRET: string
+  /** Optional: segment to file the contact under. Contacts are account-level. */
+  RESEND_SEGMENT_ID?: string
 }
 
 const b64urlDecode = (s: string) => {
@@ -53,7 +54,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   const [payload, signature] = token.split('.')
   if (!payload || !signature) return fail('invalid')
 
-  if (!env.RESEND_API_KEY || !env.SUBSCRIBE_SECRET || !env.RESEND_AUDIENCE_ID) {
+  if (!env.RESEND_API_KEY || !env.SUBSCRIBE_SECRET) {
     console.error('confirm: missing environment configuration')
     return fail('error')
   }
@@ -73,13 +74,17 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   if (!email || !expiry) return fail('invalid')
   if (expiry < Math.floor(Date.now() / 1000)) return fail('expired')
 
-  const res = await fetch(`https://api.resend.com/audiences/${env.RESEND_AUDIENCE_ID}/contacts`, {
+  const res = await fetch('https://api.resend.com/contacts', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${env.RESEND_API_KEY}`,
       'content-type': 'application/json',
     },
-    body: JSON.stringify({ email, unsubscribed: false }),
+    body: JSON.stringify({
+      email,
+      unsubscribed: false,
+      ...(env.RESEND_SEGMENT_ID ? { segments: [env.RESEND_SEGMENT_ID] } : {}),
+    }),
   })
 
   // A repeated confirmation is not an error for the human clicking the link.
