@@ -1,0 +1,26 @@
+#!/usr/bin/env sh
+# gitleaks pre-commit hook — blocks commits that introduce secrets.
+# Versioned in .githooks/ and active via `git config core.hooksPath .githooks`
+# (same setting the pre-push announcement hook needs — one path for both).
+# Bypass consciously with: git commit --no-verify
+
+GITLEAKS="$(command -v gitleaks 2>/dev/null || true)"
+if [ -z "$GITLEAKS" ] && [ -x "$HOME/go/bin/gitleaks" ]; then
+  GITLEAKS="$HOME/go/bin/gitleaks"
+fi
+
+if [ -z "$GITLEAKS" ] || [ ! -x "$GITLEAKS" ]; then
+  echo "⚠ gitleaks not found — skipping secret scan." >&2
+  echo "  Install: go install github.com/zricethezav/gitleaks/v8@latest" >&2
+  exit 0
+fi
+
+"$GITLEAKS" git --staged --redact
+status=$?
+if [ "$status" -ne 0 ]; then
+  echo "" >&2
+  echo "❌ gitleaks: в staged-изменениях найден потенциальный секрет — коммит остановлен." >&2
+  echo "   Ложное срабатывание? Добавь правило в .gitleaks.toml или (осознанно) commit --no-verify." >&2
+  exit 1
+fi
+exit 0
