@@ -141,7 +141,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     // 422 rather than 502: Cloudflare replaces a 502 body with its own error page.
     const detail = await res.text()
     console.error('subscribe: resend failed', res.status, detail)
-    return json({ ok: false, error: 'send_failed', status: res.status, detail }, 422)
+    return json({ ok: false, error: 'send_failed', status: res.status, detail, from }, 422)
   }
 
   return json({ ok: true })
