@@ -3,6 +3,7 @@ import Page from './Page.astro'
 import Eyebrow from '../components/v5/Eyebrow.astro'
 import Tag from '../components/v5/Tag.astro'
 import Btn from '../components/v5/Btn.astro'
+import Subscribe from '../components/v5/Subscribe.astro'
 import type { CollectionEntry } from 'astro:content'
 
 interface Props {
@@ -170,6 +171,11 @@ const ctaExternal = ctaLink ? /^https?:\/\//.test(ctaLink.href) : false
       </div>
     </section>
   )}
+
+  {/* SUBSCRIBE */}
+  <section class="px-5 sm:px-10 pb-12 sm:pb-14">
+    <Subscribe />
+  </section>
 
   {/* FOOTER NAV */}
   <section class="px-5 sm:px-10 pb-14 sm:pb-16">

@@ -67,6 +67,25 @@ public/
 
 **New case study:** create `src/content/case-studies/<slug>.md` with frontmatter (`title`, `client`, `industry`, `duration`, `tech`, `pubDate`, `problem`, `result`). Keep anonymous — no client names, no proprietary code.
 
+## Email subscription (double opt-in)
+
+Readers subscribe from the blog page or the end of any article. They receive a confirmation email
+first; the address is only stored — as a contact in a Resend audience — once they click the link in
+it. Unconfirmed addresses are never persisted. Posts go out as Resend broadcasts, which carry the
+unsubscribe link.
+
+Required environment variables (Pages project → Settings → Environment variables → Production;
+mark the two secrets as secrets):
+
+| Variable | Value |
+| :--- | :--- |
+| `RESEND_API_KEY` | `re_…` — needs contact-write access — secret |
+| `RESEND_AUDIENCE_ID` | UUID of the audience in Resend → Audiences |
+| `SUBSCRIBE_SECRET` | long random string, e.g. `openssl rand -base64 48` — secret |
+| `FROM_EMAIL` | `Alpisto Blog <blog@alpisto.eu>` — domain must be verified in Resend |
+
+Local run: `npx wrangler pages dev dist` with the same variables in `.dev.vars` (gitignored).
+
 ## Deploy
 
 Push to `main` → Cloudflare Pages builds and deploys automatically. Build command: `pnpm build`, output directory: `dist`.

@@ -3,6 +3,7 @@ import Page from '../../layouts/Page.astro'
 import Eyebrow from '../../components/v5/Eyebrow.astro'
 import Tag from '../../components/v5/Tag.astro'
 import Btn from '../../components/v5/Btn.astro'
+import Subscribe from '../../components/v5/Subscribe.astro'
 import { getCollection } from 'astro:content'
 import { calculateReadingTime } from '../../lib/readingTime'
 
@@ -62,7 +63,7 @@ const restPosts = posts.slice(2)
         </p>
         <div class="mt-5 flex flex-wrap gap-3">
           <Btn kind="ink" href="/rss.xml">RSS / atom.xml</Btn>
-          <Btn kind="ghost" href="/contact">Subscribe by email</Btn>
+          <Btn kind="ghost" href="#subscribe">Subscribe by email</Btn>
         </div>
       </div>
     </div>
@@ -235,6 +236,11 @@ const restPosts = posts.slice(2)
             </div>
           </div>
         </div>
+      </section>
+
+      {/* SUBSCRIBE */}
+      <section id="subscribe" class="px-5 sm:px-10 pt-14 sm:pt-16 scroll-mt-8">
+        <Subscribe />
       </section>
 
       {/* SMALL CTA */}

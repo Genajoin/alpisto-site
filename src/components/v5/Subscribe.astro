@@ -1,0 +1,140 @@
+---
+/**
+ * V5 Subscribe — double opt-in email form for the blog.
+ *
+ * Posts to /api/subscribe (Pages Function), which mails a signed confirmation
+ * link. Nothing is stored until the reader clicks it.
+ *
+ * Usage:
+ *   <Subscribe />                        full block with heading
+ *   <Subscribe compact />                just the field + button (inline)
+ */
+interface Props {
+  compact?: boolean
+  class?: string
+}
+
+const { compact = false, class: className = '' } = Astro.props
+---
+
+<form
+  class:list={[
+    'subscribe-form',
+    compact ? 'flex flex-wrap items-start gap-3' : 'border-2 border-ink bg-paper-card p-6 sm:p-7',
+    className,
+  ]}
+  novalidate
+>
+  {!compact && (
+    <>
+      <div class="font-mono uppercase text-[12px] tracking-[0.18em] text-ink-2">● Subscribe</div>
+      <h3 class="font-display font-bold tracking-[-0.03em] leading-[1.05] text-ink mt-3 text-[24px] sm:text-[30px]">
+        New posts by email<span class="text-accent">.</span>
+      </h3>
+      <p class="font-display text-[15px] leading-[1.55] text-ink-2 mt-2 max-w-[560px]">
+        Roughly one email per article — embedded, BLE, free-flight hardware. No newsletter
+        machinery, no tracking pixels. Unsubscribe from any email.
+      </p>
+    </>
+  )}
+
+  <div class:list={[compact ? 'contents' : 'mt-5 flex flex-wrap items-start gap-3']}>
+    <label class="sr-only" for="subscribe-email">Email address</label>
+    <input
+      id="subscribe-email"
+      name="email"
+      type="email"
+      required
+      autocomplete="email"
+      placeholder="you@example.com"
+      class="font-mono text-[14px] px-4 py-3 border-2 border-ink bg-paper text-ink placeholder:text-ink-3 min-w-[240px] flex-1 max-w-[380px] focus:outline-none focus:bg-paper-card"
+    />
+    {/* Honeypot — hidden from humans, irresistible to bots. */}
+    <div class="hidden" aria-hidden="true">
+      <label>
+        Company
+        <input name="company" type="text" tabindex="-1" autocomplete="off" />
+      </label>
+    </div>
+    <button
+      type="submit"
+      class="inline-flex items-center gap-[10px] font-display font-bold text-[14px] tracking-[0.02em] px-5 py-3 border-2 bg-ink text-paper border-ink hover:bg-accent hover:text-ink transition-colors disabled:opacity-60"
+    >
+      Subscribe →
+    </button>
+  </div>
+
+  <p
+    class="subscribe-status font-mono text-[12px] leading-[1.6] tracking-[0.04em] mt-3 hidden w-full"
+    role="status"
+    aria-live="polite"
+  >
+  </p>
+</form>
+
+<style>
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('.subscribe-form').forEach(form => {
+    const status = form.querySelector<HTMLParagraphElement>('.subscribe-status')!
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!
+    const input = form.querySelector<HTMLInputElement>('input[name="email"]')!
+
+    const show = (message: string, tone: 'ok' | 'err') => {
+      status.textContent = message
+      status.classList.remove('hidden')
+      status.style.color = tone === 'ok' ? 'var(--color-ink)' : '#b02a1a'
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault()
+      const email = input.value.trim()
+      if (!email || !input.checkValidity()) {
+        show('That address does not look right — check it and try again.', 'err')
+        return
+      }
+
+      button.disabled = true
+      const original = button.textContent
+      button.textContent = 'Sending…'
+
+      try {
+        const res = await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            email,
+            company: form.querySelector<HTMLInputElement>('input[name="company"]')?.value ?? '',
+          }),
+        })
+        const data = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string }
+
+        if (res.ok && data.ok) {
+          form.reset()
+          show('Check your inbox — click the link in the email to confirm.', 'ok')
+        } else if (data.error === 'invalid_email') {
+          show('That address does not look right — check it and try again.', 'err')
+        } else {
+          show('Could not send the confirmation. Try again, or write to hello@alpisto.eu.', 'err')
+        }
+      } catch {
+        show('Network error. Try again, or write to hello@alpisto.eu.', 'err')
+      } finally {
+        button.disabled = false
+        button.textContent = original
+      }
+    })
+  })
+</script>
