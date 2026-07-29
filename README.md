@@ -86,6 +86,30 @@ mark the two secrets as secrets):
 
 Local run: `npx wrangler pages dev dist` with the same variables in `.dev.vars` (gitignored).
 
+### Announcing a post by email
+
+Nothing goes out automatically — publishing an article does not mail anyone. When you want to
+announce one:
+
+```bash
+npm run announce -- <post-slug>                  # creates a draft
+npm run announce -- <slug-a> <slug-b>            # one email, two cards
+npm run announce -- <slug> --subject "Better line"
+npm run announce -- <slug> --dry                 # renders to /tmp, sends nothing
+npm run announce -- <slug> --send                # skips the review step
+```
+
+The script takes the title and description from the post's frontmatter, renders the standard
+template (plain-text version and unsubscribe link included) and creates a Resend broadcast as a
+**draft**. Review it at [resend.com/broadcasts](https://resend.com/broadcasts) and press Send.
+
+It reads `RESEND_API_KEY` and `RESEND_SEGMENT_ID` from `.env` — the same values as in Pages, kept
+locally and gitignored. `--dry` needs neither.
+
+Two deliberate choices: sending stays a human decision, because a broadcast cannot be recalled;
+and RSS (`/rss.xml`) is independent of all this — RSS readers get every post the moment it is
+published, whether or not it is ever emailed.
+
 ## Deploy
 
 Push to `main` → Cloudflare Pages builds and deploys automatically. Build command: `pnpm build`, output directory: `dist`.

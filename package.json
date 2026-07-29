@@ -9,7 +9,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "announce": "node --env-file-if-exists=.env scripts/announce.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.6",
