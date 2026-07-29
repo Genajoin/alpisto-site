@@ -83,12 +83,14 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     body: JSON.stringify({
       email,
       unsubscribed: false,
-      ...(env.RESEND_SEGMENT_ID ? { segments: [env.RESEND_SEGMENT_ID] } : {}),
+      ...(env.RESEND_SEGMENT_ID ? { segments: [{ id: env.RESEND_SEGMENT_ID }] } : {}),
     }),
   })
 
-  // A repeated confirmation is not an error for the human clicking the link.
-  if (!res.ok && res.status !== 409 && res.status !== 422) {
+  // 409 means the address is already on the list — not an error for the human
+  // clicking the link. Everything else is: 422 here is a validation failure,
+  // not "already exists", and swallowing it loses subscribers silently.
+  if (!res.ok && res.status !== 409) {
     console.error('confirm: resend failed', res.status, await res.text())
     return fail('error')
   }
