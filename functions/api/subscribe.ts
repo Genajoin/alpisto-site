@@ -125,8 +125,11 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   })
 
   if (!res.ok) {
-    console.error('subscribe: resend failed', res.status, await res.text())
-    return json({ ok: false, error: 'send_failed' }, 502)
+    // Resend's own message is the only useful diagnostic here (unverified domain,
+    // bad key, wrong from-address), and it contains no secrets — surface it.
+    const detail = await res.text()
+    console.error('subscribe: resend failed', res.status, detail)
+    return json({ ok: false, error: 'send_failed', status: res.status, detail }, 502)
   }
 
   return json({ ok: true })
