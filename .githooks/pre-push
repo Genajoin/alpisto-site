@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+# Drafts an email announcement when a push contains a newly published post.
+#
+# Runs on push rather than commit on purpose: a commit publishes nothing, and a
+# draft pointing at a page that is not live yet is a 404 waiting to be sent.
+#
+# Never blocks the push — the newsletter is not worth losing a push over.
+#
+# Enable once per clone:  git config core.hooksPath .githooks
+
+set -uo pipefail
+
+repo_root=$(git rev-parse --show-toplevel)
+cd "$repo_root" || exit 0
+
+[ -f .env ] || exit 0          # no credentials here, nothing to do
+command -v node >/dev/null || exit 0
+
+blog_dir="src/content/blog"
+slugs=()
+
+is_published() {
+  # A post counts as published when its frontmatter says draft: false.
+  grep -qE '^draft:\s*false' "$1" 2>/dev/null
+}
+
+was_draft_at() {
+  # True when the same file was still a draft in the remote's version.
+  git show "$1:$2" 2>/dev/null | grep -qE '^draft:\s*true'
+}
+
+collect() {
+  local base=$1 head=$2
+
+  # Newly added posts.
+  while IFS= read -r file; do
+    [ -n "$file" ] || continue
+    is_published "$file" && slugs+=("$(basename "${file%.*}")")
+  done < <(git diff --name-only --diff-filter=A "$base" "$head" -- "$blog_dir" 2>/dev/null)
+
+  # Posts that flipped from draft to published in this push.
+  while IFS= read -r file; do
+    [ -n "$file" ] || continue
+    if is_published "$file" && was_draft_at "$base" "$file"; then
+      slugs+=("$(basename "${file%.*}")")
+    fi
+  done < <(git diff --name-only --diff-filter=M "$base" "$head" -- "$blog_dir" 2>/dev/null)
+}
+
+# stdin gives: <local ref> <local sha> <remote ref> <remote sha>
+while read -r _local_ref local_sha _remote_ref remote_sha; do
+  [ "$local_sha" = "0000000000000000000000000000000000000000" ] && continue   # branch deletion
+  if [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
+    # New branch on the remote: compare against the default branch instead of
+    # announcing the entire history.
+    base=$(git rev-parse origin/main 2>/dev/null) || continue
+  else
+    base=$remote_sha
+  fi
+  collect "$base" "$local_sha"
+done
+
+[ ${#slugs[@]} -gt 0 ] || exit 0
+
+# Deduplicate while keeping order.
+mapfile -t unique < <(printf '%s\n' "${slugs[@]}" | awk '!seen[$0]++')
+
+echo
+echo "─── new post$([ ${#unique[@]} -gt 1 ] && echo s) in this push ───"
+node --env-file-if-exists=.env scripts/announce.mjs "${unique[@]}" --once || {
+  echo "announce: draft not created (see above) — you can run it by hand later" >&2
+}
+echo
+
+exit 0

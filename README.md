@@ -110,6 +110,22 @@ Two deliberate choices: sending stays a human decision, because a broadcast cann
 and RSS (`/rss.xml`) is independent of all this — RSS readers get every post the moment it is
 published, whether or not it is ever emailed.
 
+### Drafting the announcement automatically
+
+A `pre-push` hook drafts the announcement for you. Enable it once per clone:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+On every push it looks at the commits being pushed and picks up posts that are either newly added
+or flipped from `draft: true` to `draft: false`, then creates the draft and prints its id in the
+terminal. `--once` keeps repeated pushes from piling up duplicates. It never sends, and it never
+blocks the push: no `.env`, no node, or a failing API call and it simply stays quiet.
+
+On push rather than on commit deliberately — a commit publishes nothing, so a draft made at commit
+time can point at a page that is not live yet.
+
 ## Deploy
 
 Push to `main` → Cloudflare Pages builds and deploys automatically. Build command: `pnpm build`, output directory: `dist`.

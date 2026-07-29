@@ -31,13 +31,14 @@ const die = message => {
 // --- arguments ---------------------------------------------------------------
 
 const argv = process.argv.slice(2)
-const flags = { send: false, dry: false, subject: null }
+const flags = { send: false, dry: false, once: false, subject: null }
 const slugs = []
 
 for (let i = 0; i < argv.length; i++) {
   const arg = argv[i]
   if (arg === '--send') flags.send = true
   else if (arg === '--dry') flags.dry = true
+  else if (arg === '--once') flags.once = true
   else if (arg === '--subject') flags.subject = argv[++i] ?? die('--subject needs a value')
   else if (arg.startsWith('-')) die(`unknown flag ${arg}`)
   else slugs.push(arg.replace(/\.mdx?$/, ''))
@@ -168,20 +169,31 @@ const { RESEND_API_KEY, RESEND_SEGMENT_ID } = process.env
 if (!RESEND_API_KEY) die('RESEND_API_KEY is not set (put it in .env)')
 if (!RESEND_SEGMENT_ID) die('RESEND_SEGMENT_ID is not set (put it in .env)')
 
-const api = async (path, body) => {
+const api = async (path, body, method = 'POST') => {
   const res = await fetch(`https://api.resend.com${path}`, {
-    method: 'POST',
+    method,
     headers: {
       authorization: `Bearer ${RESEND_API_KEY}`,
       'content-type': 'application/json',
       // Cloudflare sits in front of the API and answers 403/1010 without a UA.
       'user-agent': 'alpisto-announce/1.0',
     },
-    body: JSON.stringify(body),
+    body: body === undefined ? undefined : JSON.stringify(body),
   })
   const payload = await res.text()
   if (!res.ok) die(`Resend ${res.status}: ${payload}`)
   return JSON.parse(payload)
+}
+
+// --once: skip if any of these posts has been announced before. Lets the pre-push
+// hook run on every push without piling up duplicate drafts.
+if (flags.once) {
+  const { data = [] } = await api('/broadcasts', undefined, 'GET')
+  const already = posts.filter(p => data.some(b => (b.name ?? '').includes(p.slug)))
+  if (already.length > 0) {
+    console.log(`announce: already announced, skipping — ${already.map(p => p.slug).join(', ')}`)
+    process.exit(0)
+  }
 }
 
 const broadcast = await api('/broadcasts', {
