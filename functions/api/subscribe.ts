@@ -88,51 +88,60 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const confirmUrl = `${new URL(request.url).origin}/api/confirm?t=${encodeURIComponent(token)}`
 
   const from = env.FROM_EMAIL ?? 'Alpisto Blog <blog@alpisto.eu>'
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${env.RESEND_API_KEY}`,
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      from,
-      to: email,
-      reply_to: env.REPLY_TO_EMAIL ?? 'hello@alpisto.eu',
-      subject: 'Confirm your subscription to the Alpisto blog',
-      text: [
-        'Someone (hopefully you) asked for new Alpisto blog posts by email.',
-        '',
-        'Confirm here — the link works for three days:',
-        confirmUrl,
-        '',
-        "If it wasn't you, ignore this email. Nothing is stored until you confirm.",
-        '',
-        '— Evgeny, Alpisto',
-      ].join('\n'),
-      html: `
-        <div style="font-family:ui-sans-serif,system-ui,sans-serif;font-size:16px;line-height:1.55;color:#141414;max-width:520px">
-          <p>Someone (hopefully you) asked for new Alpisto blog posts by email.</p>
-          <p style="margin:28px 0">
-            <a href="${confirmUrl}"
-               style="display:inline-block;background:#141414;color:#fff;text-decoration:none;padding:14px 22px;font-weight:700;border:2px solid #141414">
-              Confirm subscription
-            </a>
-          </p>
-          <p style="font-size:14px;color:#555">The link works for three days.</p>
-          <p style="font-size:14px;color:#555">
-            If it wasn't you, just ignore this email — nothing is stored until you confirm.
-          </p>
-          <p style="font-size:14px;color:#555">— Evgeny, Alpisto</p>
-        </div>`,
-    }),
-  })
+  const message = {
+    from,
+    to: email,
+    reply_to: env.REPLY_TO_EMAIL ?? 'hello@alpisto.eu',
+    subject: 'Confirm your subscription to the Alpisto blog',
+    text: [
+      'Someone (hopefully you) asked for new Alpisto blog posts by email.',
+      '',
+      'Confirm here — the link works for three days:',
+      confirmUrl,
+      '',
+      "If it wasn't you, ignore this email. Nothing is stored until you confirm.",
+      '',
+      '— Evgeny, Alpisto',
+    ].join('\n'),
+    html: `
+      <div style="font-family:ui-sans-serif,system-ui,sans-serif;font-size:16px;line-height:1.55;color:#141414;max-width:520px">
+        <p>Someone (hopefully you) asked for new Alpisto blog posts by email.</p>
+        <p style="margin:28px 0">
+          <a href="${confirmUrl}"
+             style="display:inline-block;background:#141414;color:#fff;text-decoration:none;padding:14px 22px;font-weight:700;border:2px solid #141414">
+            Confirm subscription
+          </a>
+        </p>
+        <p style="font-size:14px;color:#555">The link works for three days.</p>
+        <p style="font-size:14px;color:#555">
+          If it wasn't you, just ignore this email — nothing is stored until you confirm.
+        </p>
+        <p style="font-size:14px;color:#555">— Evgeny, Alpisto</p>
+      </div>`,
+  }
+
+  let res: Response
+  try {
+    res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${env.RESEND_API_KEY}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(message),
+    })
+  } catch (err) {
+    console.error('subscribe: fetch to resend threw', err)
+    return json({ ok: false, error: 'send_failed', detail: String(err) }, 422)
+  }
 
   if (!res.ok) {
     // Resend's own message is the only useful diagnostic here (unverified domain,
     // bad key, wrong from-address), and it contains no secrets — surface it.
+    // 422 rather than 502: Cloudflare replaces a 502 body with its own error page.
     const detail = await res.text()
     console.error('subscribe: resend failed', res.status, detail)
-    return json({ ok: false, error: 'send_failed', status: res.status, detail }, 502)
+    return json({ ok: false, error: 'send_failed', status: res.status, detail }, 422)
   }
 
   return json({ ok: true })
