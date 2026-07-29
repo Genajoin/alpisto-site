@@ -16,6 +16,8 @@ interface Env {
   RESEND_API_KEY: string
   SUBSCRIBE_SECRET: string
   FROM_EMAIL?: string
+  /** Where replies go — useful when sending from a domain other than alpisto.eu. */
+  REPLY_TO_EMAIL?: string
 }
 
 const TOKEN_TTL_SECONDS = 60 * 60 * 24 * 3 // 3 days
@@ -95,6 +97,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     body: JSON.stringify({
       from,
       to: email,
+      reply_to: env.REPLY_TO_EMAIL ?? 'hello@alpisto.eu',
       subject: 'Confirm your subscription to the Alpisto blog',
       text: [
         'Someone (hopefully you) asked for new Alpisto blog posts by email.',
