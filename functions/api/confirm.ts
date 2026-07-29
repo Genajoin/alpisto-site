@@ -46,9 +46,17 @@ const safeEqual = (a: string, b: string) => {
   return diff === 0
 }
 
+// Never cached: a confirmation link must actually reach this function, even when
+// the reader clicks it twice or their client prefetches it.
+const redirect = (location: string) =>
+  new Response(null, {
+    status: 302,
+    headers: { location, 'cache-control': 'no-store' },
+  })
+
 export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   const origin = new URL(request.url).origin
-  const fail = (reason: string) => Response.redirect(`${origin}/subscribed/?state=${reason}`, 302)
+  const fail = (reason: string) => redirect(`${origin}/subscribed/?state=${reason}`)
 
   const token = new URL(request.url).searchParams.get('t') ?? ''
   const [payload, signature] = token.split('.')
@@ -95,5 +103,6 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     return fail('error')
   }
 
-  return Response.redirect(`${origin}/subscribed/`, 302)
+  console.log('confirm: contact created', res.status, email)
+  return redirect(`${origin}/subscribed/`)
 }
