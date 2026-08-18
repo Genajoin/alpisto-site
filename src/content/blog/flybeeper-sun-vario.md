@@ -1,56 +1,127 @@
 ---
-title: "FlyBeeper Sun Vario: a Solar-Powered Bluetooth Variometer Under 8 Grams"
-description: "A solar-powered BLE variometer that weighs under 8 g and never needs a battery change. Supercapacitor energy buffer, USB-C emergency charge in 60 seconds, 500,000 cycles, operating range -15 °C to +70 °C — designed as a primary vario for hike-and-fly paragliding."
-pubDate: 2024-08-20
-updatedDate: 2026-05-26
+title: "FlyBeeper SunVario: the vario you never charge"
+description: "A solar audio variometer the size of a matchbox that runs off a lithium-ion capacitor instead of a battery. Thirty minutes of morning sun fills it from empty; a minute on USB-C is enough for a flying day. 29 × 34 × 12 mm, 9.8 g, one button, Bluetooth to your phone."
+pubDate: 2026-08-18
 tags: ["flybeeper", "sun-vario", "variometer", "bluetooth-le", "solar", "supercapacitor", "paragliding", "hardware"]
 draft: false
 heroImage: "/img/flybeeper/sun-vario/main.jpg"
-ctaTarget: "/flybeeper"
+ctaTarget: "https://market.flybeeper.com/device/sun-vario"
 toc: false
 ---
 
-The FlyBeeper mini BT is, to my knowledge, the smallest and lightest Bluetooth variometer available. Its standout features are the four remote-control buttons for the phone-side flight app and the swappable primary cell, which keeps working at temperatures where Li-ion batteries freeze. It is a popular paragliding instrument, prized for its sensitivity.
+Every instrument in your flight bag has a charging ritual. The vario, the radio, the phone, the
+tracker. You plug them in the night before, or you don't and you find out on launch.
 
-![FlyBeeper Sun Vario — first prototype with solar panel on the cockpit](/img/blog/flybeeper-sun-vario/01-photo_2024-08-05_17-24-08-e1724141358930.jpg)
-*First prototype: solar panel, USB-C and supercapacitor in a sub-8 g body.*
+The SunVario is my attempt to delete one line from that list. It is an audio variometer with a
+solar panel on top and a lithium-ion capacitor inside instead of a battery — 29 × 34 × 12 mm, 9.8 g,
+one button, three volume levels, Bluetooth to your phone. You do not charge it. You leave it on the
+cockpit, and the sun that you are flying in keeps it running.
 
-The new Sun Vario project takes the same form factor in the direction of the day's popular trend but with all the latest components. The result is the prototype of the smallest and lightest Bluetooth variometer with an "eternal" power source. Highlights:
+![FlyBeeper SunVario — first batch, black and white bodies](/img/blog/flybeeper-sun-vario/first-batch-black-white.jpg)
+*First batch, printed in two colours. The layer lines will be finer on production units.*
 
-- Sensitivity comparable to "instantaneous" varios — but without their drawbacks.
-- Three audible-volume levels. Loud enough for cockpit mounting.
-- Bluetooth LE — transmits pressure, battery level and settings.
-- Extensive configuration, including frequency, duty-cycle and period curves keyed to vario.
-- Online configurator.
-- Solar panel covers 100% of the device's consumption.
-- Battery sized for 6 hours without sun.
-- USB Type-C port for emergency charging — 0% to 100% in 60 seconds.
-- 500,000 charge/discharge cycles, so battery wear is a non-issue. This enables a more rugged, non-serviceable enclosure.
-- Operating temperature range: -15 °C to +70 °C — usable in extreme conditions.
-- Weight under 8 g, ideal for hike-and-fly.
-- 32 × 27 × 12 mm — fits on any cockpit or shoulder strap.
+## Why a capacitor and not a battery
 
-## Use cases
+Almost every solar gadget pairs a panel with a small lithium cell, and that pairing is what kills
+them. The cell sits at full charge in the sun being trickle-overcharged, it accumulates cycles it
+was never specified for, it loses capacity in the cold and ages faster in the heat. Two seasons in,
+the "solar" device needs charging like everything else.
 
-The device was designed as a primary, high-sensitivity audio variometer for everyday paragliding in mountain terrain. A single physical button handles volume. There is no way to accidentally drop into a setup mode. All of the (many) settings are changed through a clear graphical interface on your phone, wirelessly. The "eternal" battery and fixed mounting eliminate one checklist item from pre-flight preparation. The wide temperature range allows winter use.
+A lithium-ion capacitor has none of that machinery. It does not care how many times you charge it,
+it does not need a charge controller deciding when to stop, and there is no chemistry quietly
+degrading while it sits full. It stores less energy than a battery — about 2.5 mAh — which sounds
+fatal until you measure what this device actually consumes.
 
-The communication protocol is optimised for power and bandwidth and is supported by most popular flight computers. The second use case, then, is as an external pressure sensor for a flight app. While there is sun, the device is always discoverable. You do not need to power it on. Launch your app and it auto-discovers and connects, and the device becomes the barometric-altitude source. You can also use the app's audio vario through the phone's speaker or Bluetooth headphones. If the phone dies, you can wake the device's own buzzer with a single button press and keep flying.
+The trade is real and I would rather state it than hide it: a capacitor self-discharges, so a
+SunVario that spends half a year in a dark cupboard will be empty when you find it. The fix takes
+less time than finding the cable would have. Put it on the windowsill while you pack.
 
-## Hardware notes
+## Charging, in the two units that matter
 
-Most projects like this combine a solar panel with a lithium battery. That combination shortens lifespan due to constant overcharging and a high cycle count. The operating-temperature range of a small Li-ion is narrow: it freezes early and overheats in the sun. The good news is that industry has finally started mass-producing affordable components that solve these problems.
+**Thirty minutes of sun, from flat to full.** Measured on an August morning, on a windowsill, not
+in a laboratory. From completely empty, a few minutes under a midday sun already put it in working
+order — you do not have to wait for full.
 
-Size and weight are preserved through the use of a low-voltage solar panel together with ultra-low-power MPPT and step-up conversion. Just ten years ago these technologies were unavailable in devices this small.
+That is the number behind the whole design: what the panel brings in covers roughly five times what
+the device draws in its hungriest state — sound at maximum, phone connected, climbing without a
+break. In sunlight the device is not slowly losing ground; it is filling up while it works.
 
-The device has its trade-offs. The main one is high self-discharge: it fully drains within a week. That is normal and does not affect battery life, but you have to account for it if you take long breaks from flying. Either leave the device in the sun for an hour before flight or plug it in for 60 seconds. Unlike most devices, this one can also be revived when you are fully suited up and ready to launch — 10 seconds on the cable is enough.
+**One minute on USB-C for a flying day.** This is the one that changes how you live with the
+device. There is so little charge in the whole thing — eleven coulombs, end to end — that filling it
+is not a wait. You are not charging a battery, you are topping up a capacitor. Forgot about it
+entirely? Plug it in while you put your harness on.
 
-## FAQ
+That single fact is what makes a solar instrument practical rather than anxious. The panel covers a
+typical flying day outright; the capacitor carries you through a glide in shadow, a turn away from
+the sun, the evening. And when neither is enough, a minute of cable puts you back in the air.
 
-- **How do I power it on/off?** A long-press until the audible beep toggles between audio-vario mode and Bluetooth-only mode. For full shut-down (for example, on an aircraft) find the `Reset` hole on the back corner of the case. Use a thin object to press and release. Wait for a single LED flash; before the second flash press and release `Reset` again. The device powers down and is no longer reachable over Bluetooth. To bring it back, press `Reset` once.
-- **Is there an accelerometer / IMU?** No. The device uses a modern high-sensitivity barometer and specialised algorithms to deliver fast climb-start and climb-end response without an accelerometer. Unlike cheap "instant" varios, this one is not sensitive to turbulence, chop, or the centripetal force of a thermal turn.
-- **Is there an audio vario?** Yes. The device has a fairly large piezo. The tone is not as pleasant as a phone speaker but it is loud and energy-efficient. You can put the device in silent mode, connect it to a phone over Bluetooth, and use the phone's speaker instead.
-- **How are settings changed?** All settings are changed in a convenient graphical web configurator by pairing the device over Bluetooth. The physical button only controls volume.
-- **Is it weather-sealed?** No. The barometer — the most vulnerable component — must have unobstructed access to ambient air for sensitivity. The piezo also needs a path for sound to escape. Hermetically isolating these elements from the rest of the circuit is not worthwhile, because a damaged barometer would render the device useless anyway. That said, units have survived a trip through the washing machine.
-- **Can I mount it on or in a helmet?** Yes, but in this case I recommend significantly increasing the "Vario averaging time" setting to reduce sensitivity to airflow gusts and pressure changes from head movement.
-- **How is it mounted?** A hook-and-loop tape on the back of the device fastens it to a cockpit. The case has a hole for a safety tether. Mounting on the shoulder strap is acceptable, but you may need to increase the "Vario averaging time" to reduce sensitivity to wind gusts and to overall pressure changes from changes in airspeed.
-- **Is there a "zeros" mode?** A special indication mode around zero vario values is trivially expressed as a curve and is the default. You can implement any behaviour you like via the 12-point curves for frequency, duration and duty cycle.
+## What it does without any sun at all
+
+Measured on a real unit, logging its own bank voltage over eight-hour runs:
+
+- **~18 hours** beeping on its own, no phone connected.
+- **8.5 hours** in a realistic flight: phone connected and streaming pressure, volume 1, climbing
+  half the time.
+- **5.4 hours** on the loudest setting under the same conditions.
+- **52 hours** sitting silent and unconnected, waiting for you.
+
+The full method, the discharge curves and the formula behind those numbers are in the [engineering
+write-up](/blog/sun-vario-energy-budget-measured/).
+
+## What it is like to use
+
+One button. Press and hold to turn it on; it beeps to confirm. Press it in flight to cycle volume,
+including silent. Hold it to turn it off. There is no menu, no mode you can fall into by accident,
+and nothing to configure on the device itself.
+
+Everything else lives in the web configurator: pair over Bluetooth, and you get the full set of
+curves — frequency, duty cycle and period against climb rate, twelve points each — plus averaging
+time, thresholds, and firmware updates over the air. If you want a "zeros" mode, you draw it as a
+curve; it is the default shape.
+
+The second way to use it is as the barometric sensor for your phone. It publishes pressure over
+BLE at 10 Hz as a standard characteristic, so XCTrack, SeeYou and the rest pick it up as an
+external sensor. Silence the buzzer, let the app do the audio through your headphones, and the
+device is just a very good barometer that never needs charging. If the phone dies mid-flight, one
+button press wakes the device's own beeper and you carry on.
+
+There is no accelerometer, and that is deliberate — [I wrote a whole
+post](/blog/why-no-accelerometer-in-my-vario/) about why an IMU costs more than it gives in a
+paraglider. What you get instead is a high-sensitivity barometer polled 62 times a second by a
+processor that has nothing else to do, which is where the response actually comes from.
+
+## What it is not
+
+- **Not waterproof.** The barometer needs open access to outside air and the piezo needs a path for
+  sound; sealing both is not worth doing on a device whose barometer would be dead anyway.
+- **Not specified for deep cold.** The design target is **−5 °C and up**, which covers about 95 %
+  of real flying. It will very probably keep working colder than that — what it needs down there is
+  sun, because the cold end is about how the capacitor behaves, not about the electronics.
+- **Not a FANET tracker.** If you want to appear on the live map and see other pilots, that is the
+  [FANET Vario](/blog/flybeeper-fanet-vario/) — a bigger device with a radio.
+- **Not serviceable.** There is no battery to replace, which is the point, so the case is built to
+  be closed and stay closed.
+
+## Under the lid
+
+nRF52832, an SPL07-003 barometer on SPI, a PAM8904E charge pump driving a 12 mm piezo, a 10 F
+lithium-ion capacitor, USB-C, and a solar panel across the top face feeding an energy harvester
+that lifts whatever the panel gives into the capacitor.
+
+The enclosure is three printed parts: a tray, a frame that clips over the panel from outside, and a
+separate strip that carries the button and nothing else — one part per job, so pressing on the
+panel cannot reach the button.
+
+If that kind of detail is what you came for, the [engineering write-up
+](/blog/sun-vario-energy-budget-measured/) has the discharge curves, the runtime formula, why the
+barometer turned out to cost more current than the sound, and what the enclosure went through to
+get here.
+
+## Ordering
+
+The SunVario is **on sale now**, free shipping. The first units go out as a pre-ordered batch,
+shipped in the order the payments arrive — built and sent by me, with the firmware updated over the
+air as it improves.
+
+**[Order the SunVario →](https://market.flybeeper.com/device/sun-vario)** · **[Read the
+engineering write-up →](/blog/sun-vario-energy-budget-measured/)**

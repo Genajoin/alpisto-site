@@ -86,20 +86,21 @@ const devices: Device[] = [
   {
     n: '04',
     slug: 'sun-vario',
-    name: 'FlyBeeper Solar Vario',
-    status: 'dev',
-    statusLabel: 'In development',
+    name: 'FlyBeeper SunVario',
+    status: 'shipping',
+    statusLabel: 'Currently shipping',
     image: '/img/flybeeper/sun-vario/main.jpg',
     summary:
-      'Super-lightweight variometer with solar panel and supercapacitor instead of a battery. Operates from −15 to +70 °C. <8 g.',
+      'Solar audio variometer with a lithium-ion capacitor instead of a battery — nothing to charge, nothing to age out. Sixty seconds on USB-C is enough for a flying day; the sun does the rest. Runtimes measured on hardware.',
     specs: [
-      { label: 'Storage', value: 'Supercapacitor — 50 000 cycles' },
-      { label: 'Solar', value: '100% of consumption covered' },
-      { label: 'Fallback charge', value: '0–80% in 60 s via USB-C' },
-      { label: 'Operating temp', value: '−15 to +70 °C' },
-      { label: 'Weight', value: '< 8 g · 32 × 27 × 12 mm' },
+      { label: 'Storage', value: '10 F lithium-ion capacitor · no battery' },
+      { label: 'Runtime', value: '~18 h unconnected · 8.5 h flying with phone' },
+      { label: 'Charge', value: '60 s on USB-C for a flying day · 30 min of sun from empty' },
+      { label: 'Body', value: '9.8 g · 29 × 34 × 12.1 mm · one button' },
+      { label: 'Order', value: 'On sale · free shipping' },
     ],
     blogTag: 'sun-vario',
+    orderUrl: 'https://market.flybeeper.com/device/sun-vario',
   },
   {
     n: '05',
@@ -175,11 +176,14 @@ const devices: Device[] = [
   },
 ]
 
+// Счётчики считаются по самому списку: карточка меняет статус — цифра над ней
+// меняется сама. Раньше они были вбиты руками и разъезжались с каталогом.
+const countBy = (kind: StatusKind) => String(devices.filter((d) => d.status === kind).length)
 const heroStats: [string, string][] = [
-  ['8', 'devices designed'],
-  ['2', 'currently shipping'],
-  ['3', 'in development'],
-  ['3', 'retired / discontinued'],
+  [String(devices.length), 'devices designed'],
+  [countBy('shipping'), 'currently shipping'],
+  [countBy('dev'), 'in development'],
+  [countBy('discontinued'), 'retired / discontinued'],
 ]
 
 interface Review {
