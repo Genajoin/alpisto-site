@@ -210,7 +210,7 @@ that runs the cell near its maximum-power point and lifts whatever it gets up in
 clamping at 3.8 V. That part exists because the cell is a low-voltage one: it cannot reach the
 capacitor's window on its own. It is also the piece I most want to simplify — a boost stage,
 an inductor and an MPPT resistor network is a lot of board area for a device this size, and a
-panel whose maximum-power voltage already sits inside the capacitor's 2.5–3.6 V window would let
+panel whose maximum-power voltage already sits inside the capacitor's 2.5–3.8 V window would let
 all of it go away. That is a hardware revision away, not a firmware setting.
 
 A capacitor helps here in a way a battery does not. It needs no constant-current/constant-voltage
