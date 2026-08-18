@@ -123,5 +123,11 @@ The SunVario is **on sale now**, free shipping. The first units go out as a pre-
 shipped in the order the payments arrive — built and sent by me, with the firmware updated over the
 air as it improves.
 
+A word on timing, because "pre-order" means different things in different shops. A few units are
+built and sitting on my desk; those ship within three business days. After they are gone, your
+device is built for you — boards from the factory, enclosure printed and assembled here — which
+takes up to four weeks from payment. Either way you get an email within a day telling you which of
+the two you are, and you can cancel for a full refund any time before it ships.
+
 **[Order the SunVario →](https://market.flybeeper.com/device/sun-vario)** · **[Read the
 engineering write-up →](/blog/sun-vario-energy-budget-measured/)**
