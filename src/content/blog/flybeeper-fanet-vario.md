@@ -149,9 +149,11 @@ Updates are over BLE: an MCUboot dual-slot bootloader with SMP-over-BLE (MCUmgr)
 
 The configurator page talks to the device over Bluetooth straight from your browser and pushes the new firmware in about thirty seconds — no cable, no app to install, nothing to sign up for. The clip below is the whole process, unedited: connect, install, done, 185 KB over the air.
 
-<div style="width: 100%; max-width: 390px; margin-left: auto; margin-right: auto; aspect-ratio: 9 / 16;">
-  <iframe src="https://www.youtube-nocookie.com/embed/AiKyc4u7TBo" title="FlyBeeper FANET Vario — firmware update from the browser" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="width: 100%; height: 100%; border: 0; border-radius: 0.5rem;"></iframe>
-</div>
+<figure style="margin: 2rem auto; max-width: 390px;">
+  <video controls muted loop playsinline preload="metadata" poster="/video/fanet-vario-web-dfu.jpg" style="width: 100%; border-radius: 0.5rem; display: block;">
+    <source src="/video/fanet-vario-web-dfu.mp4" type="video/mp4" />
+  </video>
+</figure>
 
 One honest limitation: this works in Chrome and Edge on Android, Windows, macOS and Linux, but not in Safari on iPhone — Apple doesn't allow Bluetooth from the browser. On an iPhone you download the firmware file from the same page and install it with a free MCUmgr app. One extra step, not a dead end.
 
