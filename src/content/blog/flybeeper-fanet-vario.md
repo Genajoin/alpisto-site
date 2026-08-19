@@ -145,6 +145,18 @@ A write-only simulation input lets an app feed the curves a climb rate for testi
 
 Updates are over BLE: an MCUboot dual-slot bootloader with SMP-over-BLE (MCUmgr) transport, so you flash signed images from nRF Connect for Mobile — connect, DFU, done, with automatic rollback if an image fails to confirm.
 
+**And you don't need any of that to install one.**
+
+The configurator page talks to the device over Bluetooth straight from your browser and pushes the new firmware in about thirty seconds — no cable, no app to install, nothing to sign up for. The clip below is the whole process, unedited: connect, install, done, 185 KB over the air.
+
+<div style="width: 100%; max-width: 390px; margin-left: auto; margin-right: auto; aspect-ratio: 9 / 16;">
+  <iframe src="https://www.youtube-nocookie.com/embed/AiKyc4u7TBo" title="FlyBeeper FANET Vario — firmware update from the browser" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="width: 100%; height: 100%; border: 0; border-radius: 0.5rem;"></iframe>
+</div>
+
+One honest limitation: this works in Chrome and Edge on Android, Windows, macOS and Linux, but not in Safari on iPhone — Apple doesn't allow Bluetooth from the browser. On an iPhone you download the firmware file from the same page and install it with a free MCUmgr app. One extra step, not a dead end.
+
+This is the part I wanted sorted before shipping the first batch. An instrument from a one-man shop should be fixable after you've bought it, not just before.
+
 ## An honest pre-order
 
 I should be straight with you about what this is. I'm an engineer and a pilot in Tolmin, Slovenia, and FlyBeeper is my own line of small BLE instruments for free flight — designed end to end, from the Nordic firmware and the PCB to the app. The FANET Vario is new, and this is a first batch of about ten units. It's a pre-order, not a warehouse: units ship in the order payments come in. If you like backing small, well-made kit from the person who actually built it — and getting one of the first — this is exactly that.
