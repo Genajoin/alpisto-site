@@ -51,6 +51,13 @@ device. There is so little charge in the whole thing — eleven coulombs, end to
 is not a wait. You are not charging a battery, you are topping up a capacitor. Forgot about it
 entirely? Plug it in while you put your harness on.
 
+<figure style="margin: 2rem 0;">
+  <video controls preload="metadata" playsinline poster="/video/sun-vario-60-seconds.jpg" style="width: 100%; border-radius: 0.5rem; display: block;">
+    <source src="/video/sun-vario-60-seconds.mp4" type="video/mp4" />
+  </video>
+  <figcaption style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.75;">Sixty seconds on USB-C, filmed on the desk. The bar and the stopwatch follow the real charge curve; the beeping at the end is the device itself, recorded over Bluetooth with the vario simulator driving the buzzer. Sound on.</figcaption>
+</figure>
+
 That single fact is what makes a solar instrument practical rather than anxious. The panel covers a
 typical flying day outright; the capacitor carries you through a glide in shadow, a turn away from
 the sun, the evening. And when neither is enough, a minute of cable puts you back in the air.
