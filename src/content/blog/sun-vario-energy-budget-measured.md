@@ -22,7 +22,12 @@ the entire power system: no cell to age out, no charge controller deciding when 
 chemistry degrading while the device sits full in a hot cockpit.
 
 The interesting part is the scale it fits into. The finished device is 29 × 34 × 12.1 mm and weighs
-9.8 g — panel, capacitor, buzzer, USB-C, radio and enclosure included. That is the size of a
+9.8 g — panel, capacitor, buzzer, USB-C, radio and enclosure included.
+
+![The complete SunVario on a jeweller's scale, next to a FlyBeeper remote](/img/blog/flybeeper-sun-vario/weight-on-scale.jpg)
+
+That is the whole product on the scale, printed body and all — this particular unit came in at
+9.44 g. That is the size of a
 matchbox and the weight of a couple of coins. I have not found another solar vario anywhere near
 it; the ones that exist are the size of a phone, because a lithium cell and its charge management
 take room and a capacitor does not.
