@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 372" width="880" height="372" role="img" aria-label="Bar chart of BLE round-trip time minus device processing for four link configurations">
+  <style>
+    .m { font-family: ui-monospace, "DejaVu Sans Mono", "Courier New", monospace; }
+    .t { fill: #0c0c0c; }
+    .mu { fill: #5a5a5a; }
+  </style>
+  <rect x="0" y="0" width="880" height="372" fill="#f7f3e8"/>
+
+  <text class="m t" x="20" y="30" font-size="13" font-weight="700" letter-spacing="1.2">BLE ROUND-TRIP, DEVICE PROCESSING REMOVED</text>
+
+  <!-- legend -->
+  <rect x="556" y="20" width="14" height="12" fill="#0c0c0c"/>
+  <text class="m t" x="576" y="30" font-size="11.5">min</text>
+  <rect x="622" y="20" width="14" height="12" fill="#ff5b1f"/>
+  <text class="m t" x="642" y="30" font-size="11.5">median</text>
+  <rect x="722" y="20" width="14" height="12" fill="#5a5a5a" opacity="0.55"/>
+  <text class="m t" x="742" y="30" font-size="11.5">p95</text>
+
+  <!-- gridlines -->
+  <g stroke="#5a5a5a" stroke-width="1" opacity="0.35">
+    <line x1="370.75" y1="52" x2="370.75" y2="336"/>
+    <line x1="479.5" y1="52" x2="479.5" y2="336"/>
+    <line x1="588.25" y1="52" x2="588.25" y2="336"/>
+    <line x1="697" y1="52" x2="697" y2="336"/>
+    <line x1="805.75" y1="52" x2="805.75" y2="336"/>
+  </g>
+  <line x1="262" y1="52" x2="262" y2="336" stroke="#0c0c0c" stroke-width="2"/>
+
+  <!-- row 1 -->
+  <text class="m t" x="20" y="88" font-size="12.5" font-weight="700">Laptop · BlueZ</text>
+  <text class="m mu" x="20" y="104" font-size="11">default CI 30–50 ms</text>
+  <rect x="262" y="62" width="292.8" height="15" fill="#0c0c0c"/>
+  <text class="m t" x="562.8" y="74" font-size="11">67.3</text>
+  <rect x="262" y="82" width="305.0" height="15" fill="#ff5b1f"/>
+  <text class="m t" x="575" y="94" font-size="11">70.1</text>
+  <rect x="262" y="102" width="475.5" height="15" fill="#5a5a5a" opacity="0.55"/>
+  <text class="m t" x="745.5" y="114" font-size="11">109.3</text>
+
+  <!-- row 2 -->
+  <text class="m t" x="20" y="160" font-size="12.5" font-weight="700">Laptop · BlueZ</text>
+  <text class="m mu" x="20" y="176" font-size="11">CI forced to 7.5 ms</text>
+  <rect x="262" y="134" width="67.0" height="15" fill="#0c0c0c"/>
+  <text class="m t" x="337" y="146" font-size="11">15.4</text>
+  <rect x="262" y="154" width="77.9" height="15" fill="#ff5b1f"/>
+  <text class="m t" x="348" y="166" font-size="11">17.9</text>
+  <text class="m mu" x="266" y="186" font-size="11">p95 — not measured, link held fast for only 4.5 s</text>
+
+  <!-- row 3 -->
+  <text class="m t" x="20" y="232" font-size="12.5" font-weight="700">Android phone</text>
+  <text class="m mu" x="20" y="248" font-size="11">default connection</text>
+  <rect x="262" y="206" width="276.7" height="15" fill="#0c0c0c"/>
+  <text class="m t" x="546.7" y="218" font-size="11">63.6</text>
+  <rect x="262" y="226" width="363.7" height="15" fill="#ff5b1f"/>
+  <text class="m t" x="633.7" y="238" font-size="11">83.6</text>
+  <rect x="262" y="246" width="538.9" height="15" fill="#5a5a5a" opacity="0.55"/>
+  <text class="m t" x="808.9" y="258" font-size="11">123.9</text>
+
+  <!-- row 4 -->
+  <text class="m t" x="20" y="304" font-size="12.5" font-weight="700">Android phone</text>
+  <text class="m mu" x="20" y="320" font-size="11">CONNECTION_PRIORITY_HIGH</text>
+  <rect x="262" y="278" width="119.6" height="15" fill="#0c0c0c"/>
+  <text class="m t" x="389.6" y="290" font-size="11">27.5</text>
+  <rect x="262" y="298" width="176.2" height="15" fill="#ff5b1f"/>
+  <text class="m t" x="446.2" y="310" font-size="11">40.5</text>
+  <rect x="262" y="318" width="306.7" height="15" fill="#5a5a5a" opacity="0.55"/>
+  <text class="m t" x="576.7" y="330" font-size="11">70.5</text>
+
+  <!-- axis -->
+  <line x1="262" y1="336" x2="830" y2="336" stroke="#0c0c0c" stroke-width="2"/>
+  <g class="m t" font-size="11" text-anchor="middle">
+    <text x="262" y="354">0</text>
+    <text x="370.75" y="354">25</text>
+    <text x="479.5" y="354">50</text>
+    <text x="588.25" y="354">75</text>
+    <text x="697" y="354">100</text>
+    <text x="805.75" y="354">125</text>
+  </g>
+  <text class="m mu" x="830" y="368" font-size="11" text-anchor="end">milliseconds</text>
+</svg>

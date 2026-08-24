@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 336" width="880" height="336" role="img" aria-label="Bar chart comparing share of time spent in ADS-L against share of frames caught for four bench runs">
+  <style>
+    .m { font-family: ui-monospace, "DejaVu Sans Mono", "Courier New", monospace; }
+    .t { fill: #0c0c0c; }
+    .mu { fill: #5a5a5a; }
+  </style>
+  <rect x="0" y="0" width="880" height="336" fill="#f7f3e8"/>
+
+  <text class="m t" x="20" y="30" font-size="13" font-weight="700" letter-spacing="1.2">TIME ON ADS-L vs FRAMES CAUGHT</text>
+
+  <!-- legend -->
+  <rect x="520" y="20" width="14" height="12" fill="#5a5a5a" opacity="0.45"/>
+  <text class="m t" x="540" y="30" font-size="11.5">time in ADS-L</text>
+  <rect x="680" y="20" width="14" height="12" fill="#ff5b1f"/>
+  <text class="m t" x="700" y="30" font-size="11.5">frames caught</text>
+
+  <!-- gridlines -->
+  <g stroke="#5a5a5a" stroke-width="1" opacity="0.35">
+    <line x1="64" y1="68" x2="840" y2="68"/>
+    <line x1="64" y1="115.5" x2="840" y2="115.5"/>
+    <line x1="64" y1="163" x2="840" y2="163"/>
+    <line x1="64" y1="210.5" x2="840" y2="210.5"/>
+  </g>
+  <g class="m mu" font-size="11" text-anchor="end">
+    <text x="54" y="72">100 %</text>
+    <text x="54" y="119.5">75</text>
+    <text x="54" y="167">50</text>
+    <text x="54" y="214.5">25</text>
+    <text x="54" y="262">0</text>
+  </g>
+
+  <!-- A -->
+  <rect x="98" y="199.1" width="56" height="58.9" fill="#5a5a5a" opacity="0.45"/>
+  <text class="m mu" x="126" y="193" font-size="11.5" text-anchor="middle">31 %</text>
+  <rect x="166" y="228.4" width="56" height="29.6" fill="#ff5b1f"/>
+  <text class="m t" x="194" y="222" font-size="11.5" text-anchor="middle" font-weight="700">15.6 %</text>
+
+  <!-- B -->
+  <rect x="288" y="153.5" width="56" height="104.5" fill="#5a5a5a" opacity="0.45"/>
+  <text class="m mu" x="316" y="147" font-size="11.5" text-anchor="middle">55 %</text>
+  <rect x="356" y="163" width="56" height="95" fill="#ff5b1f"/>
+  <text class="m t" x="384" y="157" font-size="11.5" text-anchor="middle" font-weight="700">50 %</text>
+
+  <!-- C -->
+  <rect x="478" y="153.5" width="56" height="104.5" fill="#5a5a5a" opacity="0.45"/>
+  <text class="m mu" x="506" y="147" font-size="11.5" text-anchor="middle">55 %</text>
+  <rect x="546" y="68" width="56" height="190" fill="#ff5b1f"/>
+  <text class="m t" x="574" y="62" font-size="11.5" text-anchor="middle" font-weight="700">100 %</text>
+
+  <!-- D -->
+  <rect x="668" y="204.8" width="56" height="53.2" fill="#5a5a5a" opacity="0.45"/>
+  <text class="m mu" x="696" y="198" font-size="11.5" text-anchor="middle">28 %</text>
+  <rect x="736" y="163" width="56" height="95" fill="#ff5b1f"/>
+  <text class="m t" x="764" y="157" font-size="11.5" text-anchor="middle" font-weight="700">50 %</text>
+
+  <!-- axis -->
+  <line x1="64" y1="258" x2="840" y2="258" stroke="#0c0c0c" stroke-width="2"/>
+
+  <g class="m t" text-anchor="middle">
+    <text x="160" y="282" font-size="14" font-weight="700">A</text>
+    <text x="350" y="282" font-size="14" font-weight="700">B</text>
+    <text x="540" y="282" font-size="14" font-weight="700">C</text>
+    <text x="730" y="282" font-size="14" font-weight="700">D</text>
+  </g>
+  <g class="m mu" font-size="10.5" text-anchor="middle">
+    <text x="160" y="300">free-running slots</text>
+    <text x="350" y="300">aligned · both channels</text>
+    <text x="540" y="300">aligned · one channel</text>
+    <text x="730" y="300">aligned · every 2nd second</text>
+  </g>
+
+  <text class="m mu" x="64" y="326" font-size="11">180 frames per run · dev-kit transmitter at −9 dBm, 1 Hz, on 868.2 MHz only</text>
+</svg>

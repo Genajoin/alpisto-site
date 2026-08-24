@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 320" width="880" height="320" role="img" aria-label="Timeline of one UTC second showing the ADS-L Direct slot from 450 to 1000 ms and the receive window opened 9 ms early">
+  <style>
+    .m { font-family: ui-monospace, "DejaVu Sans Mono", "Courier New", monospace; }
+    .t { fill: #0c0c0c; }
+    .mu { fill: #5a5a5a; }
+    .ac { fill: #ff5b1f; }
+  </style>
+  <rect x="0" y="0" width="880" height="320" fill="#f7f3e8"/>
+
+  <text class="m t" x="70" y="34" font-size="13" font-weight="700" letter-spacing="1.4">ONE UTC SECOND, ALIGNED</text>
+
+  <!-- guides -->
+  <line x1="403" y1="60" x2="403" y2="252" stroke="#0c0c0c" stroke-width="1" stroke-dasharray="4 4" opacity="0.55"/>
+  <line x1="810" y1="60" x2="810" y2="252" stroke="#0c0c0c" stroke-width="1" stroke-dasharray="4 4" opacity="0.55"/>
+  <line x1="70" y1="60" x2="70" y2="252" stroke="#0c0c0c" stroke-width="1" stroke-dasharray="4 4" opacity="0.55"/>
+
+  <!-- band A: the standard -->
+  <text class="m mu" x="70" y="70" font-size="12" letter-spacing="0.6">WHAT THE STANDARD SAYS</text>
+  <rect x="70" y="78" width="333" height="36" fill="#5a5a5a" opacity="0.10"/>
+  <rect x="70" y="78" width="333" height="36" fill="none" stroke="#5a5a5a" stroke-width="1.5"/>
+  <text class="m mu" x="236" y="101" font-size="11" text-anchor="middle">no M-band traffic expected</text>
+  <rect x="403" y="78" width="407" height="36" fill="#ff5b1f" opacity="0.20"/>
+  <rect x="403" y="78" width="407" height="36" fill="none" stroke="#ff5b1f" stroke-width="2"/>
+  <text class="m t" x="606" y="101" font-size="12.5" text-anchor="middle" font-weight="700">Direct slot C.5 · 450–1000 ms</text>
+
+  <!-- band B: my radio -->
+  <text class="m mu" x="70" y="160" font-size="12" letter-spacing="0.6">WHAT MY RADIO DOES</text>
+  <rect x="70" y="168" width="326" height="36" fill="#5a5a5a" opacity="0.14"/>
+  <rect x="70" y="168" width="326" height="36" fill="none" stroke="#0c0c0c" stroke-width="1.5"/>
+  <text class="m t" x="233" y="191" font-size="12.5" text-anchor="middle">FANET  ~440 ms</text>
+  <rect x="396" y="168" width="414" height="36" fill="#ff5b1f" opacity="0.28"/>
+  <rect x="396" y="168" width="414" height="36" fill="none" stroke="#0c0c0c" stroke-width="2"/>
+  <text class="m t" x="606" y="191" font-size="12.5" text-anchor="middle" font-weight="700">ADS-L RX  550.9 ms</text>
+
+  <!-- switch slivers -->
+  <rect x="70" y="168" width="10.4" height="36" fill="#0c0c0c" opacity="0.75"/>
+  <rect x="396" y="168" width="6.1" height="36" fill="#0c0c0c" opacity="0.75"/>
+
+  <!-- lead annotation -->
+  <line x1="396" y1="140" x2="396" y2="168" stroke="#ff5b1f" stroke-width="1.5" stroke-dasharray="3 3"/>
+  <text class="m ac" x="390" y="146" font-size="11.5" text-anchor="end" font-weight="700">window opens 9 ms early</text>
+
+  <!-- leaders -->
+  <polyline points="75,206 75,224 84,224" fill="none" stroke="#5a5a5a" stroke-width="1.2"/>
+  <text class="m mu" x="88" y="228" font-size="11">13.8–14.4 ms · ADS-L → FANET</text>
+  <polyline points="399,206 399,224 408,224" fill="none" stroke="#5a5a5a" stroke-width="1.2"/>
+  <text class="m mu" x="412" y="228" font-size="11">8.1–8.2 ms · FANET → ADS-L</text>
+
+  <!-- axis -->
+  <line x1="70" y1="252" x2="830" y2="252" stroke="#0c0c0c" stroke-width="2"/>
+  <g stroke="#0c0c0c" stroke-width="1.5">
+    <line x1="70" y1="252" x2="70" y2="259"/>
+    <line x1="255" y1="252" x2="255" y2="259"/>
+    <line x1="403" y1="252" x2="403" y2="259"/>
+    <line x1="440" y1="252" x2="440" y2="259"/>
+    <line x1="625" y1="252" x2="625" y2="259"/>
+    <line x1="810" y1="252" x2="810" y2="259"/>
+  </g>
+  <g class="m t" font-size="11" text-anchor="middle">
+    <text x="70" y="274">0</text>
+    <text x="255" y="274">250</text>
+    <text x="403" y="274">450</text>
+    <text x="440" y="274">500</text>
+    <text x="625" y="274">750</text>
+    <text x="810" y="274">1000</text>
+  </g>
+  <text class="m mu" x="70" y="298" font-size="11">ms from the whole UTC second</text>
+  <text class="m mu" x="830" y="298" font-size="11" text-anchor="end">measured window period: 1000.2 ms</text>
+</svg>
