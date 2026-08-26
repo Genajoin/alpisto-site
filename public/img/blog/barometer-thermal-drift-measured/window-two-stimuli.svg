@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 380" width="880" height="380" role="img" aria-label="Residual error for a slow warm-up and for hand movement, and vario noise, against the averaging window">
+  <style>.m{font-family:"Geist Mono",ui-monospace,"DejaVu Sans Mono","Courier New",monospace}.t{fill:#0c0c0c}.mu{fill:#5a5a5a}</style>
+  <rect x="0" y="0" width="880" height="380" fill="#f7f3e8"/>
+  <text class="m t" x="20" y="30" font-size="13" font-weight="700" letter-spacing="1.2">THE SAME WINDOW, TWO DIFFERENT STIMULI</text>
+  <rect x="70" y="48" width="14" height="10" fill="#3744ff"/>
+  <text class="m mu" x="90" y="58" font-size="11.5" text-anchor="start">slow warm-up</text>
+  <rect x="196.4" y="48" width="14" height="10" fill="#ff5b1f"/>
+  <text class="m mu" x="216.4" y="58" font-size="11.5" text-anchor="start">picked up by hand</text>
+  <g stroke="#5a5a5a" stroke-width="1" opacity="0.30">
+    <line x1="70" y1="272.0" x2="430" y2="272.0"/>
+    <line x1="70" y1="200.9" x2="430" y2="200.9"/>
+    <line x1="70" y1="129.8" x2="430" y2="129.8"/>
+  </g>
+  <g class="m mu" font-size="10.5" text-anchor="end">
+    <text x="62" y="276.0">0.00</text>
+    <text x="62" y="204.9">2.00</text>
+    <text x="62" y="133.8">4.00</text>
+  </g>
+  <rect x="81.5" y="244.3" width="21.6" height="27.7" fill="#3744ff"/>
+  <text class="m t" x="92.3" y="239.3" font-size="9.5" text-anchor="middle">0.78</text>
+  <rect x="106.0" y="232.5" width="21.6" height="39.5" fill="#ff5b1f"/>
+  <text class="m t" x="116.8" y="227.5" font-size="9.5" text-anchor="middle">1.11</text>
+  <text class="m mu" x="106.0" y="288.0" font-size="10.5" text-anchor="middle">1.0</text>
+  <rect x="153.5" y="245.3" width="21.6" height="26.7" fill="#3744ff"/>
+  <text class="m t" x="164.3" y="240.3" font-size="9.5" text-anchor="middle">0.75</text>
+  <rect x="178.0" y="230.8" width="21.6" height="41.2" fill="#ff5b1f"/>
+  <text class="m t" x="188.8" y="225.8" font-size="9.5" text-anchor="middle">1.16</text>
+  <text class="m mu" x="178.0" y="288.0" font-size="10.5" text-anchor="middle">2.0</text>
+  <rect x="225.5" y="246.8" width="21.6" height="25.2" fill="#3744ff"/>
+  <text class="m t" x="236.3" y="241.8" font-size="9.5" text-anchor="middle">0.71</text>
+  <rect x="250.0" y="221.2" width="21.6" height="50.8" fill="#ff5b1f"/>
+  <text class="m t" x="260.8" y="216.2" font-size="9.5" text-anchor="middle">1.43</text>
+  <text class="m mu" x="250.0" y="288.0" font-size="10.5" text-anchor="middle">4.1</text>
+  <rect x="297.5" y="248.2" width="21.6" height="23.8" fill="#3744ff"/>
+  <text class="m t" x="308.3" y="243.2" font-size="9.5" text-anchor="middle">0.67</text>
+  <rect x="322.0" y="192.0" width="21.6" height="80.0" fill="#ff5b1f"/>
+  <text class="m t" x="332.8" y="187.0" font-size="9.5" text-anchor="middle">2.25</text>
+  <text class="m mu" x="322.0" y="288.0" font-size="10.5" text-anchor="middle">8.2</text>
+  <rect x="369.5" y="252.4" width="21.6" height="19.6" fill="#3744ff"/>
+  <text class="m t" x="380.3" y="247.4" font-size="9.5" text-anchor="middle">0.55</text>
+  <rect x="394.0" y="119.5" width="21.6" height="152.5" fill="#ff5b1f"/>
+  <text class="m t" x="404.8" y="114.5" font-size="9.5" text-anchor="middle">4.29</text>
+  <text class="m mu" x="394.0" y="288.0" font-size="10.5" text-anchor="middle">16.4</text>
+  <line x1="70" y1="272" x2="430" y2="272" stroke="#0c0c0c" stroke-width="1"/>
+  <text class="m mu" x="62" y="82" font-size="11" text-anchor="start">residual error, m</text>
+  <text class="m mu" x="70" y="306" font-size="10.5" text-anchor="start">averaging window, s</text>
+  <rect x="520" y="48" width="14" height="10" fill="#5a5a5a"/>
+  <text class="m mu" x="540" y="58" font-size="11.5" text-anchor="start">vario noise at rest</text>
+  <g stroke="#5a5a5a" stroke-width="1" opacity="0.30">
+    <line x1="520" y1="272.0" x2="860" y2="272.0"/>
+    <line x1="520" y1="170.2" x2="860" y2="170.2"/>
+  </g>
+  <g class="m mu" font-size="10.5" text-anchor="end">
+    <text x="512" y="276.0">0.00</text>
+    <text x="512" y="174.2">10.00</text>
+  </g>
+  <rect x="530.9" y="119.5" width="20.4" height="152.5" fill="#5a5a5a"/>
+  <text class="m t" x="541.1" y="114.5" font-size="9.5" text-anchor="middle">14.99</text>
+  <text class="m mu" x="554.0" y="288.0" font-size="10.5" text-anchor="middle">1.0</text>
+  <rect x="598.9" y="182.9" width="20.4" height="89.1" fill="#5a5a5a"/>
+  <text class="m t" x="609.1" y="177.9" font-size="9.5" text-anchor="middle">8.76</text>
+  <text class="m mu" x="622.0" y="288.0" font-size="10.5" text-anchor="middle">2.0</text>
+  <rect x="666.9" y="223.2" width="20.4" height="48.8" fill="#5a5a5a"/>
+  <text class="m t" x="677.1" y="218.2" font-size="9.5" text-anchor="middle">4.80</text>
+  <text class="m mu" x="690.0" y="288.0" font-size="10.5" text-anchor="middle">4.1</text>
+  <rect x="734.9" y="241.9" width="20.4" height="30.1" fill="#5a5a5a"/>
+  <text class="m t" x="745.1" y="236.9" font-size="9.5" text-anchor="middle">2.96</text>
+  <text class="m mu" x="758.0" y="288.0" font-size="10.5" text-anchor="middle">8.2</text>
+  <rect x="802.9" y="245.5" width="20.4" height="26.5" fill="#5a5a5a"/>
+  <text class="m t" x="813.1" y="240.5" font-size="9.5" text-anchor="middle">2.60</text>
+  <text class="m mu" x="826.0" y="288.0" font-size="10.5" text-anchor="middle">16.4</text>
+  <line x1="520" y1="272" x2="860" y2="272" stroke="#0c0c0c" stroke-width="1"/>
+  <text class="m mu" x="512" y="82" font-size="11" text-anchor="start">vario noise, cm/s rms</text>
+  <text class="m mu" x="520" y="306" font-size="10.5" text-anchor="start">averaging window, s</text>
+  <text class="m mu" x="70" y="370" font-size="10.5" text-anchor="start">uncompensated: 14.5 m slow, 11.9 m by hand, 2.49 cm/s</text>
+</svg>

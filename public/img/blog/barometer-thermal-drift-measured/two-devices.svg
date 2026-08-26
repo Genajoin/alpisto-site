@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 290" width="880" height="290" role="img" aria-label="Pressure error per kelvin for the damaged sensor, the same sensor compensated, and a healthy sibling device">
+  <style>.m{font-family:"Geist Mono",ui-monospace,"DejaVu Sans Mono","Courier New",monospace}.t{fill:#0c0c0c}.mu{fill:#5a5a5a}</style>
+  <rect x="0" y="0" width="880" height="290" fill="#f7f3e8"/>
+  <text class="m t" x="20" y="30" font-size="13" font-weight="700" letter-spacing="1.2">THE SAME PART, TWO DEVICES</text>
+  <text class="m mu" x="316" y="83" font-size="12" text-anchor="end">this device, as it is</text>
+  <rect x="330" y="62" width="460.8" height="28" fill="#3744ff"/>
+  <text class="m t" x="800.8" y="82" font-size="14" font-weight="700">470 Pa/K</text>
+  <text class="m mu" x="316" y="137" font-size="12" text-anchor="end">this device, compensated</text>
+  <rect x="330" y="116" width="21.4" height="28" fill="#ff5b1f"/>
+  <text class="m t" x="361.4" y="136" font-size="14" font-weight="700">21.8 Pa/K</text>
+  <text class="m mu" x="316" y="191" font-size="12" text-anchor="end">a sibling that came in from the sun</text>
+  <rect x="330" y="170" width="2.9" height="28" fill="#5a5a5a"/>
+  <text class="m t" x="342.9" y="190" font-size="14" font-weight="700">3 Pa/K</text>
+  <text class="m mu" x="330" y="242" font-size="11" text-anchor="start">pressure error per kelvin of die temperature — datasheet limit is 0.5</text>
+  <text class="m mu" x="330" y="262" font-size="11" text-anchor="start">the sibling cooled 2.8 K and moved 0.62 m of altitude;</text>
+  <text class="m mu" x="330" y="280" font-size="11" text-anchor="start">this one moves 12 m on a third of a degree</text>
+</svg>
