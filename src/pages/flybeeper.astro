@@ -6,10 +6,12 @@ import Btn from '../components/v5/Btn.astro'
 
 const title = 'FlyBeeper — indie BLE wearables for paraglider pilots'
 const description =
-  "Eight BLE wearables for paraglider pilots, designed and shipped by Alpisto's founder. Firmware on Nordic nRF52, KiCad PCBs, mobile apps, web backend — end-to-end."
+  "Nine BLE wearables for paraglider pilots, designed and shipped by Alpisto's founder. Firmware on Nordic nRF52, KiCad PCBs, mobile apps, web backend — end-to-end."
 
 type StatusKind = 'shipping' | 'dev' | 'discontinued'
 
+// Цен здесь нет и быть не должно: ценник живёт в одном месте — на market.flybeeper.com.
+// Здесь у каждого прибора только кнопка Order, которая туда и ведёт.
 interface Device {
   n: string
   slug: string
@@ -21,7 +23,6 @@ interface Device {
   specs: { label: string; value: string }[]
   blogTag?: string
   orderUrl?: string
-  orderPrice?: string
 }
 
 const devices: Device[] = [
@@ -43,7 +44,6 @@ const devices: Device[] = [
     ],
     blogTag: 'mini-bt',
     orderUrl: 'https://market.flybeeper.com/device/mini-bt',
-    orderPrice: '€89',
   },
   {
     n: '02',
@@ -59,11 +59,10 @@ const devices: Device[] = [
       { label: 'Vario', value: '±2 cm barometric — same sensor as the line' },
       { label: 'Power', value: 'Solar + LiPo ~900 mAh · USB-C' },
       { label: 'Body', value: '29 g · 29 × 92 × 16 mm · antenna inside' },
-      { label: 'Price', value: '€149 · free shipping · first batch ≈ 10 units' },
+      { label: 'Order', value: 'On sale · free shipping · built in small batches' },
     ],
     blogTag: 'fanet-vario',
     orderUrl: 'https://market.flybeeper.com/device/fanet-vario',
-    orderPrice: '€149',
   },
   {
     n: '03',
@@ -104,6 +103,25 @@ const devices: Device[] = [
   },
   {
     n: '05',
+    slug: 'baro',
+    name: 'FlyBeeper Baro',
+    status: 'shipping',
+    statusLabel: 'Currently shipping',
+    image: '/img/flybeeper/baro/main.jpg',
+    summary:
+      'External Bluetooth barometer, successor to the FBPS1. Gives xcTrack, SeeYou, LK8000 or FlySkyHy a pressure reading ten times a second, so the vario on your phone reacts the moment the air does. No sound and no screen — the phone already has both.',
+    specs: [
+      { label: 'Sensor', value: 'SPL06-001 · ±2 cm · polled 40 times a second' },
+      { label: 'BLE', value: 'Pressure 10 Hz — standard environmental sensing service' },
+      { label: 'Power', value: 'CR2032 — 400 h flying · ~4 years asleep' },
+      { label: 'Controls', value: 'One button: wake, or double-press to sleep for storage' },
+      { label: 'Body', value: '8 g · Ø32.2 × 9.0 mm · printed enclosure' },
+    ],
+    blogTag: 'ps1',
+    orderUrl: 'https://market.flybeeper.com/device/baro',
+  },
+  {
+    n: '06',
     slug: 'fanet-base',
     name: 'FlyBeeper FANET Base',
     status: 'dev',
@@ -121,7 +139,7 @@ const devices: Device[] = [
     blogTag: 'fanet',
   },
   {
-    n: '06',
+    n: '07',
     slug: 'pressure-sensor',
     name: 'FlyBeeper Pressure Sensor (PS1)',
     status: 'discontinued',
@@ -139,7 +157,7 @@ const devices: Device[] = [
     blogTag: 'ps1',
   },
   {
-    n: '07',
+    n: '08',
     slug: 'remote-control-4',
     name: 'FlyBeeper Remote Control 4 (RC4)',
     status: 'discontinued',
@@ -157,7 +175,7 @@ const devices: Device[] = [
     blogTag: 'rc4',
   },
   {
-    n: '08',
+    n: '09',
     slug: 'f1',
     name: 'FlyBeeper F1',
     status: 'discontinued',
@@ -271,7 +289,7 @@ const integrations: Integration[] = [
       <div class="lg:pb-3">
         <p class="font-display text-[17px] sm:text-[19px] leading-[1.45] text-ink m-0 font-medium">
           An indie product line of Bluetooth-LE wearables for paraglider pilots,
-          built by Alpisto's founder. Eight devices designed end-to-end —
+          built by Alpisto's founder. Nine devices designed end-to-end —
           firmware on Nordic nRF52, KiCad PCBs, mobile apps, web backend,
           and the small-batch fulfilment that goes with them.
         </p>
@@ -426,7 +444,7 @@ const integrations: Integration[] = [
                 rel="noopener noreferrer"
                 class="inline-block font-mono text-[12px] tracking-[0.06em] uppercase text-ink font-bold bg-accent px-[10px] py-[5px] no-underline hover:bg-ink hover:text-paper"
               >
-                Order{device.orderPrice ? ` — ${device.orderPrice}` : ''} →
+                Order →
               </a>
             )}
           </div>
