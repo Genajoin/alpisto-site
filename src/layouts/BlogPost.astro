@@ -55,6 +55,14 @@ const ctaMap: Record<string, { eyebrow: string; title: string; body: string; lab
     label: 'Order the FlyBeeper FANET Vario →',
     href: 'https://market.flybeeper.com/device/fanet-vario',
   },
+  'https://maps.flybeeper.com/?layers=fl&lat=46.14254&lng=9.51481&z=4.65&p=6': {
+    eyebrow: '● Live on the map',
+    title: 'See the flyability forecast for yourself.',
+    body:
+      'The link opens maps.flybeeper.com with the Flyability layer already on, centred on the model\u2019s whole coverage from Spain to Turkey. Day chips switch today and the three days ahead; every cell card shows tier probabilities and storm rows.',
+    label: 'Open the Flyability map →',
+    href: 'https://maps.flybeeper.com/?layers=fl&lat=46.14254&lng=9.51481&z=4.65&p=6',
+  },
 }
 const ctaLink = ctaTarget ? ctaMap[ctaTarget] : undefined
 const ctaExternal = ctaLink ? /^https?:\/\//.test(ctaLink.href) : false

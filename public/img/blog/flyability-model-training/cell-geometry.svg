@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 540" width="880" height="540" role="img" aria-label="Grid cell geometry: one square degree versus 0.75 by 1 degree">
+<style>.m{font-family:"Geist Mono",ui-monospace,"DejaVu Sans Mono","Courier New",monospace}.t{fill:#0c0c0c}.mu{fill:#5a5a5a}</style>
+<rect x="0" y="0" width="880" height="540" fill="#f7f3e8"/>
+<text class="m t" x="20" y="30" font-size="13" font-weight="700" letter-spacing="1.2">WHY THE GRID IS 0.75° × 1°, NOT 1° × 1°</text>
+<text class="m mu" x="20" y="48" font-size="11.5">at 46.5° N a square degree is a rectangle: 111 km tall, 76 km wide</text>
+<rect x="150" y="71" width="198" height="289" fill="#e3ddcd" stroke="#0c0c0c" stroke-width="2"/>
+<rect x="560" y="144" width="198" height="216" fill="#e3ddcd" stroke="#0c0c0c" stroke-width="2"/>
+<g stroke="#5a5a5a" stroke-width="1"><line x1="132" y1="360" x2="132" y2="71"/></g>
+<text class="m mu" x="124" y="218" font-size="11" text-anchor="end">111 km</text>
+<g stroke="#5a5a5a" stroke-width="1"><line x1="150" y1="380" x2="348" y2="380"/></g>
+<text class="m mu" x="249" y="396" font-size="11" text-anchor="middle">76 km</text>
+<g stroke="#5a5a5a" stroke-width="1"><line x1="542" y1="360" x2="542" y2="144"/></g>
+<text class="m mu" x="534" y="255" font-size="11" text-anchor="end">83 km</text>
+<g stroke="#5a5a5a" stroke-width="1"><line x1="560" y1="380" x2="758" y2="380"/></g>
+<text class="m mu" x="659" y="396" font-size="11" text-anchor="middle">76 km</text>
+<text class="m t" x="249" y="426" font-size="12" text-anchor="middle" font-weight="700">1° × 1°</text>
+<text class="m mu" x="249" y="444" font-size="11" text-anchor="middle">1.45× taller than wide</text>
+<text class="m t" x="659" y="426" font-size="12" text-anchor="middle" font-weight="700">0.75° × 1°</text>
+<text class="m mu" x="659" y="444" font-size="11" text-anchor="middle">≈ 83 × 80 km — honest squares</text>
+<text class="m mu" x="20" y="518" font-size="10.5">The cell id is its south-west corner, e.g. 45.75_11. The step is read from the artifact, never assumed.</text>
+</svg>

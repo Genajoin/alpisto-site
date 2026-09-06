@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 430" width="880" height="430" role="img" aria-label="Flights of 50 km and longer by month, alpine cells, 2006 to 2026">
+<style>.m{font-family:"Geist Mono",ui-monospace,"DejaVu Sans Mono","Courier New",monospace}.t{fill:#0c0c0c}.mu{fill:#5a5a5a}</style>
+<rect x="0" y="0" width="880" height="430" fill="#f7f3e8"/>
+<text class="m t" x="20" y="30" font-size="13" font-weight="700" letter-spacing="1.2">FLIGHTS ≥ 50 KM, BY START MONTH</text>
+<text class="m mu" x="20" y="48" font-size="11.5">Alpine cells · XContest 2006–2026 · count of flights, not days</text>
+<rect x="640" y="20" width="14" height="3" fill="#ff5b1f"/><text class="m mu" x="662" y="27" font-size="11.5">April</text>
+<rect x="730" y="20" width="14" height="3" fill="#3744ff"/><text class="m mu" x="752" y="27" font-size="11.5">July</text>
+<g stroke="#5a5a5a" stroke-width="1" opacity="0.30"><line x1="64" y1="356.0" x2="860" y2="356.0"/></g>
+<text class="m mu" x="56" y="360.0" font-size="11" text-anchor="end">0k</text>
+<g stroke="#5a5a5a" stroke-width="1" opacity="0.30"><line x1="64" y1="305.5" x2="860" y2="305.5"/></g>
+<text class="m mu" x="56" y="309.5" font-size="11" text-anchor="end">10k</text>
+<g stroke="#5a5a5a" stroke-width="1" opacity="0.30"><line x1="64" y1="254.9" x2="860" y2="254.9"/></g>
+<text class="m mu" x="56" y="258.9" font-size="11" text-anchor="end">20k</text>
+<g stroke="#5a5a5a" stroke-width="1" opacity="0.30"><line x1="64" y1="204.4" x2="860" y2="204.4"/></g>
+<text class="m mu" x="56" y="208.4" font-size="11" text-anchor="end">30k</text>
+<g stroke="#5a5a5a" stroke-width="1" opacity="0.30"><line x1="64" y1="153.8" x2="860" y2="153.8"/></g>
+<text class="m mu" x="56" y="157.8" font-size="11" text-anchor="end">40k</text>
+<g stroke="#5a5a5a" stroke-width="1" opacity="0.30"><line x1="64" y1="103.3" x2="860" y2="103.3"/></g>
+<text class="m mu" x="56" y="107.3" font-size="11" text-anchor="end">50k</text>
+<rect x="76.6" y="353.1" width="41.1" height="2.9" fill="#0c0c0c"/>
+<text class="m mu" x="97.2" y="372" font-size="11" text-anchor="middle">JAN</text>
+<rect x="142.9" y="333.2" width="41.1" height="22.8" fill="#0c0c0c"/>
+<text class="m mu" x="163.5" y="327.2" font-size="10.5" text-anchor="middle">4 516</text>
+<text class="m mu" x="163.5" y="372" font-size="11" text-anchor="middle">FEB</text>
+<rect x="209.3" y="224.9" width="41.1" height="131.1" fill="#0c0c0c"/>
+<text class="m mu" x="229.8" y="218.9" font-size="10.5" text-anchor="middle">25 938</text>
+<text class="m mu" x="229.8" y="372" font-size="11" text-anchor="middle">MAR</text>
+<rect x="275.6" y="116.7" width="41.1" height="239.3" fill="#ff5b1f"/>
+<text class="m mu" x="296.2" y="110.7" font-size="10.5" text-anchor="middle">47 340</text>
+<text class="m mu" x="296.2" y="372" font-size="11" text-anchor="middle">APR</text>
+<rect x="341.9" y="123.2" width="41.1" height="232.8" fill="#0c0c0c"/>
+<text class="m mu" x="362.5" y="117.2" font-size="10.5" text-anchor="middle">46 059</text>
+<text class="m mu" x="362.5" y="372" font-size="11" text-anchor="middle">MAY</text>
+<rect x="408.3" y="145.3" width="41.1" height="210.7" fill="#0c0c0c"/>
+<text class="m mu" x="428.8" y="139.3" font-size="10.5" text-anchor="middle">41 680</text>
+<text class="m mu" x="428.8" y="372" font-size="11" text-anchor="middle">JUN</text>
+<rect x="474.6" y="144.8" width="41.1" height="211.2" fill="#3744ff"/>
+<text class="m mu" x="495.2" y="138.8" font-size="10.5" text-anchor="middle">41 793</text>
+<text class="m mu" x="495.2" y="372" font-size="11" text-anchor="middle">JUL</text>
+<rect x="540.9" y="97.0" width="41.1" height="259.0" fill="#0c0c0c"/>
+<text class="m mu" x="561.5" y="91.0" font-size="10.5" text-anchor="middle">51 238</text>
+<text class="m mu" x="561.5" y="372" font-size="11" text-anchor="middle">AUG</text>
+<rect x="607.3" y="274.6" width="41.1" height="81.4" fill="#0c0c0c"/>
+<text class="m mu" x="627.8" y="268.6" font-size="10.5" text-anchor="middle">16 104</text>
+<text class="m mu" x="627.8" y="372" font-size="11" text-anchor="middle">SEP</text>
+<rect x="673.6" y="338.4" width="41.1" height="17.6" fill="#0c0c0c"/>
+<text class="m mu" x="694.2" y="332.4" font-size="10.5" text-anchor="middle">3 485</text>
+<text class="m mu" x="694.2" y="372" font-size="11" text-anchor="middle">OCT</text>
+<rect x="739.9" y="352.6" width="41.1" height="3.4" fill="#0c0c0c"/>
+<text class="m mu" x="760.5" y="372" font-size="11" text-anchor="middle">NOV</text>
+<rect x="806.3" y="355.2" width="41.1" height="0.8" fill="#0c0c0c"/>
+<text class="m mu" x="826.8" y="372" font-size="11" text-anchor="middle">DEC</text>
+<text class="m mu" x="20" y="418" font-size="10.5">April beats July; March beats September. The season is March–October, not May–September.</text>
+</svg>
