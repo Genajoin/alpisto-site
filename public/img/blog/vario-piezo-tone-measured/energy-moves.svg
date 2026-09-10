@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 430" width="880" height="430" role="img" aria-label="Measured harmonic levels of the 2 kHz tone at 50 per cent and at 37 per cent duty">
+  <style>.m{font-family:"Geist Mono",ui-monospace,"DejaVu Sans Mono","Courier New",monospace}.t{fill:#0c0c0c}.mu{fill:#5a5a5a}</style>
+  <rect x="0" y="0" width="880" height="430" fill="#f7f3e8"/>
+  <text class="m t" x="20" y="30" font-size="13" font-weight="700" letter-spacing="1.2">THE 2 kHz TONE: WHERE THE ENERGY GOES WHEN THE DUTY CHANGES</text>
+  <rect x="20" y="47" width="14" height="3" fill="#3744ff"/>
+  <text class="m mu" x="42" y="54" font-size="11.5">50 % duty</text>
+  <rect x="133" y="47" width="14" height="3" fill="#ff5b1f"/>
+  <text class="m mu" x="155" y="54" font-size="11.5">37 % duty</text>
+  <g stroke="#5a5a5a" stroke-width="1" opacity="0.30">
+    <line x1="78" y1="329.8" x2="860" y2="329.8"/>
+    <line x1="78" y1="283.2" x2="860" y2="283.2"/>
+    <line x1="78" y1="236.6" x2="860" y2="236.6"/>
+    <line x1="78" y1="190.1" x2="860" y2="190.1"/>
+    <line x1="78" y1="143.5" x2="860" y2="143.5"/>
+  </g>
+  <g class="m mu" font-size="11" text-anchor="end">
+    <text x="69" y="333.8">-90</text>
+    <text x="69" y="287.2">-75</text>
+    <text x="69" y="240.6">-60</text>
+    <text x="69" y="194.1">-45</text>
+    <text x="69" y="147.5">-30</text>
+  </g>
+  <text class="m mu" x="69" y="92" font-size="11" text-anchor="end">dBFS</text>
+  <rect x="98.7" y="191.1" width="33.5" height="144.9" fill="#3744ff"/>
+  <rect x="135.5" y="195.4" width="33.5" height="140.6" fill="#ff5b1f"/>
+  <text class="m mu" x="133.9" y="356" font-size="11" text-anchor="middle">2 kHz</text>
+  <text class="m mu" x="133.9" y="370" font-size="10.5" text-anchor="middle" opacity="0.75">k=1</text>
+  <rect x="210.4" y="213.9" width="33.5" height="122.1" fill="#3744ff"/>
+  <rect x="247.2" y="118.4" width="33.5" height="217.6" fill="#ff5b1f"/>
+  <text class="m mu" x="245.6" y="356" font-size="11" text-anchor="middle">4 kHz</text>
+  <text class="m mu" x="245.6" y="370" font-size="10.5" text-anchor="middle" opacity="0.75">k=2</text>
+  <rect x="322.1" y="144.7" width="33.5" height="191.3" fill="#3744ff"/>
+  <rect x="359.0" y="172.7" width="33.5" height="163.3" fill="#ff5b1f"/>
+  <text class="m mu" x="357.3" y="356" font-size="11" text-anchor="middle">6 kHz</text>
+  <text class="m mu" x="357.3" y="370" font-size="10.5" text-anchor="middle" opacity="0.75">k=3</text>
+  <rect x="433.8" y="267.7" width="33.5" height="68.3" fill="#3744ff"/>
+  <rect x="470.7" y="112.9" width="33.5" height="223.1" fill="#ff5b1f"/>
+  <text class="m mu" x="469.0" y="356" font-size="11" text-anchor="middle">8 kHz</text>
+  <text class="m mu" x="469.0" y="370" font-size="10.5" text-anchor="middle" opacity="0.75">k=4</text>
+  <rect x="545.5" y="172.9" width="33.5" height="163.1" fill="#3744ff"/>
+  <rect x="582.4" y="191.0" width="33.5" height="145.0" fill="#ff5b1f"/>
+  <text class="m mu" x="580.7" y="356" font-size="11" text-anchor="middle">10 kHz</text>
+  <text class="m mu" x="580.7" y="370" font-size="10.5" text-anchor="middle" opacity="0.75">k=5</text>
+  <rect x="657.2" y="330.7" width="33.5" height="5.3" fill="#3744ff"/>
+  <rect x="694.1" y="209.4" width="33.5" height="126.6" fill="#ff5b1f"/>
+  <text class="m mu" x="692.4" y="356" font-size="11" text-anchor="middle">12 kHz</text>
+  <text class="m mu" x="692.4" y="370" font-size="10.5" text-anchor="middle" opacity="0.75">k=6</text>
+  <rect x="769.0" y="226.2" width="33.5" height="109.8" fill="#3744ff"/>
+  <rect x="805.8" y="226.0" width="33.5" height="110.0" fill="#ff5b1f"/>
+  <text class="m mu" x="804.1" y="356" font-size="11" text-anchor="middle">14 kHz</text>
+  <text class="m mu" x="804.1" y="370" font-size="10.5" text-anchor="middle" opacity="0.75">k=7</text>
+  <text class="m t" x="245.6" y="94" font-size="11.5" text-anchor="middle" font-weight="700">the piezo resonance sits here</text>
+  <line x1="245.6" y1="100" x2="245.6" y2="112.4" stroke="#0c0c0c" stroke-width="1"/>
+  <line x1="78" y1="336" x2="860" y2="336" stroke="#0c0c0c" stroke-width="1"/>
+  <text class="m mu" x="78" y="384" font-size="11">harmonic of the 2 kHz tone  ·  at 50 % duty the even ones are missing by construction</text>
+  <text class="m t" x="860" y="422" font-size="12" font-weight="700" text-anchor="end" fill="#3744ff">+11.5 dB louder, from one number in a table</text>
+</svg>

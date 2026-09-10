@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 430" width="880" height="430" role="img" aria-label="Loudness of every tone in the table, as shipped and after the duty-cycle fix">
+  <style>.m{font-family:"Geist Mono",ui-monospace,"DejaVu Sans Mono","Courier New",monospace}.t{fill:#0c0c0c}.mu{fill:#5a5a5a}</style>
+  <rect x="0" y="0" width="880" height="430" fill="#f7f3e8"/>
+  <text class="m t" x="20" y="30" font-size="13" font-weight="700" letter-spacing="1.2">LOUDNESS ACROSS THE TONE TABLE, SAME VOLUME SETTING</text>
+  <rect x="20" y="47" width="14" height="3" fill="#3744ff"/>
+  <text class="m mu" x="42" y="54" font-size="11.5">square wave, 50 % duty (as shipped)</text>
+  <rect x="313" y="47" width="14" height="3" fill="#ff5b1f"/>
+  <text class="m mu" x="335" y="54" font-size="11.5">duty chosen per frequency</text>
+  <g stroke="#5a5a5a" stroke-width="1" opacity="0.30">
+    <line x1="78" y1="328.9" x2="860" y2="328.9"/>
+    <line x1="78" y1="284.5" x2="860" y2="284.5"/>
+    <line x1="78" y1="240.2" x2="860" y2="240.2"/>
+    <line x1="78" y1="195.8" x2="860" y2="195.8"/>
+    <line x1="78" y1="151.5" x2="860" y2="151.5"/>
+    <line x1="78" y1="107.1" x2="860" y2="107.1"/>
+  </g>
+  <g class="m mu" font-size="11" text-anchor="end">
+    <text x="69" y="332.9">-34</text>
+    <text x="69" y="288.5">-30</text>
+    <text x="69" y="244.2">-26</text>
+    <text x="69" y="199.8">-22</text>
+    <text x="69" y="155.5">-18</text>
+    <text x="69" y="111.1">-14</text>
+  </g>
+  <text class="m mu" x="69" y="88" font-size="11" text-anchor="end">dBFS</text>
+  <rect x="274.4" y="96" width="335.2" height="244" fill="#5a5a5a" opacity="0.10"/>
+  <text class="m mu" x="442.1" y="110" font-size="11" text-anchor="middle">climb 0.4 … 4.5 m/s lives in here</text>
+  <polyline points="78.0,312.5 129.3,308.7 182.4,287.5 237.4,288.2 288.7,277.8 341.8,268.3 396.7,246.3 448.0,248.7 470.0,224.9 490.0,238.4 508.4,214.8 525.4,220.4 541.3,210.2 556.1,219.5 583.2,271.7 607.4,310.4 629.3,223.7 658.7,167.0 684.8,184.0 711.9,165.4 736.1,156.5 755.0,127.7 766.8,146.2 778.0,134.3 793.9,214.9 818.1,217.5 840.0,244.8 860.0,210.4" fill="none" stroke="#3744ff" stroke-width="1.8" stroke-linejoin="round"/>
+  <circle cx="78.0" cy="312.5" r="2.6" fill="#3744ff"/>
+  <circle cx="129.3" cy="308.7" r="2.6" fill="#3744ff"/>
+  <circle cx="182.4" cy="287.5" r="2.6" fill="#3744ff"/>
+  <circle cx="237.4" cy="288.2" r="2.6" fill="#3744ff"/>
+  <circle cx="288.7" cy="277.8" r="2.6" fill="#3744ff"/>
+  <circle cx="341.8" cy="268.3" r="2.6" fill="#3744ff"/>
+  <circle cx="396.7" cy="246.3" r="2.6" fill="#3744ff"/>
+  <circle cx="448.0" cy="248.7" r="2.6" fill="#3744ff"/>
+  <circle cx="470.0" cy="224.9" r="2.6" fill="#3744ff"/>
+  <circle cx="490.0" cy="238.4" r="2.6" fill="#3744ff"/>
+  <circle cx="508.4" cy="214.8" r="2.6" fill="#3744ff"/>
+  <circle cx="525.4" cy="220.4" r="2.6" fill="#3744ff"/>
+  <circle cx="541.3" cy="210.2" r="2.6" fill="#3744ff"/>
+  <circle cx="556.1" cy="219.5" r="2.6" fill="#3744ff"/>
+  <circle cx="583.2" cy="271.7" r="2.6" fill="#3744ff"/>
+  <circle cx="607.4" cy="310.4" r="2.6" fill="#3744ff"/>
+  <circle cx="629.3" cy="223.7" r="2.6" fill="#3744ff"/>
+  <circle cx="658.7" cy="167.0" r="2.6" fill="#3744ff"/>
+  <circle cx="684.8" cy="184.0" r="2.6" fill="#3744ff"/>
+  <circle cx="711.9" cy="165.4" r="2.6" fill="#3744ff"/>
+  <circle cx="736.1" cy="156.5" r="2.6" fill="#3744ff"/>
+  <circle cx="755.0" cy="127.7" r="2.6" fill="#3744ff"/>
+  <circle cx="766.8" cy="146.2" r="2.6" fill="#3744ff"/>
+  <circle cx="778.0" cy="134.3" r="2.6" fill="#3744ff"/>
+  <circle cx="793.9" cy="214.9" r="2.6" fill="#3744ff"/>
+  <circle cx="818.1" cy="217.5" r="2.6" fill="#3744ff"/>
+  <circle cx="840.0" cy="244.8" r="2.6" fill="#3744ff"/>
+  <circle cx="860.0" cy="210.4" r="2.6" fill="#3744ff"/>
+  <polyline points="78.0,313.5 129.3,308.6 182.4,287.5 237.4,288.5 288.7,278.1 341.8,269.7 396.7,246.4 448.0,247.3 470.0,224.8 490.0,238.4 508.4,215.3 525.4,220.3 541.3,210.8 556.1,224.8 583.2,187.4 607.4,182.8 629.3,227.8 658.7,167.3 684.8,183.9 711.9,163.7 736.1,157.1 755.0,128.2 766.8,147.3 778.0,135.8 793.9,214.0 818.1,219.3 840.0,245.1 860.0,210.6" fill="none" stroke="#ff5b1f" stroke-width="1.8" stroke-linejoin="round" stroke-dasharray="5 3"/>
+  <circle cx="78.0" cy="313.5" r="2.6" fill="#ff5b1f"/>
+  <circle cx="129.3" cy="308.6" r="2.6" fill="#ff5b1f"/>
+  <circle cx="182.4" cy="287.5" r="2.6" fill="#ff5b1f"/>
+  <circle cx="237.4" cy="288.5" r="2.6" fill="#ff5b1f"/>
+  <circle cx="288.7" cy="278.1" r="2.6" fill="#ff5b1f"/>
+  <circle cx="341.8" cy="269.7" r="2.6" fill="#ff5b1f"/>
+  <circle cx="396.7" cy="246.4" r="2.6" fill="#ff5b1f"/>
+  <circle cx="448.0" cy="247.3" r="2.6" fill="#ff5b1f"/>
+  <circle cx="470.0" cy="224.8" r="2.6" fill="#ff5b1f"/>
+  <circle cx="490.0" cy="238.4" r="2.6" fill="#ff5b1f"/>
+  <circle cx="508.4" cy="215.3" r="2.6" fill="#ff5b1f"/>
+  <circle cx="525.4" cy="220.3" r="2.6" fill="#ff5b1f"/>
+  <circle cx="541.3" cy="210.8" r="2.6" fill="#ff5b1f"/>
+  <circle cx="556.1" cy="224.8" r="2.6" fill="#ff5b1f"/>
+  <circle cx="583.2" cy="187.4" r="2.6" fill="#ff5b1f"/>
+  <circle cx="607.4" cy="182.8" r="2.6" fill="#ff5b1f"/>
+  <circle cx="629.3" cy="227.8" r="2.6" fill="#ff5b1f"/>
+  <circle cx="658.7" cy="167.3" r="2.6" fill="#ff5b1f"/>
+  <circle cx="684.8" cy="183.9" r="2.6" fill="#ff5b1f"/>
+  <circle cx="711.9" cy="163.7" r="2.6" fill="#ff5b1f"/>
+  <circle cx="736.1" cy="157.1" r="2.6" fill="#ff5b1f"/>
+  <circle cx="755.0" cy="128.2" r="2.6" fill="#ff5b1f"/>
+  <circle cx="766.8" cy="147.3" r="2.6" fill="#ff5b1f"/>
+  <circle cx="778.0" cy="135.8" r="2.6" fill="#ff5b1f"/>
+  <circle cx="793.9" cy="214.0" r="2.6" fill="#ff5b1f"/>
+  <circle cx="818.1" cy="219.3" r="2.6" fill="#ff5b1f"/>
+  <circle cx="840.0" cy="245.1" r="2.6" fill="#ff5b1f"/>
+  <circle cx="860.0" cy="210.6" r="2.6" fill="#ff5b1f"/>
+  <line x1="607.4" y1="310.4" x2="607.4" y2="182.8" stroke="#0c0c0c" stroke-width="1"/>
+  <text class="m t" x="597.4" y="304.4" font-size="11.5" font-weight="700" text-anchor="end">the hole at 2 kHz: +11.5 dB</text>
+  <line x1="78" y1="348" x2="860" y2="348" stroke="#0c0c0c" stroke-width="1"/>
+  <g class="m mu" font-size="11" text-anchor="middle">
+    <text x="78.0" y="370">200</text>
+    <text x="171.2" y="370">300</text>
+    <text x="288.7" y="370">500</text>
+    <text x="366.0" y="370">700</text>
+    <text x="448.0" y="370">1 k</text>
+    <text x="541.3" y="370">1500</text>
+    <text x="607.4" y="370">2 k</text>
+    <text x="700.6" y="370">3 k</text>
+    <text x="766.8" y="370">4 k</text>
+    <text x="860.0" y="370">6 k</text>
+  </g>
+  <text class="m mu" x="78" y="384" font-size="11">tone frequency the firmware asks for, Hz</text>
+  <text class="m t" x="860" y="422" font-size="12" font-weight="700" text-anchor="end" fill="#3744ff">16 dB of swing nobody asked for</text>
+</svg>
