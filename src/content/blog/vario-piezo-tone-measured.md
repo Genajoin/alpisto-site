@@ -1,6 +1,6 @@
 ---
 title: "The note that never sounds: what a piezo vario actually plays"
-description: "A pilot in r/freeflight asked for a vario that sounds like an instrument instead of a smoke alarm. Everyone lets you tune the curve; nobody lets you tune the timbre. So I put a FANET Vario in a desk drawer with a microphone and measured what the piezo does with the tones the firmware sends it. At 1000 Hz the fundamental comes out 33 dB below its own third harmonic — below 2.8 kHz the instrument never plays the note that was set. Loudness swings 16 dB across the tone table, one number fills the worst hole by 11.5 dB, and the obvious soft-attack idea turned out to be an accent rather than a fade."
+description: "Small varios beep in a way nobody would call pleasant, and it is not because nobody cared. A piezo disc is a bell with one note of its own, and a vario plays a tune on it by feeding it square waves and letting the bell pick what it likes. I put one in a desk drawer with a microphone: at 1000 Hz the note that was asked for comes out 33 dB below its own third harmonic, loudness swings 16 dB across the tone table, and the obvious way to soften a beep turns out to make it sharper."
 pubDate: 2026-09-10
 tags: ["flybeeper", "fanet-vario", "sun-vario", "variometer", "piezo", "audio", "pwm", "firmware", "nrf52", "zephyr", "measurement", "paragliding", "hardware"]
 draft: false
@@ -9,283 +9,220 @@ ctaTarget: "https://market.flybeeper.com/device/fanet-vario"
 toc: true
 ---
 
-A pilot posted in r/freeflight looking for a small vario with a tone they could live with. They are
-a musician, they named another maker's instrument as the sound they wanted, and the thread found
-the real gap on its own: every vario on the market lets you tune the *curve* — where the beeping
-starts, how fast it climbs, how pitch maps to lift — and not one of them lets you tune the
-*timbre*.
+Every small vario beeps, and most of them beep in a way nobody would call pleasant. Thin, sharp,
+metallic, closer to a smoke alarm than to an instrument. It is tempting to put that down to cheap
+parts and nobody caring.
 
-That is a fair complaint and an awkward one, because the sound comes out of a ceramic disc the size
-of a fingernail driven by a chip that has exactly two output states. There is no volume knob in
-there, no filter, no waveform. So the honest question is not "can we make it sound nice" but "how
-much of the sound is actually a free parameter, given the parts already soldered to the board".
+That is not where it comes from. It falls out of what the sound is made by, and once you look at
+what that is, the harshness stops being a matter of taste and becomes a thing you can measure. So I
+measured it — a FlyBeeper vario in a closed desk drawer with a microphone — to find out how much of
+it can be fixed in firmware and how much cannot.
 
-I put a [FANET Vario](/blog/flybeeper-fanet-vario/) in a desk drawer with a microphone and measured
-it. The answer turned out to be more interesting than yes or no: the instrument was not playing the
-notes I thought it was.
+## What is actually making the sound
 
-## What is actually in the sound path
+A piezo buzzer is not a tiny loudspeaker. Inside it is a thin brass disc with a layer of ceramic
+glued on top. Put a voltage across the ceramic and it tries to stretch sideways; the brass does not;
+the sandwich has no choice but to bow, like a bimetal strip warming up. Flip the voltage back and
+forth and the disc flutters and pushes air.
 
-Two components decide everything.
+The difference from a loudspeaker matters more than the similarity. A speaker cone is deliberately
+floppy, hung on a soft rubber surround so it can follow whatever signal you give it. A piezo disc is
+stiff and clamped at the rim, and anything stiff has a note of its own — the frequency at which it
+would rather vibrate. Ours is 12 mm across and rings at about 4 kHz. Tap a wine glass and you get
+the same idea: the glass answers with its note, not yours.
 
-The emitter is a **KLJ-1230**: a 12 × 12 mm surface-mount piezo disc, 16 nF of static capacitance,
-which the manufacturer rates at 4.1 kHz — the frequency at which they quote 83 dB at 10 cm from a
-3 Vpp square wave. Nobody publishes a response curve, because there is nothing flattering to
-publish. A piezo disc is a resonator, not a loudspeaker.
+Being a bell has two consequences.
 
-The driver is a **PAM8904E**, and this is the part that surprises people. It is not an amplifier.
-It is an H-bridge with a charge pump in front of it: the digital input pin swings the bridge, and
-the output is ±VOUT with nothing in between. The volume setting on the device is not gain — it is
-the charge-pump multiplier, 1×, 2× or 3× the supply. That is also why a beeping vario's current
-draw depends on how full its battery is, which came up when I measured
-[an energy budget for the SunVario](/blog/sun-vario-energy-budget-measured/): a piezo is a
-capacitive load, and power goes with the square of the drive.
+At its own note the disc is loud, and away from it the disc is not merely a bit quieter but tens of
+decibels quieter. You are pushing on a stiff plate that does not want to move.
 
-So the firmware cannot produce a sine wave. It cannot produce any wave. What it controls is:
+And the electronics cannot help. The chip that drives it is not an amplifier — it is a switch that
+throws the disc between plus and minus a fixed voltage, with nothing in between. There is no volume
+control in the usual sense either: the three volume settings simply pick how high that fixed voltage
+is. The vario does not play a tone. It switches a voltage on and off at the rate the firmware asks
+for.
 
-- **frequency** — how often the bridge flips;
-- **duty cycle** — the ratio of the two states within a period;
-- **timing of the edges** — when a note starts and stops.
+## How a bell plays a tune
 
-That is the entire instrument. Everything below is about how much sound design fits into those
-three knobs.
+Switching on and off gives you a square wave, and a square wave is not a pure tone. It is a bundle:
+the frequency you asked for, plus a ladder of multiples above it — three times, five times, seven
+times — each a little weaker than the last.
 
-One more detail from the datasheet that matters later: the chip shuts itself down after 42 ms
-without an input signal, and needs up to 1.9 ms in 3× mode to bring the rail back. In a vario's
-climb pattern most gaps between beeps are longer than 42 ms, so nearly every beep starts with the
-charge pump waking up.
+Feed that bundle to a disc that only answers near 4 kHz and it will not play the note at the bottom
+of the ladder. It picks whichever rung falls closest to its own resonance and radiates that, while
+the rest goes nowhere.
 
-## The rig: a firmware that plays a rigid schedule
+That is how an instrument with a single note plays a tune. It does not, quite. It offers the disc a
+comb of frequencies and lets the disc choose.
 
-Measuring this needs no synchronisation cable, just discipline. I built a test firmware behind a
-Kconfig flag — `default n`, so the shipped image is byte-identical with the option off — that plays
-one fixed cycle forever:
-
-- a start marker: five 60 ms bursts at 2 kHz, then a second of silence;
-- blocks of 28 tones from 200 Hz to 6 kHz, each 300 ms long with a 200 ms gap;
-- click tests: ten 100 ms beeps at 1 kHz, which is where attack and decay get measured;
-- all of it repeated at each of the three volume settings.
-
-Because the schedule is rigid, the analysis only has to find the start marker by correlation. After
-that every tone is addressable by arithmetic: tone *n* of a block starts at *B* + 800 + 500·*n*
-milliseconds. The script slices out 50–280 ms of each tone — the steady part, past the attack — and
-takes a 65 536-point FFT.
-
-The first recording was made on a desk next to a PC with fans. The second was made with the board
-and the microphone shut in a desk drawer, which dropped the noise floor by 9 to 14 dB in every band
-and removed a broadband smear near the resonance that turned out to be the desk, not the device.
-Everything quoted below is from the drawer, at volume setting 2.
-
-Two honest caveats. The microphone is a plain USB condenser with no calibration, so every number
-here is a *relative* level in dBFS — differences are meaningful, absolute sound pressure is not.
-And the board was measured bare, outside its enclosure; the enclosure has a cavity that changes the
-absolute levels, though not the physics.
-
-## The first result: below 2.8 kHz you never hear the note that was set
+Here is what that looks like on a real device, with the firmware asking for 28 different tones and a
+microphone listening:
 
 ![Measured level of the fundamental and of the loudest partial actually radiated, plotted against the tone frequency the firmware asks for](/img/blog/vario-piezo-tone-measured/missing-fundamental.svg)
 
-The blue line is the tone the firmware asked for. The orange line is the loudest thing the piezo
-actually radiated. Below 2.8 kHz they are not the same signal at all.
+The blue line is the note the firmware asked for. The orange line is the loudest thing that actually
+came out. Below 2.8 kHz they are not the same signal. At 1000 Hz — an ordinary, middle-of-the-table
+beep — the requested note is 33 dB below its own third harmonic. Around 315 Hz the gap reaches
+49 dB, and the loudest thing in the air is the ninth rung of the ladder.
 
-At 1000 Hz — an ordinary, mid-table beep — the fundamental comes out at −57.7 dBFS and the third
-harmonic at 3 kHz comes out at −25.2. The note is **33 dB below its own third harmonic**. The worst
-case in the sweep is 315 Hz, where the fundamental is at −80.8, close enough to the noise floor to
-be arguable, and the loudest partial is the *ninth* harmonic at 2835 Hz, 48.8 dB above it.
+Two things follow, and between them they explain the sound.
 
-The crossover is at 2.8 kHz. Above that the disc radiates the note itself and the harmonics fall
-away as they should. Below it, the piezo is a bandpass filter with its passband at 3–8 kHz — the
-main resonance measured at 3.8–4.2 kHz, with a second region around 7–8 kHz — and everything the
-pilot hears is upper partials of a fundamental that never made it into the air.
+The pitch is still right. Your ear is good at reconstructing a missing bottom note from a series of
+harmonics — it is doing exactly that every time you hear a bass line on a phone speaker that cannot
+produce bass at all. A pilot hears the beeping rise and fall as the curve intends.
 
-This does not mean the pitch is wrong. The ear is good at inferring a fundamental from a series of
-harmonics — the classic missing-fundamental effect — and 3, 5 and 7 kHz are unambiguously the
-harmonics of 1 kHz. A pilot hears the beep rise and fall exactly as the curve intends.
+But the timbre is made entirely of upper partials, sitting in the 3–8 kHz band where human hearing
+is at its sharpest. That is a fairly precise physical description of harsh. The metallic quality is
+not a firmware choice and not a cost-cutting decision; it is what a 12 mm disc does with anything
+below its resonance.
 
-But "a tone made entirely of its own upper partials, concentrated in the band where human hearing
-is most sensitive" is a fairly precise physical definition of *harsh*. The thin, piercing quality
-that the Reddit thread was complaining about is not a firmware choice. It is what a 12 mm ceramic
-disc does with anything below its resonance.
-
-## The second result: 16 dB of loudness the pilot never asked for
-
-The same sweep, read differently:
+There is a second symptom from the same cause. As the pitch rises, which rung of the ladder lands on
+the resonance keeps changing, so the loudness lurches:
 
 ![Loudness of every tone in the table at one volume setting, as shipped and after choosing a duty cycle per frequency](/img/blog/vario-piezo-tone-measured/loudness-table.svg)
 
-At a single volume setting, the loudness of the tone table swings **16.5 dB** from 500 Hz to 6 kHz.
-That is not a gentle tilt — it is peaks where some harmonic happens to land on the resonance and
-holes where none does.
+At one volume setting, the tone table swings 16.5 dB from end to end. The worst hole is at
+1800–2000 Hz, which in the default curve is 4 to 4.5 m/s — strong lift, exactly when the sound
+matters most. Turning the volume up moves the whole table, hole included.
 
-The worst hole sits at 1800–2000 Hz, and that is not a harmless place for it. In the default vario
-curve, 2020 Hz is 4.5 m/s: strong lift, the moment the sound matters most. Right there the
-instrument is 13 dB quieter than it is at 2500 Hz, for no reason the pilot can see or fix. Turning
-the volume up moves the whole table, holes included.
+## What can be done about it
 
-## The one lever: duty cycle
+Four honest routes, from the ones that need a screwdriver to the one that needs nothing.
 
-The rectangular wave has one property worth exploiting. The amplitude of its *k*-th harmonic is
+A bigger disc. Resonance drops as the plate grows, and a 20–27 mm plate rings somewhere around
+2.5–3.5 kHz. That would put most of the tone table back into the range the disc radiates as itself,
+which is the difference between hearing a note and hearing its harmonics. This is the most promising
+direction and the one being tried next; the same driver copes with the larger plate without any
+change.
 
-```
-H(k, D) ∝ |sin(k·π·D)| / k
-```
+The enclosure. A cavity behind the disc and a grille in front of it change the answer as much as the
+disc does. Everything below was measured on a bare board, and the calibration that comes out of it
+belongs to a particular disc in a particular box — swap either and it has to be measured again.
 
-where *D* is the duty cycle. Each harmonic has its own maximum at *D* = 1/(2k), and its own zeros.
-At 50 % the odd harmonics are as strong as they can be and the even ones are gone by construction —
-which is exactly the "square wave" sound everyone recognises.
+A driver that can make a smooth wave. They exist, and they idle at milliamps. A solar vario lives on
+hundreds of microamps and is never plugged in, so that is not a firmware update but a different
+product with a different battery.
+
+Or leave every component where it is and use the two things the firmware actually controls: which
+rung of the ladder lands on the resonance, and how a note begins. Only this one is free, and it is
+the rest of this article.
+
+## The rig
+
+The measurement needs no synchronisation cable, only a rigid schedule. A test firmware behind a
+build flag — off by default, and with it off the image is byte-for-byte the same — plays one fixed
+cycle forever: a marker of five short bursts at 2 kHz, then blocks of 28 tones from 200 Hz to 6 kHz
+at 300 ms each, then rows of ten short beeps for measuring attack and decay. The analysis finds the
+marker by correlation and then every tone by arithmetic, and takes a 65 536-point transform over the
+steady middle of each one.
+
+The first recording was made on a desk next to a PC. The second, which is the one quoted here, was
+made with the board and the microphone shut in a desk drawer: the noise floor dropped by 9 to 14 dB
+and a broadband smear near the resonance disappeared, having turned out to be the desk. The
+microphone is uncalibrated, so every level here is relative — differences mean something, absolute
+loudness does not.
+
+## Choosing which rung lands on the resonance
+
+The one knob with real authority is the duty cycle: the fraction of each period the switch spends on
+one side. It does not change the pitch. It changes the recipe of the ladder, by a rule simple enough
+to write on a napkin — the strength of the k-th rung follows sin(kπD)/k, where D is that fraction.
 
 ![Amplitude of each harmonic of a rectangular wave against its duty cycle, showing that harmonic k peaks at a duty of one over two k](/img/blog/vario-piezo-tone-measured/duty-harmonics.svg)
 
-Since the piezo only radiates what lands in 3–8 kHz, the duty cycle is a way of choosing *which
-harmonic gets to sit on the resonance*. That is the whole trick, and in the 2 kHz hole it works
-beautifully. At 50 % duty the loudest thing a 2 kHz tone produces is its third harmonic at 6 kHz,
-in a quiet stretch of the response, while the even harmonics that would land on 4 and 8 kHz are
-suppressed by construction. Moving to 37 % turns them on:
+Every rung has a duty cycle at which it is loudest, and one at which it disappears entirely. At the
+symmetric 50 % the odd rungs are as strong as they get and the even ones vanish — that is the square
+wave sound everyone recognises.
+
+Since the disc only radiates what lands near 4 kHz, this becomes a way to pick the rung it will
+hear. In the 2 kHz hole it works beautifully. At 50 % duty the loudest thing a 2 kHz tone makes is
+its third harmonic at 6 kHz, in a dead part of the response, while the even harmonics that would
+land on 4 and 8 kHz are suppressed by construction. Going to 37 % turns them on:
 
 ![Measured harmonic levels of the 2 kHz tone at 50 per cent and at 37 per cent duty, showing the second and fourth harmonics rising by 30 and 50 dB](/img/blog/vario-piezo-tone-measured/energy-moves.svg)
 
 The 4 kHz partial rises from −52.7 to −21.9 dBFS and the 8 kHz one from −70.0 to −20.2 — the two
-places this disc is loud, both filled from a tone that could reach neither. The total is
-**+11.5 dB at 2000 Hz and +7.6 dB at 1800 Hz**, measured on the device, from changing one number in
-a table. The hole is gone.
+places this disc is loud, both filled from a tone that could previously reach neither. The result is
+11.5 dB more sound at 2000 Hz and 7.6 dB at 1800 Hz, from one number in a table.
 
-What does not work is the tempting generalisation. I tried to flatten the whole table this way, and
-it cannot be done:
+What does not work is the tempting generalisation. Flattening the whole table this way is
+impossible, for reasons that are worth knowing before anyone offers you a tone character setting:
 
-- Above 2.8 kHz the fundamental is what you hear, and its amplitude, sin(πD), is monotonic. Any
-  duty below 50 % makes the tone quieter *and* adds an octave — a second harmonic where there was
-  none. Cleanliness costs loudness in the same move.
-- Below 2.8 kHz the opposite: because you are listening to harmonics, reducing the duty tends to
-  make a tone *louder*, not quieter. There is no "turn this one down" direction.
-- The nodes have to be measured, not guessed. My first table used 37 % from 1500 Hz upward, and the
-  measurement came back with 1500 and 1600 Hz **1.8 and 3.7 dB quieter** than before. The hole
-  starts later than it looks. The shipping table moves to 37 % only between 1700 and 2100 Hz.
+- Above 2.8 kHz the disc radiates the note itself, and its strength grows steadily with duty. Any
+  reduction makes the tone quieter and adds an octave that was not there before. You pay for
+  cleanliness with loudness in the same move.
+- Below 2.8 kHz it is the other way round. Since you are listening to harmonics, reducing the duty
+  usually makes a tone louder, not quieter. There is no turn this one down direction.
+- The nodes have to be measured rather than reasoned about. My first table applied 37 % from 1500 Hz
+  upward, and the recording came back with 1500 and 1600 Hz quieter than before, by 1.8 and 3.7 dB.
+  The hole starts later than it looks. The table that stands now uses 37 % only between 1700 and
+  2100 Hz.
 
-So the honest score for the duty-cycle lever: the table's spread goes from 16.5 dB to 13.5 dB, and
-the one hole that mattered is filled. It is a fix, not a transformation.
+So the honest score: the spread across the table goes from 16.5 dB to 13.5 dB and the one hole that
+mattered is gone. A fix, not a transformation.
 
-## The negative result: the obvious soft attack is an accent
+## The attack: a good idea that failed
 
-Now the part I got wrong, which is the more useful half of the article.
+The other knob is time. A beep as shipped is a hard gate — full amplitude inside a millisecond — and
+that instant edge is the click you hear in a quiet room. The textbook remedy is a fade-in, and this
+hardware seems to offer one for free: loudness follows the duty cycle, so ramping the duty from a
+couple of percent up to 50 % over ten milliseconds should be an attack envelope with no new parts.
 
-A vario beep as shipped is a hard gate: the bridge starts flipping at full duty and the piezo is at
-full amplitude within a millisecond. That instant edge is the click everybody hears in a quiet
-room. The textbook fix is a fade-in, and on this hardware there is an obvious way to do one without
-any new components: since amplitude follows sin(πD), ramp the duty cycle from ~2 % to 50 % over ten
-milliseconds and you have an attack envelope for free.
-
-I implemented it, flashed it over the air, recorded it, and it was worse.
+I built it, flashed it over the air, recorded it, and it was worse.
 
 ![Envelope of one 100 millisecond beep at 1 kHz with a hard gate, a linear duty ramp and a geometric ramp, averaged over ten beeps](/img/blog/vario-piezo-tone-measured/envelopes.svg)
 
-The orange trace is that linear ramp. Instead of rising smoothly it overshoots to 4.5 dB *above*
-the steady level of the note, dips 6 dB, comes back — and then does the same thing on the way out,
-sitting 3.9 dB above the steady level at a point where the beep should already be decaying into
-silence. It is not a fade. It is an accent at both ends, a small "wow" wrapped around every beep.
+The orange trace is that ramp. Instead of swelling it overshoots above the steady level of its own
+note, dips six decibels, comes back — and repeats the trick on the way out, sitting louder than the
+note at a moment when the beep should already be fading. Not a fade. An accent at both ends, a small
+wow wrapped around every beep. Measured across the table it roughly doubled the overshoot of a plain
+hard gate.
 
-The reason is in the harmonic chart above. Below 2.8 kHz you are listening to harmonics 3 through
-5, and each of those peaks at *D* = 1/(2k) — between 10 % and 17 % duty. A linear ramp from 2 % to
-50 % spends its middle third crossing exactly those values. It walks straight over a hump that the
-steady tone never visits.
+The reason is in the harmonic chart above. Below 2.8 kHz you are listening to the third and fifth
+rungs, and each of those is loudest at a duty of about 10 to 17 %. A ramp from 2 % to 50 % spends
+its middle third walking straight across that hump — a hump the steady note never visits. The
+physics behind loudness follows the duty cycle is perfectly correct, and the conclusion is still
+wrong, because the thing being ramped is not the thing being heard.
 
-The response model built from the sweep puts numbers on it: a 1 kHz tone is already as loud at 7 %
-duty as it is at 50 %, and stays louder than the steady note up to about 20 %. The recording says
-the excursion is larger than the model predicts, which is what you get when a real resonance is
-sharper than a smooth interpolation of it. Averaged over every tone below 2.8 kHz, the peak in the
-first 25 ms of a note sits 1.6 dB above the steady level with a hard gate and **3.2 dB with the
-linear ramp**, reaching 6.4 dB at 1500 Hz. The ramp did not soften the attack. It doubled it.
+The fix is to not walk through the hump but to jump over it. The envelope that works does three
+things. It grows the duty by a constant ratio rather than a constant step, about 3 dB per
+millisecond, because hearing is logarithmic. It stops at a knee of 3 %, below the hump. And from
+there it jumps to the target duty in a single period, so nothing lingers where the harmonics peak.
+The pitch never moves: only the pulse width changes, never the period.
 
-This is a good example of a plausible idea that only measurement can kill. It sounds right, the
-physics behind "amplitude follows sin(πD)" is correct, and the conclusion is still wrong, because
-the thing being ramped is not the thing being heard.
+The blue trace is the result. The sound climbs out of silence over about twelve milliseconds, the
+rise from −20 to −3 dB stretching from 0.7 ms to 6.7 ms — a tenfold slower edge, and an edge is what
+a click is. What it does not remove is the overshoot itself, and it should not try: a bell struck
+from rest always rings above its steady level. The geometric ramp leaves that transient where the
+hard gate had it, and the linear one added about two decibels on top. That difference is the whole
+result.
 
-## The fix: a ramp that jumps
+Two things stayed put, which is how you know the envelope only does what it should. Every tone in
+the table measures the same with it and without it, within 0.3 dB. And the release turned out not to
+matter: the disc rings for some 9 ms of its own accord after the drive stops, so any shorter ramp
+down is inaudible either way.
 
-If the hump lies between the quiet end and the target, do not walk through it. Jump.
+There is one place it misbehaves. At 200 and 250 Hz the enveloped beep starts harder than a plain
+one, because a ten-millisecond ramp at 200 Hz is only two periods long — there is no room for a ramp
+at all, and the short pulses it does produce drop their even harmonics straight onto the resonance.
+Those two entries are the −8 and −14 m/s sink alarm, where a hard onset is arguably right anyway, so
+the envelope simply stays off below 300 Hz.
 
-The second envelope does three things:
+## What it costs, and what is next
 
-1. **Geometric, not linear.** The duty grows by a constant *ratio* each step, roughly 3 dB per
-   millisecond, because hearing is logarithmic and a linear ramp lurches even when there is no
-   hump. Implemented with a 34-byte table of 2^(k/16) in Q10 fixed point — no floating point in the
-   firmware.
-2. **Stops at a knee.** For tones below 2.8 kHz the ramp ends at 3 % duty, under the hump for most
-   of the band — though not, as it turns out, for the lowest two tones. Above 2.8 kHz there is no
-   hump at all and the ramp runs all the way to the target.
-3. **Then jumps.** From the knee to the target duty in a single PWM period. The frequency never
-   changes during any of this; only the pulse width moves, so the note's pitch is rock steady.
+The calibration table, the envelope and the fixed-point exponentials behind it add 696 bytes of code
+and three bytes of RAM, and with the build flag off the image is identical to one built without them
+at all. There is a small timing tax: each millisecond of ramp really costs about 1.1 ms, because the
+kernel rounds a sleep up to its next tick, so a 10 ms envelope stretches a 100 ms beep by roughly
+two. Nobody will hear that in a climb, but a tone loop that assumes exact lengths should know.
 
-The blue trace is the result. The sound emerges from the noise floor and takes about twelve
-milliseconds to arrive; the rise from −20 dB to −3 dB goes from **0.7 ms to 6.7 ms**, a tenfold
-slower edge, and an edge is what a click is. At the tail, where the linear ramp sat 3.9 dB *above*
-the steady level at a moment the note should have been decaying, the geometric one is 14 dB below
-it.
+Neither change has flown. Both live in a test cycle rather than in the vario's own tone loop, and
+the next steps are in that order: put them in the loop, measure the device inside its enclosure
+instead of bare, and then try the larger plate, which is the only route that attacks the harshness
+at its source rather than working around it.
 
-What the envelope does not do is remove the overshoot, and it should not try: a resonator excited
-from rest rings above its steady amplitude however you start it. Across all 28 tones the peak in
-the first 25 ms is 1.6 dB above steady with a hard gate and 1.9 dB with the geometric envelope —
-the same transient, arriving more slowly — against 3.2 dB for the linear ramp. That gap between
-1.9 and 3.2 dB is the entire result: not the absence of a transient, but the absence of the extra
-one the ramp invented.
-
-One honest exception, visible in the same measurement. At the two lowest entries in the table,
-200 and 250 Hz, the geometric ramp overshoots 1–2 dB *more* than a hard gate, because a
-3 % knee is already above the steady level down there. Those two entries are −14 and −8 m/s: the
-deep-sink alarm, where a harder onset is arguably the correct behaviour anyway.
-
-Two things did not change, which is how you know the envelope is doing only what it should. The
-steady part of every tone in the table is identical with and without it, within 0.3 dB. And the
-release is honest about its limits: the piezo rings for about 9 ms of its own accord after the
-drive stops, so a release ramp shorter than that is inaudible either way.
-
-The cost is worth stating precisely, if only because "add an envelope" sounds expensive. The
-calibration table, the envelope and the fixed-point exponentials together add **696 bytes of code**
-to the buzzer module and three bytes of RAM, and with the Kconfig option off the image is
-byte-for-byte identical to one built without the feature at all.
-
-There is one timing tax. Each 1 ms ramp step actually costs about 1.1 ms, because `k_sleep()`
-rounds up to the next kernel tick and the PWM update is not free, so a 10/10 ms envelope stretches
-a 100 ms beep by roughly 2 ms — measured as a 2.07 ms drift per repetition against 0.2 ms for plain
-beeps. Nobody will hear that in a climb, but a vario loop that assumes exact beep lengths needs to
-know.
-
-## What firmware cannot do
-
-For completeness, the things that came up and did not survive contact with the hardware.
-
-**A sine wave.** Not possible. The output stage has two states. Every discussion of "smooth
-waveforms" on this hardware has to end here.
-
-**Class D into the piezo.** The temptation is to run a 200 kHz carrier, modulate it, and let the
-piezo's own capacitance do the filtering. The energy says no. Driving a 16 nF capacitor between
-rails 9 V apart at 200 kHz costs C·V²·f ≈ 260 mW, all of it in the charge pump — against an
-instrument whose entire draw during a beeping climb is a few hundred microamps. It would need a
-series inductor of a millihenry or two to become a real class-D output stage. That is a board
-change, and it is untested.
-
-**A different driver or a different emitter.** Both are real options and both are a different
-product, not a firmware update. A moving-coil speaker is a resistive load in a completely different
-power class; on a solar instrument that never gets plugged in, it is not a trade you can make
-quietly.
-
-## What this means for the pilot
-
-The Reddit question deserves a straight answer: on a piezo vario, timbre is not a free parameter,
-and any manufacturer who offers you a "tone character" setting on this class of hardware is
-offering you a choice of which harmonic sits on the resonance. That is what it is. It is not
-nothing — it is 11.5 dB in the place where the old table had a hole — but it is not a synthesiser.
-
-What is genuinely adjustable, and what I would rather spend the effort on, is *how a note begins*.
-The click at the start of every beep is not a piezo property. It is a firmware choice that nobody
-had questioned, and it can be replaced with a real attack for 696 bytes and two milliseconds.
-
-Both changes now exist and both have been measured on the bench. Neither has flown yet: the next
-step is wiring them into the vario's own tone loop rather than a test harness, and then a flight
-where the only thing that matters is whether a pilot notices anything at all. That is the honest
-state of it.
-
-The thing I will keep from this is smaller and more general. I had been reading the tone table as a
-table of notes — 470 Hz for 0.4 m/s, 2020 Hz for 4.5 — and it is nothing of the kind. It is a table
-of *excitations* for a resonator that answers in its own voice, and half the entries in it never
-produce the note they name. Once you look at it that way, "make it sound nicer" stops being a
-matter of taste and turns into a question with numbers in it.
+The thing I will keep from this is smaller and more general than any of the numbers. I had been
+reading the tone table as a table of notes — 470 Hz for 0.4 m/s, 2020 Hz for 4.5 — and it is nothing
+of the kind. It is a table of excitations for a bell that answers in its own voice, and half the
+entries in it never produce the note they name. Once you see it that way, make it sound nicer stops
+being a matter of taste and turns into a question with numbers in it.
