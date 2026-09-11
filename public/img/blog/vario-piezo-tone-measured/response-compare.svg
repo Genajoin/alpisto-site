@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 430" width="880" height="430" role="img" aria-label="Fitted acoustic response of two sounders, both measured from the harmonics of their own square-wave tones">
+  <style>.m{font-family:"Geist Mono",ui-monospace,"DejaVu Sans Mono","Courier New",monospace}.t{fill:#0c0c0c}.mu{fill:#5a5a5a}</style>
+  <rect x="0" y="0" width="880" height="430" fill="#f7f3e8"/>
+  <text class="m t" x="20" y="30" font-size="13" font-weight="700" letter-spacing="1.2">WHAT EACH SOUNDER DOES WITH THE LADDER</text>
+  <rect x="20" y="47" width="14" height="3" fill="#ff5b1f"/>
+  <text class="m mu" x="42" y="54" font-size="11.5">FANET Vario, 12 mm piezo disc, bare board</text>
+  <rect x="355" y="47" width="14" height="3" fill="#3744ff"/>
+  <text class="m mu" x="377" y="54" font-size="11.5">instrument in the flight recording</text>
+  <g stroke="#5a5a5a" stroke-width="1" opacity="0.30">
+    <line x1="78" y1="121.3" x2="860" y2="121.3"/>
+    <line x1="78" y1="180.0" x2="860" y2="180.0"/>
+    <line x1="78" y1="238.7" x2="860" y2="238.7"/>
+    <line x1="78" y1="297.3" x2="860" y2="297.3"/>
+    <line x1="78" y1="356.0" x2="860" y2="356.0"/>
+  </g>
+  <g class="m mu" font-size="11" text-anchor="end">
+    <text x="69" y="125.3">+40 dB</text>
+    <text x="69" y="184.0">+20 dB</text>
+    <text x="69" y="242.7">0 dB</text>
+    <text x="69" y="301.3">-20 dB</text>
+    <text x="69" y="360.0">-40 dB</text>
+  </g>
+  <line x1="78.0" y1="238.7" x2="860.0" y2="238.7" stroke="#5a5a5a" stroke-width="1" stroke-dasharray="3 4"/>
+  <polyline points="78.0,301.8 162.1,287.1 221.8,272.2 281.5,256.4 327.8,238.7 382.2,218.0 437.9,193.5 491.4,166.6 541.4,141.5 593.6,123.1 644.4,114.0 699.6,113.1 754.0,119.8 805.6,134.1 860.0,151.6 915.7,168.3" fill="none" stroke="#ff5b1f" stroke-width="2.4" stroke-linejoin="round"/>
+  <circle cx="78.0" cy="301.8" r="2.4" fill="#ff5b1f"/>
+  <circle cx="162.1" cy="287.1" r="2.4" fill="#ff5b1f"/>
+  <circle cx="221.8" cy="272.2" r="2.4" fill="#ff5b1f"/>
+  <circle cx="281.5" cy="256.4" r="2.4" fill="#ff5b1f"/>
+  <circle cx="327.8" cy="238.7" r="2.4" fill="#ff5b1f"/>
+  <circle cx="382.2" cy="218.0" r="2.4" fill="#ff5b1f"/>
+  <circle cx="437.9" cy="193.5" r="2.4" fill="#ff5b1f"/>
+  <circle cx="491.4" cy="166.6" r="2.4" fill="#ff5b1f"/>
+  <circle cx="541.4" cy="141.5" r="2.4" fill="#ff5b1f"/>
+  <circle cx="593.6" cy="123.1" r="2.4" fill="#ff5b1f"/>
+  <circle cx="644.4" cy="114.0" r="2.4" fill="#ff5b1f"/>
+  <circle cx="699.6" cy="113.1" r="2.4" fill="#ff5b1f"/>
+  <circle cx="754.0" cy="119.8" r="2.4" fill="#ff5b1f"/>
+  <circle cx="805.6" cy="134.1" r="2.4" fill="#ff5b1f"/>
+  <circle cx="860.0" cy="151.6" r="2.4" fill="#ff5b1f"/>
+  <circle cx="915.7" cy="168.3" r="2.4" fill="#ff5b1f"/>
+  <polyline points="162.1,268.3 221.8,257.6 281.5,247.7 327.8,238.7 382.2,228.4 437.9,214.3 491.4,203.4 541.4,200.5 593.6,202.4 644.4,217.8 699.6,241.2 754.0,269.3 805.6,305.0 860.0,341.1" fill="none" stroke="#3744ff" stroke-width="2.4" stroke-linejoin="round"/>
+  <circle cx="162.1" cy="268.3" r="2.4" fill="#3744ff"/>
+  <circle cx="221.8" cy="257.6" r="2.4" fill="#3744ff"/>
+  <circle cx="281.5" cy="247.7" r="2.4" fill="#3744ff"/>
+  <circle cx="327.8" cy="238.7" r="2.4" fill="#3744ff"/>
+  <circle cx="382.2" cy="228.4" r="2.4" fill="#3744ff"/>
+  <circle cx="437.9" cy="214.3" r="2.4" fill="#3744ff"/>
+  <circle cx="491.4" cy="203.4" r="2.4" fill="#3744ff"/>
+  <circle cx="541.4" cy="200.5" r="2.4" fill="#3744ff"/>
+  <circle cx="593.6" cy="202.4" r="2.4" fill="#3744ff"/>
+  <circle cx="644.4" cy="217.8" r="2.4" fill="#3744ff"/>
+  <circle cx="699.6" cy="241.2" r="2.4" fill="#3744ff"/>
+  <circle cx="754.0" cy="269.3" r="2.4" fill="#3744ff"/>
+  <circle cx="805.6" cy="305.0" r="2.4" fill="#3744ff"/>
+  <circle cx="860.0" cy="341.1" r="2.4" fill="#3744ff"/>
+  <text class="m t" x="669.9" y="97.9" font-size="11.5" font-weight="700" text-anchor="middle" fill="#ff5b1f">still climbing at 6 kHz</text>
+  <text class="m t" x="526.1" y="178.5" font-size="11.5" font-weight="700" text-anchor="middle" fill="#3744ff">levels off near 3 kHz</text>
+  <line x1="78" y1="356" x2="860" y2="356" stroke="#0c0c0c" stroke-width="1"/>
+  <g class="m mu" font-size="11" text-anchor="middle">
+    <text x="78.0" y="374">300</text>
+    <text x="184.0" y="374">500</text>
+    <text x="281.5" y="374">800</text>
+    <text x="365.6" y="374">1.2 k</text>
+    <text x="471.6" y="374">2 k</text>
+    <text x="555.8" y="374">3 k</text>
+    <text x="661.7" y="374">5 k</text>
+    <text x="759.3" y="374">8 k</text>
+    <text x="860.0" y="374">13 k</text>
+  </g>
+  <text class="m mu" x="78" y="388" font-size="11">frequency, Hz · level relative to the same sounder at 1 kHz</text>
+  <text class="m mu" x="78" y="404" font-size="10.5">one curve fitted to 191 harmonic levels from 28 tones (piezo) and 3254 from 1090 frames of the recording; residual 6.4 and 6.6 dB</text>
+  <text class="m mu" x="78" y="418" font-size="10.5">different microphones, so read the shape of each curve, not the gap between them</text>
+  <text class="m t" x="860" y="422" font-size="12" font-weight="700" text-anchor="end" fill="#ff5b1f">64 dB of tilt versus 23</text>
+</svg>

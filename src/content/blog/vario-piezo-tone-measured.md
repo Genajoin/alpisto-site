@@ -85,6 +85,56 @@ At one volume setting, the tone table swings 16.5 dB from end to end. The worst 
 1800–2000 Hz, which in the default curve is 4 to 4.5 m/s — strong lift, exactly when the sound
 matters most. Turning the volume up moves the whole table, hole included.
 
+## Two instruments in the same thermal
+
+It would be easy to read all of that as a law of nature. It is not. It is what one particular kind
+of sounder does, and other instruments make their sound a different way. A pilot posted a flight
+video with two current instruments audible at once, both answering the same climb, and that is a
+comparison no bench can quite reproduce: same air, same microphone, same thermal, same second.
+
+It is a bad measurement in every other respect: an action-camera microphone, wind across it, and a
+lossy codec that discards quiet detail first and keeps nothing above about 15 kHz. It can be read
+for structure and not for quality, which is why the instruments are not named here. The recording is
+good enough to show two ways of building a tone and nowhere near good enough to rank two products.
+
+![Spectrogram of the FANET Vario playing eleven tones from 400 to 1600 Hz, above a spectrogram of two other instruments beeping in the same thermal](/img/blog/vario-piezo-tone-measured/spectrograms.png)
+
+The upper panel is the vario from the rest of this article, stepping through eleven tones. Every tone is
+a vertical stack, and the bottom of each stack is the faintest part of it. The tone the firmware
+asked for is the one you can barely see.
+
+The lower panel holds the two instruments in the recording, and they could not be less alike. One of them
+draws a single line and nothing else. Its harmonics are 37 to 60 dB below the tone, which puts its
+distortion between 0.3 and 1.7 per cent, and most of even that is the camera and the codec. Nothing
+driven by a square wave produces a spectrum like that, and no 12 mm piezo disc is loud at 900 Hz in
+the first place. That is a moving-coil speaker being fed a synthesised sine, the same arrangement
+that lets instruments of that family speak words rather than only beep.
+
+The other instrument builds a ladder, exactly as ours does. The difference is where the ladder still
+has a bottom rung. At 575 Hz its fundamental sits 26 dB under the third harmonic, the same
+missing-note problem; but from roughly 900 Hz upward the fundamental is the loudest thing it emits.
+Ours does not reach that point until 2.8 kHz. Nearly two octaves of the tone table that are
+harmonics for us are notes for it.
+
+Both recordings can be pushed a step further. A square wave has a known recipe — rung k is 1/k of
+the fundamental — so if you know how loud every rung came out, the part the sounder added is
+arithmetic. Fitting one smooth curve to every harmonic of every tone gives the acoustic response of
+each sounder, microphone included:
+
+![Fitted acoustic response of the FANET Vario piezo and of the instrument heard in the flight recording, both derived from the harmonics of their own square-wave tones](/img/blog/vario-piezo-tone-measured/response-compare.svg)
+
+Our disc climbs 64 dB between 300 Hz and 6 kHz and is still climbing at the top. The other sounder
+climbs 23 dB and levels off near 3 kHz. Those are different microphones, so the vertical gap between
+the curves means nothing; the shape of each one means a great deal. A response that tilts 64 dB
+across the audio band cannot help but move the energy of every low tone up into the sharp part of
+hearing. A response that tilts 23 dB and then flattens mostly leaves the tone where it was put.
+
+There is one more thing in that recording that costs nothing at all. The instrument with the clean
+tone moves its pitch across 782 to 968 Hz — three and a half semitones for the whole climb — and
+leaves the rest of the work to the beep rate. The other one sweeps from 500 Hz to 1740 Hz and spends
+the bottom of that range in the region where its own sounder cannot follow. Which range you use is a
+line in a table, not a component on a board.
+
 ## What can be done about it
 
 Four honest routes, from the ones that need a screwdriver to the one that needs nothing.
@@ -99,9 +149,10 @@ The enclosure. A cavity behind the disc and a grille in front of it change the a
 disc does. Everything below was measured on a bare board, and the calibration that comes out of it
 belongs to a particular disc in a particular box — swap either and it has to be measured again.
 
-A driver that can make a smooth wave. They exist, and they idle at milliamps. A solar vario lives on
-hundreds of microamps and is never plugged in, so that is not a firmware update but a different
-product with a different battery.
+A speaker and a smooth wave, which is what the clean instrument above is doing. It is the right
+answer acoustically and the wrong one for this device: a voice coil and an amplifier draw milliamps
+while they sound, and a solar vario lives on hundreds of microamps and is never plugged in. That is
+not a firmware update but a different product with a different battery.
 
 Or leave every component where it is and use the two things the firmware actually controls: which
 rung of the ladder lands on the resonance, and how a note begins. Only this one is free, and it is
