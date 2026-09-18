@@ -33,14 +33,20 @@ const { src, poster } = Astro.props
   .ts-plot { position: absolute; inset: 0; }
   .ts-cover { position: absolute; inset: 0; display: grid; place-items: center; overflow: hidden; }
   .ts-cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border: 0 !important; opacity: .55; }
-  .ts-load, .ts-play, .ts-chips button {
+  .ts-load, .ts-play {
     position: relative; font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
     border: 2px solid var(--color-ink); background: var(--color-ink); color: var(--color-paper); padding: 10px 16px; cursor: pointer;
   }
-  .ts-chips button { background: var(--color-paper-card); color: var(--color-ink); padding: 7px 12px; }
-  .ts-chips button[aria-pressed="true"] { background: var(--color-accent); }
+  /* кнопки выбора термика создаёт скрипт — у них нет scope-атрибута Astro, отсюда :global */
+  .ts-chips :global(button) {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+    border: 2px solid var(--color-ink); background: var(--color-paper-card); color: var(--color-ink); padding: 8px 12px; cursor: pointer;
+  }
+  .ts-chips :global(button:hover) { background: var(--color-paper-alt); }
+  .ts-chips :global(button[aria-pressed="true"]) { background: var(--color-accent); }
+  .ts-chips :global(button:focus-visible) { outline: 3px solid var(--color-accent); outline-offset: 2px; }
   .ts-load:hover, .ts-play:hover { background: var(--color-accent); color: var(--color-ink); }
-  .ts-load:focus-visible, .ts-play:focus-visible, .ts-chips button:focus-visible, .ts-time:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 2px; }
+  .ts-load:focus-visible, .ts-play:focus-visible, .ts-time:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 2px; }
   .ts-bar { display: flex; align-items: center; gap: 12px; border: 2px solid var(--color-ink); border-top: 0; padding: 10px 12px; background: var(--color-paper-card); }
   .ts-time { flex: 1; accent-color: var(--color-accent); min-width: 0; }
   .ts-clock { font-family: var(--font-mono); font-size: 13px; font-variant-numeric: tabular-nums; }
