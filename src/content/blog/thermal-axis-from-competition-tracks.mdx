@@ -1,0 +1,200 @@
+---
+title: "The thermal leans, then it drifts: 865 thermals rebuilt from competition tracks"
+description: "Every pilot knows a thermal drifts with the wind. How much, and in what way, a single pilot cannot tell: climbing and drifting happen at the same time. A competition gaggle can — a hundred pilots in one thermal at different heights in the same minute. From the published tracks of nine competitions I rebuilt the axis of 865 thermals. Near the terrain the column stays put and the wind lays it over at 45°; from 600 m up it stands nearly straight and the whole thing drifts at two thirds of the wind. A climbing pilot sees about 0.7 of the wind either way, for different reasons."
+pubDate: 2026-09-19
+tags: ["flybeeper", "thermal-soaring", "paragliding", "igc", "competition", "data-analysis", "ransac", "meteorology", "measurement", "python"]
+draft: true
+heroImage: "/img/blog/thermal-axis-from-competition-tracks/hero.png"
+ctaTarget: "/flybeeper"
+toc: true
+---
+
+import ThermalScene from '../../components/ThermalScene.astro'
+
+Every pilot knows that a thermal drifts with the wind. You climb, you lose the core, and it turns out
+to be a little downwind of where you left it. The rule of thumb is to move your circle into the wind
+side of the drift and keep following it.
+
+I needed a number rather than a rule. The thermal assistant in the FlyBeeper app remembers where you
+climbed well and where you did not, and to use those points it has to know where each of them has
+gone since — how far the air they were in has moved. My first measurements from my own tracks gave
+"about 0.6 of the wind". Measurements across several pilots said something else: 0.3 near the slope,
+0.7 higher up. Both were done carefully. Both could not be the whole story.
+
+The trouble is that one pilot measures two things at once and cannot tell them apart. The centre you
+circle around moves for two reasons. The column may **lean**: climb a hundred metres, and the core at
+your new height is somewhere downwind of where it was. And the column may **drift**: wait a minute,
+and the whole thing has moved. A climbing pilot does both at the same time, so a single track gives
+you only the sum.
+
+To separate them you need several pilots in the same thermal, in the same minute, at different
+heights. That is exactly what a competition start looks like.
+
+## A hundred pilots in one thermal
+
+Competition scoring servers publish every task's tracks. [airscore.fai.org](https://airscore.fai.org)
+has the IGC files of each scored task as one archive. I took eleven tasks from nine competitions in
+eight countries — Slovenia, North Macedonia, Serbia, Turkey, Italy, Brazil, the Czech Republic and
+Utah — plus my own days at Kobarid. Nearly all files come from Flymaster instruments: one fix per
+second, with a live barometer. That is a lot of pilots circling in the same air: 217 on one day at
+Kobarid, 133 at Kruševo.
+
+Pilots' names play no part in any of this and do not appear anywhere below.
+
+## From circles to an axis
+
+Every full turn of a pilot gives one point: *here, at this height, at this moment, was the middle of
+the circle*. The mean position over one full turn is exactly the centre of the circle as drawn in the
+air, at the middle of the turn — the wind drift of the glider itself cancels out.
+
+Then, for every thermal, I fit a straight axis that is allowed to lean and to move:
+
+<div style="overflow-x:auto">
+
+$$
+c(z, t) = c_0 + B\,(z - \bar z) + V\,(t - \bar t)
+$$
+
+</div>
+
+Here $c$ is the centre of the circle, $z$ the height and $t$ the time.
+
+$B$ is the lean, in metres sideways per metre of height. $V$ is the drift of the whole column, in
+metres per second. A lone climbing pilot sees $V + B\cdot\text{climb}$ and nothing else. With pilots
+at different heights in the same minute, $B$ and $V$ come apart.
+
+Physics suggests two limiting cases. A **plume** from a fixed source on the ground stays where it is
+and is laid over by the wind: air rising at $w$ in a wind $W$ travels $W/w$ metres sideways for every
+metre up, so $B \approx W/w$ and $V \approx 0$. A **bubble** that has left the ground stands upright
+and goes with the air around it: $B \approx 0$, $V$ close to the wind.
+
+A big start gaggle is not one thermal. At Kobarid on 27 August 2023, a simple clustering of circle
+centres glued 210 pilots over an hour and three kilometres into one "thermal". So the gaggle is cut
+into ten-minute slices, and in each slice a sequential RANSAC looks for the most populated axis —
+every circle within 110 m of it — takes its circles out, and looks for the next one. A thermal counts
+if it has at least three pilots, 250 m of height, pilots at different heights within the same minute,
+and some wind to lean in. Circle centres scatter around the fitted axis by 40–65 m, which is about a
+circle's radius.
+
+That leaves 865 thermals.
+
+## Three thermals you can turn around
+
+<ThermalScene src="/img/blog/thermal-axis-from-competition-tracks/thermals.json" poster="/img/blog/thermal-axis-from-competition-tracks/scene.png" />
+
+The same three from the side, looking across the wind. Each dot is the centre of one circle,
+coloured by time. The three lines are the fitted axis at the beginning, the middle and the end of the
+thermal's life, each in the colour of the dots of that moment. The lean shows in every line; the
+drift is the gap between them.
+
+![Three thermals seen across the wind: Kobarid, Aksaray, Niš](/img/blog/thermal-axis-from-competition-tracks/three-regimes.png)
+
+At **Kobarid** the three lines lie on top of each other: the column does not move at all. It is laid
+over at 45°, parallel to the slope and about a hundred metres above it, and the lower pilots circle a
+good three hundred metres upwind of the higher ones. Extended downwards, the axis meets the ground on
+the slope — where this thermal leaves it.
+
+At **Niš**, 1600 m above the plain, it is the other way round. The column stands almost upright, and
+the whole stack of 82 pilots slides downwind — 1.3 km in eight minutes, at 0.8 of the wind.
+
+**Aksaray**, in 5 m/s of wind 500 m over a plateau, does a little of both.
+
+## The numbers
+
+Sorted by how high the middle of the axis is above the terrain under it:
+
+<div style="overflow-x:auto">
+
+| Axis above the terrain | Thermals | Lean along the wind, m/m | Lean across the wind (control) | Column drift, × wind | What a climbing pilot sees, × wind |
+|---|---|---|---|---|---|
+| below 300 m | 146 | **+1.03** | +0.03 | **0.14** | 0.67 |
+| 300–600 m | 152 | +0.48 | +0.01 | 0.49 | 0.78 |
+| 600–900 m | 143 | +0.19 | +0.04 | 0.63 | 0.81 |
+| 900–1500 m | 341 | +0.18 | 0.00 | 0.64 | 0.78 |
+| above 1500 m | 83 | −0.02 | +0.05 | **0.67** | 0.75 |
+
+</div>
+
+Medians. The spread is wide — the middle half of the thermals near the ground lean anywhere from 0.5
+to 1.5 m per metre — so these describe the typical thermal, not every one.
+
+![Lean, drift and what a climbing pilot sees, by height above the terrain](/img/blog/thermal-axis-from-competition-tracks/by-height.png)
+
+Near the terrain the thermal behaves like a plume: it stays put and the wind lays it over. The ratio
+of the measured lean to the wind-over-climb that a plume should have is, in the median, **1.00**. From
+600 m up it turns into a column that is carried along with two thirds of the wind and leans only a
+little. Above 1500 m the lean is gone.
+
+The last column is the interesting one. Drift plus lean times climb comes out at 0.67–0.8 of the wind
+at every height. Near the slope it is mostly lean; high up it is mostly drift; the pilot in the core
+cannot feel the difference. That settles my contradiction. The 0.6 from my own tracks was this sum.
+The 0.3 near the slope from the several-pilot measurement was mostly the drift of the column, because
+pooling many pilots at many heights averages the lean away.
+
+## The wind, or the slope?
+
+Near the ground most of these thermals sit over a slope, and air flowing up a warm slope follows it.
+A thermal leaning parallel to the hillside might be doing just that, with the wind playing no part.
+
+It can be checked. Where the wind blows *down* the slope under the thermal — 153 cases with a slope
+steeper than 10 % — a slope-following column would lean uphill, into the wind. It does not: it leans
+downwind by 0.45 m per metre, and so leans *away* from the hill, by 0.32 m per metre.
+
+<div style="overflow-x:auto">
+
+| Wind relative to the slope under the axis | Thermals | Lean along the wind | Lean up the slope |
+|---|---|---|---|
+| blowing up the slope | 223 | +0.48 | +0.36 |
+| across the slope | 174 | +0.48 | +0.08 |
+| blowing down the slope | 153 | +0.45 | −0.32 |
+
+</div>
+
+The lean follows the wind whichever way the hill faces. And across the wind there is no lean at all:
+in every height band the sideways component is zero, spread evenly on both sides.
+
+![Lean along the wind against lean across the wind](/img/blog/thermal-axis-from-competition-tracks/along-vs-across.png)
+
+## Could the method invent the lean?
+
+A RANSAC that picks the most populated straight line out of a cloud of points could, in principle,
+find slopes that are not there. Two checks.
+
+First, I shuffled the heights of the circles inside every cluster — keeping positions and times,
+breaking any link between height and position — and ran the whole pipeline again. The lean came out
+at **0.00** at every height, and the drift took up all the motion, as it should.
+
+Second, the knobs. A tolerance of 80, 110 or 150 m around the axis and slices of 6, 10 or 15 minutes
+give 0.95–1.00 m per metre near the ground and 0.16–0.20 above 600 m. The numbers do not depend on
+the settings.
+
+## What it changes
+
+**For a pilot under a gaggle.** Near the terrain, the core at your height is upwind of the pilots
+above you — by roughly the height difference. A gaggle 300 m higher near the slope marks a point about
+300 m downwind of where you should be looking. High above the ground the core is almost right under
+them, but it has drifted since they found it.
+
+**For the app.** One drift factor that depends on the height above the terrain is not enough. The
+assistant needs two: a lean and a drift, both depending on that height. The rule the app uses today
+was taken from the several-pilot measurement: 0.3 of the wind near the slope. For your own climb near
+the slope that is about half of what you actually see. When other pilots are visible on the radio
+(FANET), the lean also gives a direct hint — *the core at your height is here* — which is on my list.
+
+**For a map of thermal sources.** For thermals that stay put, the axis extended to the ground is where
+the thermal leaves it. Collected over many days, that is a map of house thermals with the direction
+they lean on a given wind.
+
+## Limits
+
+- **The axis is a straight line.** Within a ten-minute slice the model is linear, while the lean
+  clearly changes with height. The line is an average over the curve.
+- **The low thermals are Alpine.** Almost everything below 300 m above the ground comes from the
+  slopes of Kobarid and Cuorgnè. Low thermals over flat ground are missing, and they may behave
+  differently.
+- **The climb of the air is rough.** It is the pilot's climb plus a fixed allowance for the glider's
+  sink in a turn, so "wind over climb" is good to about ±30 %.
+- **Competition days are good days.** Racing pilots fly strong, busy thermals after the start;
+  a weak, lonely thermal at 5 pm is not in this sample.
+- The calm French Open task did not produce a single usable thermal: without wind there is nothing to
+  lean in, and the method needs some.

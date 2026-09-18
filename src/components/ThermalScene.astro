@@ -1,0 +1,137 @@
+---
+/**
+ * Interactive 3D view of reconstructed thermals (terrain, pilot tails, the thermal's axis).
+ * Nothing is loaded until the reader presses the button: then Plotly's 3D bundle (~1.6 MB)
+ * comes from jsDelivr and the data from `src`.
+ *
+ * Usage in MDX:  <ThermalScene src="/img/blog/<slug>/thermals.json" poster="/img/blog/<slug>/scene.png" />
+ */
+interface Props { src: string; poster?: string }
+const { src, poster } = Astro.props
+---
+<figure class="thermal-scene" data-src={src}>
+  <div class="ts-stage">
+    <div class="ts-plot" aria-label="3D view: terrain, pilots' tracks and the reconstructed axis of the thermal"></div>
+    <div class="ts-cover">
+      {poster && <img src={poster} alt="" loading="lazy" />}
+      <button type="button" class="ts-load">Load the 3D view · 1.6 MB</button>
+    </div>
+  </div>
+  <div class="ts-bar" hidden>
+    <button type="button" class="ts-play">▶ Play</button>
+    <input type="range" class="ts-time" min="0" max="1" step="2" value="0" aria-label="Time" />
+    <span class="ts-clock">+0:00</span>
+  </div>
+  <div class="ts-chips" hidden role="group" aria-label="Choose a thermal"></div>
+  <p class="ts-note" hidden></p>
+  <figcaption>Drag to rotate, pinch or scroll to zoom. Height is to scale: 45° on screen is 45° in the air. Thick line — the axis now; dashed — the axis extended to the ground; tails — the last 90 s of each pilot, coloured by climb (blue sink → orange climb).</figcaption>
+</figure>
+
+<style>
+  .thermal-scene { margin: 2em 0; }
+  .ts-stage { position: relative; border: 2px solid var(--color-ink); background: var(--color-paper-card); height: min(70vh, 600px); min-height: 360px; }
+  .ts-plot { position: absolute; inset: 0; }
+  .ts-cover { position: absolute; inset: 0; display: grid; place-items: center; overflow: hidden; }
+  .ts-cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border: 0 !important; opacity: .55; }
+  .ts-load, .ts-play, .ts-chips button {
+    position: relative; font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+    border: 2px solid var(--color-ink); background: var(--color-ink); color: var(--color-paper); padding: 10px 16px; cursor: pointer;
+  }
+  .ts-chips button { background: var(--color-paper-card); color: var(--color-ink); padding: 7px 12px; }
+  .ts-chips button[aria-pressed="true"] { background: var(--color-accent); }
+  .ts-load:hover, .ts-play:hover { background: var(--color-accent); color: var(--color-ink); }
+  .ts-load:focus-visible, .ts-play:focus-visible, .ts-chips button:focus-visible, .ts-time:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 2px; }
+  .ts-bar { display: flex; align-items: center; gap: 12px; border: 2px solid var(--color-ink); border-top: 0; padding: 10px 12px; background: var(--color-paper-card); }
+  .ts-time { flex: 1; accent-color: var(--color-accent); min-width: 0; }
+  .ts-clock { font-family: var(--font-mono); font-size: 13px; font-variant-numeric: tabular-nums; }
+  .ts-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .ts-note { font-size: 15px; margin: 10px 0 0; color: var(--color-ink-2); }
+</style>
+
+<script>
+  const CDN = 'https://cdn.jsdelivr.net/npm/plotly.js-gl3d-dist-min@3.1.0/plotly-gl3d.min.js'
+  const INK = '#0c0c0c', MUTED = '#5a5a5a', CARD = '#f7f3e8', RULE = '#ddd6c4', ACC = '#ff5b1f', COOL = '#3744ff'
+  const VARIO = [[0, COOL], [1 / 6, '#d9d4c4'], [0.45, '#ffb08f'], [1, ACC]]
+  const loadScript = (url: string) => new Promise<void>((ok, bad) => { const s = document.createElement('script'); s.src = url; s.onload = () => ok(); s.onerror = bad; document.head.appendChild(s) })
+  const lower = (a: number[], v: number) => { let lo = 0, hi = a.length; while (lo < hi) { const m = (lo + hi) >> 1; if (a[m] < v) lo = m + 1; else hi = m } return lo }
+  const fmt = (s: number) => (s < 0 ? '−' : '+') + Math.floor(Math.abs(s) / 60) + ':' + String(Math.round(Math.abs(s) % 60)).padStart(2, '0')
+
+function valleySide(th: any, u: number[]){ const g = th.terrain.x, Z = th.terrain.z; let a = 0, na = 0, b = 0, nb = 0;
+  for (let j = 0; j < g.length; j++) for (let i = 0; i < g.length; i++){ const s = g[i] * -u[1] + g[j] * u[0]; if (s > 0){ a += Z[j][i]; na++; } else if (s < 0){ b += Z[j][i]; nb++; } }
+  return a / Math.max(na, 1) <= b / Math.max(nb, 1) ? 1 : -1; }
+
+  function mount(fig: HTMLElement) {
+    const btn = fig.querySelector<HTMLButtonElement>('.ts-load')!
+    btn.addEventListener('click', async () => {
+      btn.disabled = true; btn.textContent = 'Loading…'
+      try {
+        const [, data] = await Promise.all([(window as any).Plotly ? Promise.resolve() : loadScript(CDN), fetch(fig.dataset.src!).then(r => r.json())])
+        start(fig, data)
+      } catch (e) { btn.disabled = false; btn.textContent = 'Could not load — tap to retry' }
+    })
+  }
+
+  function start(fig: HTMLElement, D: any) {
+    const Plotly = (window as any).Plotly
+    const plot = fig.querySelector<HTMLElement>('.ts-plot')!, slider = fig.querySelector<HTMLInputElement>('.ts-time')!
+    const clock = fig.querySelector<HTMLElement>('.ts-clock')!, play = fig.querySelector<HTMLButtonElement>('.ts-play')!
+    const chips = fig.querySelector<HTMLElement>('.ts-chips')!, note = fig.querySelector<HTMLElement>('.ts-note')!
+    fig.querySelector<HTMLElement>('.ts-cover')!.remove()
+    for (const el of [fig.querySelector<HTMLElement>('.ts-bar')!, chips, note]) el.hidden = false
+    let idx = 0, T = 0, timer: number | null = null
+    const axisAt = (th: any, z: number, t: number) => { const m = th.model; return [m.x0 + m.B[0] * (z - m.z_c) + m.V[0] * (t + th.t_ref - m.t_c), m.y0 + m.B[1] * (z - m.z_c) + m.V[1] * (t + th.t_ref - m.t_c)] }
+    function traces(th: any) {
+      const tx: (number | null)[] = [], ty: (number | null)[] = [], tz: (number | null)[] = [], tw: number[] = [], hx: number[] = [], hy: number[] = [], hz: number[] = [], hw: number[] = []
+      for (const k of th.tracks) {
+        const a = lower(k.t, T - 90), b = lower(k.t, T + 0.5)
+        if (b - a < 2) continue
+        for (let i = a; i < b; i++) { if (i > a && k.t[i] - k.t[i - 1] > 6) { tx.push(null); ty.push(null); tz.push(null); tw.push(0) } tx.push(k.x[i]); ty.push(k.y[i]); tz.push(k.z[i]); tw.push(k.w[i]) }
+        tx.push(null); ty.push(null); tz.push(null); tw.push(0)
+        if (k.t[b - 1] >= T - 3) { hx.push(k.x[b - 1]); hy.push(k.y[b - 1]); hz.push(k.z[b - 1]); hw.push(k.w[b - 1]) }
+      }
+      const s = th.stats, ax: number[] = [], ay: number[] = [], az: number[] = []
+      for (let z = s.z_lo - 40; z <= s.z_hi + 60; z += 20) { const p = axisAt(th, z, T); ax.push(p[0]); ay.push(p[1]); az.push(z) }
+      const out: any[] = [
+        { type: 'surface', x: th.terrain.x, y: th.terrain.x, z: th.terrain.z, showscale: false, hoverinfo: 'skip', colorscale: [[0, '#d6cfbb'], [1, '#8f876c']],
+          lighting: { ambient: .75, diffuse: .6, specular: .05, roughness: .9 }, contours: { z: { show: true, color: RULE, width: 1, start: 0, end: 5000, size: 100 } } },
+        { type: 'scatter3d', mode: 'lines', x: tx, y: ty, z: tz, hoverinfo: 'skip', line: { width: 3, color: tw, colorscale: VARIO, cmin: -1, cmax: 5 } },
+        { type: 'scatter3d', mode: 'markers', x: hx, y: hy, z: hz, hoverinfo: 'skip', marker: { size: 3.5, color: hw, colorscale: VARIO, cmin: -1, cmax: 5, line: { width: 0 } } },
+        { type: 'scatter3d', mode: 'lines', x: ax, y: ay, z: az, hoverinfo: 'skip', line: { width: 9, color: INK } },
+      ]
+      if (th.root) {
+        const p = axisAt(th, s.z_lo - 40, T), sh = [th.model.V[0] * T, th.model.V[1] * T]
+        out.push({ type: 'scatter3d', mode: 'lines', x: [th.root.x + sh[0], p[0]], y: [th.root.y + sh[1], p[1]], z: [th.root.z, s.z_lo - 40], hoverinfo: 'skip', line: { width: 5, color: ACC, dash: 'dash' } })
+      }
+      const L = th.terrain.x[th.terrain.x.length - 1] * 0.8
+      out.push({ type: 'cone', x: [-L * 0.5], y: [-L * 0.5], z: [s.z_hi + 150], u: [s.wx], v: [s.wy], w: [0], sizemode: 'absolute', sizeref: 140, anchor: 'tail', showscale: false, hoverinfo: 'skip', colorscale: [[0, COOL], [1, COOL]] })
+      return out
+    }
+    function layout(th: any) {
+      const u = [th.stats.wx / th.stats.wind, th.stats.wy / th.stats.wind]
+      const H = th.terrain.x[th.terrain.x.length - 1]
+      let lo = Infinity; for (const r of th.terrain.z) for (const v of r) lo = Math.min(lo, v)
+      const zr = [lo - 20, th.stats.z_hi + 250]
+      const vs = valleySide(th, u)
+      const ax = (t: string) => ({ title: { text: t, font: { size: 11, color: MUTED } }, color: INK, gridcolor: RULE, zerolinecolor: RULE, showbackground: false, tickfont: { size: 10, family: 'Geist Mono, monospace' } })
+      return { margin: { l: 0, r: 0, t: 0, b: 0 }, paper_bgcolor: CARD, showlegend: false, uirevision: 'th' + idx,
+        scene: { aspectmode: 'manual', aspectratio: { x: 1, y: 1, z: (zr[1] - zr[0]) / (2 * H) }, xaxis: { ...ax('east, m'), range: [-H, H] }, yaxis: { ...ax('north, m'), range: [-H, H] }, zaxis: { ...ax('altitude, m'), range: zr }, camera: { eye: { x: -u[1] * 1.9 * vs, y: u[0] * 1.9 * vs, z: 0.9 }, center: { x: 0, y: 0, z: -0.1 } } } }
+    }
+    const draw = () => { const th = D.thermals[idx]; Plotly.react(plot, traces(th), layout(th), { displaylogo: false, responsive: true, modeBarButtonsToRemove: ['toImage'] }); clock.textContent = fmt(T) + ' min' }
+    function select(i: number) {
+      idx = i; const th = D.thermals[i]
+      slider.min = String(Math.ceil(th.t0 - th.t_ref)); slider.max = String(Math.floor(th.t1 - th.t_ref)); T = 0; slider.value = '0'
+      chips.querySelectorAll('button').forEach((c, j) => c.setAttribute('aria-pressed', j === i ? 'true' : 'false'))
+      note.textContent = th.note; draw()
+    }
+    const stop = () => { if (timer) { clearInterval(timer); timer = null; play.textContent = '▶ Play' } }
+    D.thermals.forEach((th: any, i: number) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = th.chip; b.onclick = () => { stop(); select(i) }; chips.appendChild(b) })
+    slider.addEventListener('input', () => { T = +slider.value; draw() })
+    play.addEventListener('click', () => {
+      if (timer) return stop()
+      play.textContent = '❚❚ Pause'
+      timer = window.setInterval(() => { T += 4; if (T > +slider.max) T = +slider.min; slider.value = String(T); draw() }, 120)
+    })
+    select(0)
+  }
+  document.querySelectorAll<HTMLElement>('.thermal-scene').forEach(mount)
+</script>
