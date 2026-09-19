@@ -1,0 +1,165 @@
+---
+title: "The lift does not fade: where 11,046 competition thermals end, and how to know before you get there"
+description: "The usual advice is to leave a thermal when it weakens. In 11,046 thermals from competition tracks it hardly weakens at all: pilots climb at full rate to within a hundred metres of the top, and the last fifty metres still give most of it. The top is a ceiling, and your own vario cannot see a ceiling coming. The pilots around you can: the ones who have already left, and the tops of the day's earlier thermals, tell you how much is left to within about a hundred metres, a minute before you get there."
+pubDate: 2026-09-20
+tags: ["flybeeper", "fanet-vario", "fanet", "ads-l", "thermal-soaring", "paragliding", "igc", "competition", "data-analysis", "meteorology", "measurement", "python"]
+draft: true
+heroImage: "/img/blog/thermal-top-from-competition-tracks/hero.png"
+ctaTarget: "https://market.flybeeper.com/device/fanet-vario"
+toc: true
+---
+
+Every thermal ends somewhere. The usual advice is to leave when it weakens: once the climb drops below
+what the day has been giving you, the next thermal is a better use of the time. A vario helps with that
+in hindsight. It tells you the climb of the last few seconds, and when the climb falls off, you are
+already there.
+
+I wanted the FlyBeeper app to say how much is left before you get there. For that I first needed to know
+how a thermal ends. Does the lift fade over the last few hundred metres, so that a careful look at your
+own climb gives you a warning? Or does it keep going and stop?
+
+## The data
+
+The same competition tracks as in [the article about the thermal's axis](/blog/thermal-axis-from-competition-tracks/):
+every paragliding competition on [airscore.fai.org](https://airscore.fai.org) with a working track
+archive, one fix per second, plus two of my own free-flying days at Kobarid. The circles of every pilot
+are grouped into thermals the same way — by ten-minute slices and the most populated axis in each.
+
+For this question a thermal needs at least three pilots and 250 m of height between the lowest and the
+highest circle. That leaves 11,046 thermals: 4,158 in the mountains, 3,095 over hills and 3,793 over flat
+land, with 105,104 climbs in them and 597,530 full circles.
+
+A climb here is one pilot's circles in one thermal. The pilot leaves at the end of the last full circle.
+The top of the thermal is the height below which nine out of ten pilots left it — the few who went higher
+are left out, so that one lucky pilot does not set the top for everyone.
+
+Pilots' names play no part and do not appear anywhere below.
+
+## What the end looks like
+
+![Two gaggles: altitude over time for every pilot, and where each one left](/img/blog/thermal-top-from-competition-tracks/exits.png)
+
+Kruševo on 26 July 2025, over flat land: 67 climbs, nearly all of them at the same rate right up to the
+line, and most of them leaving within fifty metres of each other. Chelan on 19 June 2025, a more rugged
+site: here the curves do bend over near the top, and the pilots spread out more. Both are real. The
+question is which one is typical.
+
+## The lift does not fade
+
+For every circle I divided its climb by the typical climb of the same thermal — the median over the
+circles more than 250 m below the top — and grouped the circles by how far below the top they were.
+
+![Climb of a circle against the typical climb of its thermal, by height below the top](/img/blog/thermal-top-from-competition-tracks/lift-near-top.png)
+
+<div style="overflow-x:auto">
+
+| Below the top | 500–300 m | 300–150 m | 150–100 m | 100–50 m | last 50 m |
+|---|---|---|---|---|---|
+| All thermals | 1.02–1.04 | 1.04–1.05 | 1.02 | 0.97 | 0.84 |
+| Mountains | 1.00–1.04 | 1.06–1.08 | 1.05 | 0.98 | 0.82 |
+| Hills | 1.03–1.05 | 1.04 | 1.00 | 0.94 | 0.81 |
+| Flat land | 1.02–1.03 | 1.03–1.04 | 1.01 | 0.98 | 0.90 |
+
+</div>
+
+Medians. Up to a hundred metres below the top, the climb is what it was lower down — if anything a few
+per cent better. Over the last hundred metres it drops, but not by much: in the last fifty metres pilots
+still climb at 0.84 of the thermal's usual rate, 1.3 m/s in absolute terms. Over flat land, 0.90.
+
+That does not look like a thermal running out of energy. It looks like a ceiling. On a competition day
+that is most often the cloud base, sometimes an airspace limit; the tracks do not say which, but they
+do say that the pilots are leaving air that still goes up.
+
+Two more numbers about the top. Within one thermal, the height at which pilots leave is tight: nine out
+of ten leave within 123 m of the median exit. And only 47 % of climbs get within a hundred metres of the
+top. The rest leave lower, some for tactical reasons, some because they joined late.
+
+## Your own vario cannot see it coming
+
+If the lift does not fade, your own climb says little about the top. I tried the obvious approach: fit a
+trend to the climb of your last circles and see where it would fall below 0.6 m/s. At 300 m below the
+top that gives an answer in only a quarter of the circles, off by 280 m. A warning set to sound 150 m
+before the top would fire in 42 % of climbs, and when it does, the median height left is 47 m — 25
+seconds before you leave. That is a vario telling you what you already know.
+
+## What does see it coming
+
+The pilots around you. Two things turned out to work.
+
+The first is the pilots who have just left your thermal. When someone in it stops circling and goes on
+glide, the height where they left is a sample of the top. The highest exit in the last five minutes is
+the best single estimate of all: 90 m off at 300 m below the top, 48 m off at 100 m. It is available in
+about half of the circles — you need someone who has already left above you.
+
+The second is the day. The tops of the day's earlier thermals within 20 km over the last hour tell you
+roughly where today's ceiling is: about 200 m off, but available almost always. Over sea level they work
+better than over the terrain, which is what you would expect of a cloud base: it is flat, and the ground
+under it is not.
+
+Put together — the highest recent exit in your thermal if there is one, otherwise the day's typical top
+over sea level, raised to the highest pilot still circling above you:
+
+<div style="overflow-x:auto">
+
+| Estimate of the height left | 300 m below the top | 200 m | 100 m | Available |
+|---|---|---|---|---|
+| Your own climb trend | ±279 m | ±210 m | ±160 m | 27–43 % |
+| Pilots who already left (highest exit, 5 min) | ±90 m | ±70 m | ±48 m | 53–54 % |
+| The day's tops over sea level (1 h, 20 km) | ±208 m | ±207 m | ±208 m | 95 % |
+| Combined | ±136 m | ±110 m | ±73 m | 100 % |
+
+</div>
+
+Median absolute error. The same picture as the error falls towards the top:
+
+![Error of each estimate and how often it is available, by height left to the top](/img/blog/thermal-top-from-competition-tracks/estimators.png)
+
+## A warning at 150 m
+
+With the combined estimate, the same 150 m warning fires in 93 % of the climbs that reach the top. The
+median height actually left when it sounds is 130 m (the middle half between 71 and 221 m), 72 seconds
+before the pilot leaves. It sounds more than 400 m early in 7 % of them.
+
+![Height actually left when the warning first sounds: own trend against the combined estimate](/img/blog/thermal-top-from-competition-tracks/warning.png)
+
+A minute is not much, but it is the minute that matters. It is time to decide where to go next, to pick
+up speed on the way out instead of on the last weak circle, and to leave fifty or a hundred metres before
+the gaggle without giving anything away.
+
+Competition pilots mostly do this already. Over the last stretch before they leave, 38 % of climbs have
+a tail of circles weaker than the day's average — 44 % in the mountains, 30 % over flat land — and where
+there is one, it lasts about 50 seconds and gains about 47 m. Good pilots do not waste much. What they
+have that most of us do not is a sense of where the ceiling is before they reach it.
+
+## In the app
+
+The FlyBeeper app now does this, as part of the thermal assistant — for now an experimental setting,
+off until you switch it on. A cockpit cell shows the height left to the top of the thermal you are
+in and the time to get there at your current climb, with a mark for where the estimate came from:
+neighbours who left, the day, the forecast or your own climb. The day's tops are kept on the phone until
+local midnight; the neighbours are whatever the FANET vario hears over FANET and ADS-L, plus pilots from
+the server when you are online. With nobody around, it falls back on the thermal ceiling of the weather
+forecast for the place and the hour — a number I have not tested against the tracks. When less than
+150 m is left, the app says so — "Thermal top in 140 metres", in English whatever the language of the
+app — or gives a short tone. The voice can be turned off.
+
+Before the field, a replay: three competition days — Kobarid, Aksaray and Niš — fed into the app as if
+heard over the radio, with three pilots in turn as the one carrying the phone, ADS-L once a second and
+FANET every 10 and every 30 seconds. With pilots who had already left the thermal, the app's estimate was
+off by 75–119 m over the whole climb; from the day alone, by 101–168 m. At 100 m below the top it was
+off by 67–103 m in seven of the nine runs and by about 150 m in the other two. At 300 m below the top it
+was worse than the table above, ±117–229 m: one pilot sees fewer exits above them than the whole gaggle does, and on a day when
+the tops rise towards noon the day's typical top lags behind.
+
+## Limits
+
+- The top is where the pilots left, not a measured cloud base. On competition days there is nearly
+  always a base; on a blue day the picture may be different.
+- Competition pilots leave for their own reasons: a start gate, a final glide, a leader to follow.
+- The exits of neighbours only help once someone has left above you. The first pilot to reach the top has
+  only the day and the forecast.
+- The day's typical top changes during the day. An hour-long window follows it, but late.
+- Competition days are good days, with strong, busy thermals. A weak, lonely one late in the afternoon
+  is not in this sample.
+- The radio replay assumes everyone transmits and is heard; in the air some pilots carry nothing, and
+  some packets are lost.

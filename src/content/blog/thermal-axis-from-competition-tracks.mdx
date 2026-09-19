@@ -294,29 +294,67 @@ pre-start crowd of two hundred pilots over one ridge, closer to ±0.4.
 
 The practical conclusion is about the radio. A phone with a receiver that hears FANET and ADS-L has
 everything it takes to rebuild the thermal around it from the neighbours' tracks: where the core is at
-each height, whether the column is tied to the ground or drifting, and how much. That is what goes
-into the FlyBeeper thermal assistant next, in three layers.
+each height, whether the column is tied to the ground or drifting, and how much. The FlyBeeper thermal
+assistant now does this, in three layers. For now it is an experimental setting, Thermal assistant, off
+until you switch it on.
 
-With pilots above or below you in your own thermal, the assistant fits the axis of that thermal from
-what it hears — the core at your height, not at theirs. A gaggle 300 m higher near a slope marks a
-point about 300 m downwind of where you should be looking; high above flat land they are nearly
-straight above the core, which has drifted since they found it.
+With pilots above or below you in your own thermal, it fits the axis of that thermal from what it
+hears and shows the core at your height, not at theirs, as a ring on the map with the number of pilots
+it was built from. A gaggle 300 m higher near a slope marks a point about 300 m downwind of where you
+should be looking; high above flat land they are nearly straight above the core, which has drifted since
+they found it. The ring appears as you glide towards a gaggle, before you start to turn.
+
+![The FlyBeeper app during the Kobarid replay: the black ring is the core at your height, rebuilt from 18 pilots heard over the radio](/img/blog/thermal-axis-from-competition-tracks/core-ring.png)
 
 With pilots around but not in your thermal, it takes the typical lean and drift of the thermals it has
-heard over the last half hour: on a given day, at a given site, thermals behave much alike.
+heard today: on a given day, at a given site, thermals behave much alike. The phone keeps them until local
+midnight.
 
 With nobody around, it falls back on what these 8,409 thermals say about the kind of ground below: in
 the mountains, tied down and laid over near the terrain, drifting at a little over half the wind higher
 up; over flat land, drifting at three quarters of the wind from a few hundred metres up.
 
-Either way, the old single drift factor goes. The rule the app uses today — 0.3 of the wind near the
-slope, taken from the several-pilot measurement — is about half of what you actually see in your own
-climb there. What the assistant needs is two numbers, a lean and a drift, both depending on the height
-above the terrain and on what kind of terrain it is.
+The old single drift factor is gone. It took 0.3 of the wind near the slope, from the several-pilot
+measurement — about half of what you actually see in your own climb there. For your own track the app now
+uses the sum from the tables above, for your height above the terrain and the kind of terrain. For one
+pilot that single number is still the right one: height and time move together in a climb, and splitting
+them into a lean and a drift only adds noise. On 10,881 circling segments from the same tracks, the
+centres of consecutive circles line up 7–11 m better below 600 m than with the old factor. The lean and
+the drift as separate numbers are needed where pilots at different heights come together — in the axis
+from the radio.
 
 For thermals that stay put there is a bonus: the axis extended to the ground is where the thermal
 leaves it. Collected over many days from the radio, that is a map of house thermals with the direction
-they lean on a given wind.
+they lean on a given wind. That one is not built yet.
+
+The same tracks answer the other half of the question — where the thermal ends and how to know before
+you get there. That is [the next article](/blog/thermal-top-from-competition-tracks/).
+
+## Does it work from the radio?
+
+Before the field, a replay. I took three gaggle days — Kobarid on 27 August 2023, Aksaray on 18 August
+2025 in 5 m/s of wind, Niš on 4 August 2022 over flat land — and fed each into the app as if heard over
+the radio, with three pilots in turn as the one carrying the phone: ADS-L once a second, and FANET every
+10 and every 30 seconds. The app saw only what it would have heard up to that moment. Where it put the
+core at the pilot's height was compared with the axis fitted afterwards from the full one-second tracks
+of everybody in that thermal.
+
+<div style="overflow-x:auto">
+
+| Day | Axis from the radio, share of the time in a thermal | Core from the app to the core from the full tracks | Your own circles around the same axis |
+|---|---|---|---|
+| Kobarid, mountains | 57–66 % | 52–55 m | 49 m |
+| Aksaray, wind over a plateau | 56–65 % | 53–57 m | 58 m |
+| Niš, flat land | 76–85 % | 69–78 m | 54 m |
+
+</div>
+
+Medians over the three pilots and the three kinds of radio, leaving out the few thermals where the
+full-track axis itself is implausible. The pilot's own circles scatter around the axis by 49–58 m —
+closer than that the full tracks cannot tell. In the mountains and at Aksaray the app finds the core about
+as well as the pilot circling in it. At Niš it lags: that column drifted at 0.85 of the wind, and the app,
+leaning on the typical flat-land thermal, took it at about three quarters. FANET every 30 seconds did as
+well as ADS-L every second.
 
 ## Limits
 
@@ -330,5 +368,6 @@ they lean on a given wind.
   5 pm is not in this sample.
 - The radio replay assumes everyone transmits and is heard. In the air some pilots carry no FANET or
   ADS-L at all, and some packets are lost.
+- A replay is not a flight. The app has not been checked in the air yet.
 - The calm French Open task produced one usable thermal: without wind there is nothing to lean in, and
   the method needs some.
