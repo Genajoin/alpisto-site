@@ -3,7 +3,7 @@ title: "One radio, two networks: how a FANET vario shares every second with ADS-
 description: "My vario has one radio and two networks to serve. Every second it decides which one to listen to and when to speak, and that choice decides who you see on the map. The numbers from the bench: listen to ADS-L for the whole second and FANET goes to zero; stop listening to ADS-L and FANET comes back 40 to 140 % stronger; cut the ADS-L window from 550 to 300 ms and another maker's transmitter drops from 61 % of its seconds heard to 34 %."
 pubDate: 2026-09-23
 tags: ["flybeeper", "fanet", "ads-l", "fanet-vario", "sx1262", "softrf", "ogn", "time-sync", "paragliding", "hardware", "measurement"]
-draft: true
+draft: false
 heroImage: "/img/blog/one-radio-two-networks/hero.png"
 ctaTarget: "https://market.flybeeper.com/device/fanet-vario"
 toc: true
