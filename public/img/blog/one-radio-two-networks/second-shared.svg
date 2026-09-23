@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 360" width="880" height="360" role="img" aria-label="One UTC second: FANET transmits from 0 to 200 ms, or up to 450 ms when the sky is busy; ground stations own 200 to 450 ms; aircraft transmit ADS-L in the Direct slot from 450 to 1000 ms">
+  <style>
+    .m { font-family: ui-monospace, "DejaVu Sans Mono", "Courier New", monospace; }
+    .t { fill: #0c0c0c; }
+    .mu { fill: #5a5a5a; }
+    .ac { fill: #ff5b1f; }
+  </style>
+  <rect x="0" y="0" width="880" height="360" fill="#f7f3e8"/>
+  <text class="m t" x="70" y="34" font-size="13" font-weight="700" letter-spacing="1.4">ONE UTC SECOND, SHARED</text>
+
+  <!-- scale: 70 px = 0 ms, 810 px = 1000 ms, 0.74 px per ms -->
+
+  <!-- band 1: the standard -->
+  <text class="m mu" x="70" y="70" font-size="12" letter-spacing="0.6">ADS-L, SECTION C.5</text>
+  <rect x="70" y="78" width="148" height="36" fill="#5a5a5a" opacity="0.10"/>
+  <rect x="70" y="78" width="148" height="36" fill="none" stroke="#5a5a5a" stroke-width="1.5"/>
+  <text class="m mu" x="144" y="101" font-size="11" text-anchor="middle">reserved</text>
+  <rect x="218" y="78" width="185" height="36" fill="#5a5a5a" opacity="0.22"/>
+  <rect x="218" y="78" width="185" height="36" fill="none" stroke="#5a5a5a" stroke-width="1.5"/>
+  <text class="m mu" x="310" y="101" font-size="11" text-anchor="middle">ground stations</text>
+  <rect x="403" y="78" width="407" height="36" fill="#ff5b1f" opacity="0.20"/>
+  <rect x="403" y="78" width="407" height="36" fill="none" stroke="#ff5b1f" stroke-width="1.5"/>
+  <text class="m t" x="606" y="101" font-size="11" text-anchor="middle">Direct slot: aircraft transmit ADS-L</text>
+
+  <!-- band 2: FANET transmit, quiet sky -->
+  <text class="m mu" x="70" y="140" font-size="12" letter-spacing="0.6">FANET TRANSMIT, QUIET SKY</text>
+  <rect x="70" y="148" width="148" height="30" fill="#0c0c0c" opacity="0.85"/>
+  <text class="m" x="144" y="168" font-size="11" text-anchor="middle" fill="#f7f3e8">0…200 ms</text>
+
+  <!-- band 3: FANET transmit, busy sky -->
+  <text class="m mu" x="70" y="204" font-size="12" letter-spacing="0.6">FANET TRANSMIT, TWO OR MORE OTHERS HEARD</text>
+  <rect x="70" y="212" width="333" height="30" fill="#0c0c0c" opacity="0.85"/>
+  <text class="m" x="236" y="232" font-size="11" text-anchor="middle" fill="#f7f3e8">0…450 ms</text>
+
+  <!-- band 4: our ADS-L -->
+  <text class="m mu" x="70" y="268" font-size="12" letter-spacing="0.6">OUR ADS-L FRAME: RANDOM MOMENT</text>
+  <rect x="403" y="276" width="296" height="24" fill="#ff5b1f" opacity="0.35"/>
+  <rect x="403" y="276" width="296" height="24" fill="none" stroke="#ff5b1f" stroke-width="1.5"/>
+  <text class="m t" x="551" y="293" font-size="11" text-anchor="middle">450…850 ms</text>
+
+  <!-- axis -->
+  <line x1="810" y1="304" x2="810" y2="311" stroke="#5a5a5a" stroke-width="1.5"/>
+  <line x1="403" y1="304" x2="403" y2="311" stroke="#5a5a5a" stroke-width="1.5"/>
+  <line x1="218" y1="304" x2="218" y2="311" stroke="#5a5a5a" stroke-width="1.5"/>
+  <line x1="70" y1="304" x2="70" y2="311" stroke="#5a5a5a" stroke-width="1.5"/>
+  <text class="m mu" x="70" y="324" font-size="11" text-anchor="middle">0</text>
+  <text class="m mu" x="218" y="324" font-size="11" text-anchor="middle">200</text>
+  <text class="m mu" x="403" y="324" font-size="11" text-anchor="middle">450</text>
+  <text class="m mu" x="810" y="324" font-size="11" text-anchor="middle">1000 ms</text>
+  <text class="m mu" x="440" y="348" font-size="11" text-anchor="middle">Inside each window the moment is drawn at random, afresh every second.</text>
+</svg>
