@@ -1,6 +1,6 @@
 ---
-title: "The lift does not fade: where 11,046 competition thermals end, and how to know before you get there"
-description: "The usual advice is to leave a thermal when it weakens. In 11,046 thermals from competition tracks it hardly weakens at all: pilots climb at full rate to within a hundred metres of the top, and the last fifty metres still give most of it. The top is a ceiling, and your own vario cannot see a ceiling coming. The pilots around you can: the ones who have already left, and the tops of the day's earlier thermals, tell you how much is left to within about a hundred metres, a minute before you get there."
+title: "The lift does not fade: where 11,046 competition thermals end and how to see it coming"
+description: "In 11,046 competition thermals the lift hardly fades: pilots climb at full rate almost to the top, so your own vario cannot warn you. The pilots who left before you and the day's earlier tops can, about a minute ahead."
 pubDate: 2026-09-20
 tags: ["flybeeper", "fanet-vario", "fanet", "ads-l", "thermal-soaring", "paragliding", "igc", "competition", "data-analysis", "meteorology", "measurement", "python"]
 draft: false
@@ -23,7 +23,8 @@ own climb gives you a warning? Or does it keep going and stop?
 The same competition tracks as in [the article about the thermal's axis](/blog/thermal-axis-from-competition-tracks/):
 every paragliding competition on [airscore.fai.org](https://airscore.fai.org) with a working track
 archive, one fix per second, plus two of my own free-flying days at Kobarid. The circles of every pilot
-are grouped into thermals the same way — by ten-minute slices and the most populated axis in each.
+are grouped into thermals the same way: the gaggle is cut into ten-minute slices, and in each slice I take
+the axis that has the most circles around it. The axis article explains how.
 
 For this question a thermal needs at least three pilots and 250 m of height between the lowest and the
 highest circle. That leaves 11,046 thermals: 4,158 in the mountains, 3,095 over hills and 3,793 over flat
@@ -51,6 +52,10 @@ circles more than 250 m below the top — and grouped the circles by how far bel
 
 ![Climb of a circle against the typical climb of its thermal, by height below the top](/img/blog/thermal-top-from-competition-tracks/lift-near-top.png)
 
+In the table, 1.00 is the typical climb of that thermal. The circles are counted in 50 m bands. The
+first two columns hold several bands each, so they show the lowest and the highest band, for example
+1.02–1.04.
+
 <div style="overflow-x:auto">
 
 | Below the top | 500–300 m | 300–150 m | 150–100 m | 100–50 m | last 50 m |
@@ -71,16 +76,16 @@ that is most often the cloud base, sometimes an airspace limit; the tracks do no
 do say that the pilots are leaving air that still goes up.
 
 Two more numbers about the top. Within one thermal, the height at which pilots leave is tight: nine out
-of ten leave within 123 m of the median exit. And only 47 % of climbs get within a hundred metres of the
-top. The rest leave lower, some for tactical reasons, some because they joined late.
+of ten leave within 123 m of the median exit. And fewer than half of all climbs, 47 %, get within a
+hundred metres of the top. The rest leave lower, some for tactical reasons, some because they joined late.
 
 ## Your own vario cannot see it coming
 
 If the lift does not fade, your own climb says little about the top. I tried the obvious approach: fit a
 trend to the climb of your last circles and see where it would fall below 0.6 m/s. At 300 m below the
 top that gives an answer in only a quarter of the circles, off by 280 m. A warning set to sound 150 m
-before the top would fire in 42 % of climbs, and when it does, the median height left is 47 m — 25
-seconds before you leave. That is a vario telling you what you already know.
+before the top would fire in 42 % of the climbs that got within a hundred metres of the top. When it
+does fire, the pilot has a median of 47 m left to the top, 25 seconds before leaving. That is a vario telling you what you already know.
 
 ## What does see it coming
 
@@ -92,12 +97,18 @@ the best single estimate of all: 90 m off at 300 m below the top, 48 m off at 10
 about half of the circles — you need someone who has already left above you.
 
 The second is the day. The tops of the day's earlier thermals within 20 km over the last hour tell you
-roughly where today's ceiling is: about 200 m off, but available almost always. Over sea level they work
-better than over the terrain, which is what you would expect of a cloud base: it is flat, and the ground
-under it is not.
+roughly where today's ceiling is: about 200 m off, but available almost always. They work better as
+height above sea level than as height above the ground. That is what you would expect of a cloud base:
+it is flat, and the ground under it is not.
 
-Put together — the highest recent exit in your thermal if there is one, otherwise the day's typical top
-over sea level, raised to the highest pilot still circling above you:
+Put together, the combined estimate takes three steps:
+
+1. Take the highest exit from your thermal in the last five minutes, if there is one.
+2. If there is none, take the day's typical top, as height above sea level.
+3. If a pilot still circling above you is higher than that, raise the estimate to their height.
+
+In the table, ± is the median absolute error. Available is how often the estimate exists at all. It is
+a range because it changes with height: the first number is at 300 m below the top, the second at 100 m.
 
 <div style="overflow-x:auto">
 
@@ -110,15 +121,16 @@ over sea level, raised to the highest pilot still circling above you:
 
 </div>
 
-Median absolute error. The same picture as the error falls towards the top:
+The same picture as the error falls towards the top:
 
 ![Error of each estimate and how often it is available, by height left to the top](/img/blog/thermal-top-from-competition-tracks/estimators.png)
 
 ## A warning at 150 m
 
-With the combined estimate, the same 150 m warning fires in 93 % of the climbs that reach the top. The
+With the combined estimate, the same 150 m warning fires in 93 % of the climbs that got within a hundred
+metres of the top. The
 median height actually left when it sounds is 130 m (the middle half between 71 and 221 m), 72 seconds
-before the pilot leaves. It sounds more than 400 m early in 7 % of them.
+before the pilot leaves. In 7 % of them it sounds with more than 400 m still left to the top.
 
 ![Height actually left when the warning first sounds: own trend against the combined estimate](/img/blog/thermal-top-from-competition-tracks/warning.png)
 
@@ -127,8 +139,10 @@ up speed on the way out instead of on the last weak circle, and to leave fifty o
 the gaggle without giving anything away.
 
 Competition pilots mostly do this already. Over the last stretch before they leave, 38 % of climbs have
-a tail of circles weaker than the day's average — 44 % in the mountains, 30 % over flat land — and where
-there is one, it lasts about 50 seconds and gains about 47 m. Good pilots do not waste much. What they
+a tail of circles weaker than the day's average: 44 % in the mountains, 30 % over flat land. The day's
+average here is the median climb rate of all that day's climbs, not the typical climb of this thermal
+from the first table. Where there is a tail, it lasts about 50 seconds, and the pilot gains about 47 m of
+height in it. Good pilots do not waste much. What they
 have that most of us do not is a sense of where the ceiling is before they reach it.
 
 ## In the app
@@ -148,8 +162,10 @@ heard over the radio, with three pilots in turn as the one carrying the phone, A
 FANET every 10 and every 30 seconds. With pilots who had already left the thermal, the app's estimate was
 off by 75–119 m over the whole climb; from the day alone, by 101–168 m. At 100 m below the top it was
 off by 67–103 m in seven of the nine runs and by about 150 m in the other two. At 300 m below the top it
-was worse than the table above, ±117–229 m: one pilot sees fewer exits above them than the whole gaggle does, and on a day when
-the tops rise towards noon the day's typical top lags behind.
+was off by 117 to 229 m. The combined estimate in the table above is off by 136 m there, so the best run
+was a little better than the table and the worst clearly worse. One pilot sees fewer exits above them
+than the whole gaggle does, and on a day when the tops rise towards noon the day's typical top lags
+behind.
 
 ## Limits
 
