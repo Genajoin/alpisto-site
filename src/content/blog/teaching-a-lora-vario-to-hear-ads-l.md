@@ -1,6 +1,6 @@
 ---
-title: "Teaching a LoRa vario to hear ADS-L — and finding the time to do it"
-description: "Every ADS-L receiver takes its clock from GNSS. My vario has no GNSS by design — the position comes from the phone in your harness. So I took the UTC second from the phone too, over Bluetooth, and measured how bad that channel really is. Good enough with room to spare: the share of frames the device caught went from 15 % to between 50 and 100 %."
+title: "Teaching a LoRa vario to hear ADS-L, and finding the time to do it"
+description: "An ADS-L receiver must know when each UTC second starts, and receivers normally get that from GNSS. My vario has no GNSS on purpose: its position comes from the pilot's phone. So I took the time from the phone too, over Bluetooth, and measured how accurate that is. It is accurate enough, with room to spare: the share of frames the device caught went from 15 % to between 50 and 100 %."
 pubDate: 2026-08-25
 tags: ["flybeeper", "fanet", "ads-l", "sx1262", "gfsk", "ble", "time-sync", "nrf52", "zephyr", "ogn", "paragliding", "hardware"]
 draft: false
@@ -10,208 +10,235 @@ toc: true
 ---
 
 In July I wrote about [where the line actually is](/blog/flarm-fanet-ads-l-where-the-line-is/)
-between FLARM, FANET and ADS-L, and ended on a promise: ADS-L goes on the moment it is worth
-switching on. This month I found out what that costs.
+between FLARM, FANET and ADS-L. I ended with a promise: ADS-L goes on as soon as it is worth
+switching on. This month I found out what that takes.
 
-It turned out not to be a radio problem. The radio took a week. What decided whether any of it
-worked was a clock — and my device does not have one.
+My vario talks FANET over LoRa, a long-range, low-power radio technique. Teaching it to also hear
+ADS-L turned out not to be a radio problem. The radio took a week. What decided whether any of it
+worked was a clock, and my device does not have one.
 
-A lab notebook, then. One board transmitting a metre from another on a desk, receive only.
+So this is a lab notebook. Two boards on a desk, a metre apart. One transmits, the other only
+receives.
 
-## ADS-L, in plain words
+## What ADS-L is, and why a paraglider pilot should care
 
-ADS-L is Europe's open answer to see-and-be-seen in light aviation. EASA publishes the
-specification, anyone may implement it, and there is no licence to negotiate — which is exactly
-what FLARM is not. The part that concerns me is
+ADS-L is Europe's open system for light aircraft to broadcast their position so that others can see
+them. EASA, the EU aviation safety agency, publishes the specification. Anyone may implement it, and
+there is no licence to negotiate. FLARM, the collision warning system that gliders carry, is the
+opposite on exactly that point. The part of ADS-L that concerns me is
 [ADS-L 4 SRD860](https://www.easa.europa.eu/en/document-library/agency-decisions/ed-decision-2022024r),
 currently Issue 2.
 
-Why a paraglider pilot should care is arithmetic about who else is up there. FANET shows you other
-free-flight pilots, and nothing about the sailplane converging on your thermal, because gliders do
-not speak FANET. ADS-L is the language they are being pointed at.
+Why should a paraglider pilot care? Because of who else is in the air. FANET shows you other
+free-flight pilots. It shows you nothing about the sailplane heading into your thermal, because
+gliders do not speak FANET. ADS-L is the language gliders are being pointed towards.
 
-It is also closer than it looks, which was the argument of the July article: Open Glider Network
-stations across Europe already decode ADS-L, and the PowerFLARM modules gliders already carry are
-gaining ADS-L transmission as a paid extension. And it runs on 868 MHz, where my radio already
-sits — firmware work, not a new board.
+It is also closer than it looks. That was the point of the July article. Open Glider Network (OGN)
+stations, ground receivers spread across Europe, already decode ADS-L. The PowerFLARM modules that
+gliders already carry are getting ADS-L transmission as a paid extension. And ADS-L runs on
+868 MHz, the band my radio already uses. So this is firmware work, not a new board.
 
-## Everything in ADS-L hangs on the whole second
+## Everything in ADS-L depends on the start of the second
 
-The air interface on a napkin. Two channels, 868.2 and 868.4 MHz, alternating between
-transmissions. Aircraft transmit in a window running from 450 to 1000 ms after each whole UTC
-second — the Direct slot, section `C.5`. And no position may go on the air more than 500 ms old
-(`G.1.16`).
+Here is the ADS-L radio scheme in short.
 
-From the receiver's side that says something useful. Traffic arrives in a little over half of each
-second; the rest is empty. Point your receiver at the busy half and you hear everyone. Get the
-phase wrong and you hear almost nobody, however hard you listen.
+There are two channels, 868.2 and 868.4 MHz, and transmissions alternate between them. Aircraft
+transmit only in a fixed time window, from 450 to 1000 ms after the start of each UTC second. UTC is
+the world's reference time, and a UTC second is one whole second on that clock. The standard calls
+this window the Direct slot (section `C.5`). A slot is simply a reserved time window. The standard
+also says that no position may go on the air more than 500 ms old (`G.1.16`).
 
-The standard is blunt about where a transmitter gets that second: "an accurate time base, e.g.
-obtained from a GNSS source or a network". Everyone uses GNSS, which hands out a pulse per second
-good to tens of nanoseconds.
+For a receiver, this is useful. All the traffic arrives in a little over half of each second. The
+rest of the second is empty. If you listen during the busy half, you hear everyone. If you listen at
+the wrong moment, you hear almost nobody, however long you listen.
 
-So a receiver needs one number: when the current UTC second began, to much better than the 550 ms
-width of the slot.
+The standard is direct about where a transmitter gets its time: "an accurate time base, e.g.
+obtained from a GNSS source or a network". GNSS is satellite navigation, such as GPS or Galileo.
+Everyone uses it, because a GNSS receiver gives out a pulse every second that is accurate to tens
+of nanoseconds.
+
+So a receiver needs one number: when the current UTC second began. It needs it much more precisely
+than 550 ms, the length of the slot.
 
 ## My device has no GNSS, and that is deliberate
 
 The [FANET Vario](/blog/flybeeper-fanet-vario/) has no satellite receiver. The position it
-broadcasts arrives over Bluetooth from the phone in your harness. That is the founding decision of
-the product line: a GNSS chip is milliamps, grams and euros spent duplicating a receiver the pilot
+broadcasts comes over Bluetooth from the phone in your harness. That is the founding decision of the
+product line. A GNSS chip costs milliamps, grams and euros, only to duplicate a receiver the pilot
 already carries.
 
-Which leaves the clock nowhere to come from. Without one, a receiver can only sweep: let the
-listening window walk across the phase of the second so that it at least visits the right part now
-and then. A third of every second spent that way catches about 15 % of the traffic. The rest
-arrives while you are pointed at the empty half.
+But it means the device has no source of accurate time. Without it, a receiver can only sweep: it
+moves its listening window across the second, so that it at least hits the busy half now and then.
+Spending a third of every second this way catches about 15 % of the traffic. The rest arrives while
+the receiver is listening to the empty half.
 
-The fix is almost embarrassingly obvious. The phone knows UTC. The phone is already connected. Let
-it hand over the second along with the position.
+The fix is almost embarrassingly obvious. The phone knows UTC. The phone is already connected. So
+let the phone send the time along with the position.
 
-So: does a whole second survive a Bluetooth LE link well enough to aim a 550 ms window?
+The question then is this. Bluetooth Low Energy (BLE) is the low-power Bluetooth that phones use to
+talk to small devices. Can the start of a second travel over a BLE link accurately enough to place a
+550 ms window?
 
-## The answer, before the method
+## The short answer
 
 Yes, with room to spare.
 
-From a phone running my app, the device's idea of UTC landed within 2 ms of the phone's: 0.0 ms
-right after synchronising, 1.9 ms out a minute later with no drift correction at all. In a 550 ms
-window that costs 0.4 % of the traffic. The worst case I could construct — a slow link, ten minutes
-without a resync — is under 80 ms, or 15 % of frames.
+I synchronised the device from a phone running my app. The device's idea of UTC landed within 2 ms
+of the phone's. It was 0.0 ms off right after syncing, and 1.9 ms off a minute later, with no drift
+correction at all. In a 550 ms window, that error loses 0.4 % of the traffic. The worst case I could
+construct was a slow link and ten minutes without a resync. Even then the error stays under 80 ms,
+which loses 15 % of frames.
 
-On the bench the share of transmitted frames the receiver caught went from 15.6 % to between 50 and
-100 %, for the same share of listening time.
+On the bench, the share of transmitted frames the receiver caught went from 15.6 % to between 50
+and 100 %, for the same share of listening time.
 
-The rest of this is how those numbers were measured, and the two ways I fooled myself first.
+The rest of this article is how I measured those numbers, and the two ways I fooled myself first.
 
 ## One radio, two protocols
 
-A correction of something I have said carelessly before: "the chip is either a LoRa receiver or a
-GFSK receiver, never both". True of my hardware, not of radios in general. A single-path chip like
-the SX1262 has one route from the antenna to one demodulator, so it holds one packet type at a
-time. Chips and modules with two receive paths do exist and really do hear both — for more money,
-board area and current, which is why they are not in a solar instrument living off a small panel.
+First, a correction. I have said before, carelessly, that "the chip is either a LoRa receiver or a
+GFSK receiver, never both". LoRa and GFSK are two different ways of putting data on a radio wave.
+FANET uses LoRa, ADS-L uses GFSK. My sentence is true of my hardware, but not of radios in general.
 
-So here FANET and ADS-L take turns, and taking turns costs packets from both. If "FANET + ADS-L"
-ever goes on a product page, that sentence goes next to it.
+My radio chip, the SX1262, has a single receive path: one route from the antenna to one
+demodulator, the part that turns the signal back into bits. So it can receive only one packet type
+at a time. Chips and modules with two receive paths do exist, and they really do hear both. They
+cost more money, more board space and more current. That is why they are not in a solar instrument
+that lives off a small panel.
 
-The radio thread therefore got a scheduler: a slot table and a timer tick. Switching is not free,
-so I measured 73 switches first.
+So on my device FANET and ADS-L take turns, and taking turns costs packets from both. If
+"FANET + ADS-L" ever appears on a product page, that sentence will go next to it.
+
+To manage the turns, the radio code got a scheduler: a table of time slots and a timer. Switching
+between protocols takes time, so first I measured 73 switches.
 
 | Transition | Measured |
 |---|---|
 | FANET → ADS-L (reconfigure, start receiving) | 8148…8210 µs |
 | ADS-L → FANET (restore config, restart receiving) | 13763…14374 µs |
 
-Two switches a second is about 22 ms of every second spent being neither protocol, repeatable to
-tens of microseconds — which matters later.
+Two switches a second take about 22 ms of every second. During that time the radio listens to
+neither protocol. The switch time repeats to within tens of microseconds, which matters later.
 
-The cycle was deliberately not a multiple of a second — 900 ms of FANET plus 400 ms of ADS-L — so
-that the listening window walks the phase of the second instead of parking in one part of it
+I made the cycle deliberately not a multiple of one second: 900 ms of FANET, then 400 ms of ADS-L.
+That way the ADS-L window drifts across the second instead of sitting in the same part of it
 forever. With no clock, sweeping is the honest strategy.
 
-It also sets the ceiling. Spending 31 % of every second on ADS-L caught 28 frames out of 180 —
-15.6 %. More duty cycle cannot fix that. The problem was never how much you listen. It is when.
+It also sets a hard limit. Spending 31 % of every second on ADS-L caught 28 frames out of 180, which
+is 15.6 %. Listening more would not fix that. The problem was never how much you listen. It is when
+you listen.
 
-## How bad a clock channel is Bluetooth?
+## How good a clock channel is Bluetooth?
 
-Before synchronising anything, measure the transport. So I added a ping: the host writes an opcode
-and a sequence number, and the device replies with two timestamps of its own, taken at the first
-and the last instant it touches the request. Their difference is the device's own processing, which
-the host subtracts out. The maths is NTP with the serial numbers filed off:
+Before synchronising anything, I measured the link itself. I added a ping command. The host, a
+laptop or a phone, sends a command code and a sequence number. The device replies with two
+timestamps from its own clock: the moment it first touched the request and the moment it last
+touched it. The difference between them is the device's own processing time, and the host subtracts
+it. This is the same maths that NTP, the protocol computers use to set their clocks over the
+internet, is built on:
 
 ```
 RTT_net = (t_recv − t_send) − (t_dev_tx − t_dev_rx)
 θ       = ((t_dev_rx − t_send) + (t_dev_tx − t_recv)) / 2
 ```
 
-θ, the device's clock minus the host's, is taken from the fastest exchanges of a run — on an
-asymmetric link those are the least wrong.
+RTT_net is the round-trip time of the link alone: how long a message takes to reach the device and
+come back, minus the device's processing. θ (theta) is the clock offset: the device's clock minus the
+host's. I take θ from the fastest exchanges in a run. When a link is not equally fast in both
+directions, the fastest exchanges are the least wrong.
 
 ![Bar chart of Bluetooth LE round-trip time, device processing removed, for four link configurations](/img/blog/teaching-a-lora-vario-to-hear-ads-l/ble-rtt-by-link.svg)
 *Same firmware, same command, four transports. The bars measure the link, not the device.*
 
-One blunt law explains the whole chart: the round trip is about twice the connection interval.
-Force the link to a 7.5 ms interval and the median collapses to 17.9 ms; let the firmware ask for
-its preferred 30–50 ms and it jumps back to about 70. A phone obeys the same law — asking Android
-for a high-priority connection took the median from 83.6 to 40.5 ms.
+One simple rule explains the whole chart: the round trip takes about twice the connection interval.
+The connection interval is how often two BLE devices agree to exchange data. Force the link to a
+7.5 ms interval, and the median round trip drops to 17.9 ms. Let the firmware ask for its preferred
+30–50 ms, and it jumps back to about 70 ms. A phone follows the same rule. Asking Android for a
+high-priority connection cut the median from 83.6 to 40.5 ms.
 
-Two numbers stayed put. Processing on the device: 122 µs median, 336 µs at worst, invisible next to
-the link. And losses: about 5800 pings on the bench, 858 more from the phone, not one dropped.
-Bluetooth here is not lossy. It is just late, and unevenly late.
+Two numbers did not change. Processing on the device took 122 µs median and 336 µs at worst, which
+is invisible next to the link. And nothing was lost: about 5800 pings on the bench and 858 more from
+the phone, and not one was dropped. Bluetooth here does not lose messages. It is just late, and late
+by uneven amounts.
 
-Then the crystals: one device runs 26 to 29 ppm slow, the other 73 to 82 ppm fast — 105 ppm apart,
-ordinary for a 32.768 kHz watch crystal, worth 5 ms a minute on the worse one.
+Then the crystals. Each device keeps time with a small quartz crystal, and no crystal is exact. The
+error is measured in ppm, parts per million. One of my devices runs 26 to 29 ppm slow, the other 73
+to 82 ppm fast. That is 105 ppm apart, which is ordinary for a 32.768 kHz watch crystal. On the
+worse unit it adds up to 5 ms a minute.
 
-And one trap, which cost me an afternoon. Estimating that drift rate from a short burst of pings
-produces garbage: the noise on θ is quantised by the connection interval, not Gaussian, so a
-least-squares fit describes the quantisation. One burst came out at −896 ppm; the device dutifully
-subtracted it and drifted 134 ms in 150 seconds, far worse than no correction at all. The fix is a
-sanity gate — fit only runs of 30 seconds or more, and reject anything beyond ±200 ppm.
+One trap cost me an afternoon. If you estimate that drift rate from a short burst of pings, you get
+garbage. The error in θ is not smooth random noise. It comes in steps set by the connection interval,
+so a least-squares line fitted to a short burst describes those steps, not the drift. One burst gave
+−896 ppm. The device dutifully corrected for it and drifted 134 ms in 150 seconds, far worse than no
+correction at all. The fix is a sanity check: fit only runs of 30 seconds or longer, and reject any
+result beyond ±200 ppm.
 
-Three terms, then:
+So the total error has three parts:
 
-| Term | Default link (interval 30–50 ms) | Fast link (interval 7.5 ms) |
+| Part of the error | Default link (interval 30–50 ms) | Fast link (interval 7.5 ms) |
 |---|---|---|
-| Systematic, from the link's asymmetry (±RTT_net_min / 2) | ±28…34 ms | ±7.7 ms |
-| Repeatability of θ across the best samples | 1.7…8.4 ms | 1.4 ms |
+| Fixed error because the link is not equally fast both ways (±RTT_net_min / 2) | ±28…34 ms | ±7.7 ms |
+| How much θ varies across the best samples | 1.7…8.4 ms | 1.4 ms |
 | Drift until the next resync (82 ppm, worse unit) | 4.9 ms/min | 4.9 ms/min |
 
-The window is exactly as long as the slot, so there is no margin to hide in: an error of *e* loses
-*e*/550 of the traffic.
+The receive window is exactly as long as the slot, so there is no spare margin to hide in. An error
+of *e* loses *e*/550 of the traffic.
 
-Is Bluetooth good enough as a clock channel? Yes. On the slow link with no resynchronisation for
-ten minutes the three terms add up to under 80 ms, which costs at most 15 % of frames. On a fast
-link with a resync once a minute the budget is about 10 ms, or 2 %.
+So is Bluetooth good enough as a clock channel? Yes. On the slow link, with no resync for ten
+minutes, the three parts add up to under 80 ms. That costs at most 15 % of frames. On a fast link
+with a resync once a minute, the total is about 10 ms, or 2 %.
 
 ## A clock inside the device
 
-The device keeps two numbers: an offset and a rate. The host says "at your uptime X, my UTC was Y";
-the device stores the difference and how many parts per million fast its own clock runs. Asked the
-time, it answers:
+The device keeps two numbers: an offset and a rate. Its uptime is its own counter of time since it
+was switched on. The host tells it: "at your uptime X, my UTC was Y". The device stores the
+difference, which is the offset. It also stores how many ppm fast its own clock runs, which is the
+rate. When asked for the time, it answers:
 
 $$ \text{UTC}(t) = t + \text{offset} - \text{rate}\cdot(t - t_{\text{sync}}) $$
 
-All in microseconds on a 64-bit scale, because the uptime stamps crossing the link are the low 32
-bits of a counter that wraps every 71.6 minutes; the device expands each one by picking the
-candidate nearest to now.
+All of this is in microseconds, stored as 64-bit numbers. That is needed because the uptime stamps
+sent over the link are only the lower 32 bits of a counter, and that counter wraps around every
+71.6 minutes. The device restores each full value by picking the candidate nearest to the current
+time.
 
-Measured as residual — the device's estimate of UTC minus the host's at the same instant:
+I measured the residual: the device's estimate of UTC minus the host's, at the same instant.
 
 | Device | Right after sync | ~155 s later, no rate correction | ~155 s later, with it |
 |---|---|---|---|
 | Unit 1 | −0.1…−0.7 ms | +13.3 / +13.0 ms | +5.4 ms (rate +55 ppm) |
 | Unit 2 | −0.0…−1.0 ms | −11.1 / −6.7 ms | −0.0 ms (rate −38 ppm) |
 
-Unit 1 drifting +13 ms in 155 seconds is about +85 ppm — the same unit that measured +73 and
+Unit 1 drifting +13 ms in 155 seconds is about +85 ppm. It is the same unit that measured +73 and
 +82 ppm in the ping runs. Different method, same crystal, same answer.
 
-Two mistakes in method turned up on the way, both the kind that produce beautiful wrong numbers.
+Two mistakes in method turned up on the way. Both produce beautiful wrong numbers.
 
-A residual measured against a stale θ is meaningless: the conversion from device uptime to host
-time drifts at exactly the rate the device's clock does, the two cancel, and the metric ends up
-showing the compensation instead of its result. Every drift check starts with fresh pings.
+The first: a residual measured against an old θ means nothing. The conversion from device uptime to
+host time drifts at exactly the same rate as the device's clock. The two cancel out, and the
+measurement shows the correction itself instead of its result. So every drift check starts with
+fresh pings.
 
-And "now", for computing when the window opens, has to be sampled after the radio switch, not
-before: the 14 ms of switching back was being charged to the deadline, the window opened 13 ms
-late, and the start of the Direct slot was lost. I caught it only because the first aligned run
-measured 531 ms of reception instead of 551.
+The second: "now", used to work out when the window opens, must be read after the radio switch, not
+before. I was reading it before. So the 14 ms switch back was taken out of the deadline, the window
+opened 13 ms late, and the start of the Direct slot was lost. I only caught it because the first
+aligned run measured 531 ms of reception instead of 551.
 
 ![Diagram of one UTC second showing the ADS-L Direct slot from 450 to 1000 ms, the receive window opened 9 ms early, and FANET holding the radio for the rest of the second](/img/blog/teaching-a-lora-vario-to-hear-ads-l/utc-second-window.svg)
 *One second of radio time, aligned. The dark slivers are the switches.*
 
-With that fixed, and the window opened 9 ms early because the switch takes 8.1 to 8.2 ms and the
-receiver must be listening already at 450 ms, the device gets 550.9 ms of real reception per window
-on a period of 1000.2 ms — and hands the other 440-odd ms of each second back to FANET.
+With that fixed, the window now opens 9 ms early. The switch takes 8.1 to 8.2 ms, and the receiver
+must already be listening at 450 ms. The device gets 550.9 ms of real reception per window, once
+every 1000.2 ms. The other 440-odd ms of each second go back to FANET.
 
 ## What the alignment bought
 
-Same bench, same transmitter: a dev-kit sending one frame a second at −9 dBm on 868.2 only, 180
-frames per run.
+Same bench, same transmitter: a development kit sending one frame a second at −9 dBm, on 868.2 MHz
+only. Each run is 180 frames.
 
 | Run | Receiver mode | Time on ADS-L | Frames caught |
 |---|---|---|---|
-| A | free-running 900/400 slots, both channels, no alignment | 31 % | 28/180 = 15.6 % |
+| A | sweeping 900/400 ms cycle, both channels, no alignment | 31 % | 28/180 = 15.6 % |
 | B | aligned every second, both channels | 55 % | 90/180 = 50.0 % |
 | C | aligned every second, one channel | 55 % | 180/180 = 100 % |
 | D | aligned every other second, one channel | 28 % | 90/180 = 50.0 % |
@@ -219,89 +246,101 @@ frames per run.
 ![Bar chart comparing time spent on ADS-L against frames caught for runs A to D](/img/blog/teaching-a-lora-vario-to-hear-ads-l/catch-rate-runs.svg)
 *Grey is how much of each second the radio spent on ADS-L; orange is what came back for it.*
 
-A to C is 15.6 % to 100 % for the same order of listening time, with not one dropped frame and not
-one CRC failure in any run.
+From A to C the catch rate goes from 15.6 % to 100 %, for the same order of listening time. Not one
+frame was dropped in any run. A CRC is a checksum that detects damaged packets, and not one CRC check
+failed either.
 
-B is half of C for an honest reason: half of B's windows listen on 868.4 while my bench transmitter
-only ever uses 868.2. Real aircraft alternate channels frame by frame, so in the air an alternating
-receiver and one camped on a single channel both catch about half. C's 100 % is a bench artefact;
-B, around 50 %, is the number to expect.
+B is half of C for a simple reason. Half of B's windows listen on 868.4 MHz, but my bench
+transmitter only uses 868.2. Real aircraft alternate channels frame by frame. So in the air, a
+receiver that alternates and a receiver that stays on one channel both catch about half. C's 100 %
+is a bench artefact. B's 50 % or so is the number to expect.
 
-D is the interesting one: half as much time on ADS-L for the same catch rate, with the whole gap
-between windows handed back to FANET.
+D is the interesting one. It spends half as much time on ADS-L and gets the same catch rate. The
+whole gap between its windows goes back to FANET.
 
-Then the test that matters: a phone instead of a laptop, my app instead of a Python script,
-Android's scheduler fighting for every packet. It synchronised the device to 0.0 ms residual
-immediately and 1.9 ms after a minute, with no rate compensation. Aligned windows opened at about
-0.6 per second, and the transmitter's aircraft appeared on the map in the app — decoded from a
-frame a vario pulled out of the air in a 550 ms window it had aimed with a clock it got over
+Then the test that matters: a phone instead of a laptop, my app instead of a Python script, and
+Android's scheduler competing for every packet. The phone synchronised the device to 0.0 ms residual
+straight away, and 1.9 ms after a minute, with no rate correction. Aligned windows opened about
+0.6 times per second. And the transmitter's aircraft appeared on the map in the app. That position
+was decoded from a frame a vario caught in a 550 ms window, aimed with a clock it got over
 Bluetooth.
 
-The yield there was about 26 %, which is exactly right: listening every other second halves it,
-alternating channels halves it again, and the transmitter only ever speaks on one of the two.
+The catch rate there was about 26 %, which is exactly as expected. Listening every other second
+halves it. Alternating channels halves it again, because the transmitter only ever uses one of the
+two.
 
 The radio work was a week of opcodes. The clock work was three days of not believing the first
 number I got.
 
 ## What is next, and what I have not solved
 
-Transmitting is the next step, not a door I am closing. What blocked it was never the radio; it was
-the absence of a UTC second I would stand behind, and that is exactly what this month produced.
+Transmitting is the next step. I am not closing that door. What blocked it was never the radio. It
+was the lack of a UTC second I would stand behind, and that is exactly what this month produced.
 
-The rest of that question is regulatory rather than technical. ADS-L itself is open — no licence to
-negotiate, unlike FLARM, and that argument is settled. But a device sold in the EU that transmits
-on 868 MHz has to meet the ETSI requirements under the Radio Equipment Directive, respect duty
-cycle and polite spectrum access, and carry a declaration of conformity with my name on it. I am an
-engineer, not a lawyer.
+The rest of that question is about regulation, not engineering. ADS-L itself is open: unlike FLARM,
+there is no licence to negotiate, and that point is settled. But a device sold in the EU that
+transmits on 868 MHz has to meet the ETSI requirements under the Radio Equipment Directive. ETSI is
+the European body that writes these radio standards. The device must keep to duty cycle limits,
+that is, limits on how much of the time it may transmit, and must share the band politely. And it
+must carry a declaration of conformity with my name on it. I am an engineer, not a lawyer.
 
-Field trials come first regardless. Everything above is a cooperative transmitter on a desk; real
-traffic arrives at the noise floor, from aircraft with their own idea of when the second starts.
-Until I have flown with it, the honest claim is "it decodes ADS-L on the bench", not "it sees
-gliders".
+Field trials come first anyway. Everything above is one cooperative transmitter on a desk. Real
+traffic arrives at the noise floor, barely above the background noise, from aircraft that each have
+their own idea of when the second starts. Until I have flown with it, the honest claim is "it decodes
+ADS-L on the bench", not "it sees gliders".
 
-Channel alternation should get smarter too: two windows inside one second, 450 to 725 and 725 to
-1000, would sweep both channels every second instead of alternate ones, for two extra switches per
-second — about 22 ms/s.
+Channel switching should also get smarter. Two windows inside one second, from 450 to 725 ms and
+from 725 to 1000 ms, would cover both channels every second instead of every other second. The cost
+is two extra switches per second, about 22 ms per second.
 
-And FANET is next in line for the same treatment: the command channel I built for ADS-L — typed
-opcodes, typed notifications, a reserved byte for the regional profile — is the shape the FANET
-side should have had all along.
+And FANET is next in line for the same treatment. For ADS-L I built a command channel between the
+phone and the device: typed commands, typed notifications, and a reserved byte for the regional
+profile. That is the shape the FANET side should have had all along.
 
 ## For the curious: what the radio had to be talked into
 
-None of what follows is needed to follow the argument above.
+You do not need this section to follow the rest of the article.
 
-ADS-L's M-band is plain 2-GFSK, which the SX1262 does perfectly well. Three details are not in the
-chip. Manchester coding: the SX1276 had it in hardware, the SX1262 does not, so it is a software
-codec and every buffer doubles. The preamble ends in `1001 1001`, which the chip's `0x55`/`0xAA`
-detector will never match — the trick is to make that trailing byte the first byte of a five-byte
-sync word, `99 95 A6 9A 65`, whose other four bytes are Manchester-encoded
-`0x724B`. And the CRC-24 on the Mode-S polynomial sits inside the Manchester stream with the length
-field, where the chip's parser reaches neither — so hardware CRC off, receive a fixed 60-byte block,
-cut it down in software.
+ADS-L's M-band uses plain 2-GFSK, which the SX1262 handles perfectly well. But three details are not
+built into the chip.
 
-The payload is scrambled with XXTEA, which sounds like security and is not: at key index 0 the key
-is all zeros and the algorithm is printed in the standard. It is obfuscation — a corrupted packet
+Manchester coding. This scheme sends every bit as a pair of opposite bits. The older SX1276 chip did
+it in hardware. The SX1262 does not, so it is done in software, and every buffer doubles in size.
+
+The preamble. This is the fixed pattern at the start of a packet that tells the receiver a packet is
+coming. The ADS-L preamble ends in `1001 1001`, and the chip's preamble detector, which looks for
+`0x55`/`0xAA`, will never match it. A sync word is the pattern the chip waits for before it starts
+recording a packet. The trick is to make that last preamble byte the first byte of a five-byte sync
+word, `99 95 A6 9A 65`. Its other four bytes are `0x724B` after Manchester coding.
+
+The checksum. ADS-L uses a CRC-24 on the Mode-S polynomial. It sits inside the Manchester-coded data,
+together with the length field, where the chip's packet parser can reach neither of them. So the
+hardware CRC is off, the chip receives a fixed 60-byte block, and software cuts it down to size.
+
+The payload is scrambled with XXTEA. That sounds like security, but it is not. At key index 0 the
+key is all zeros, and the algorithm is printed in the standard. It is obfuscation: a damaged packet
 comes out obviously wrong.
 
-Then the software, three layers of it, each nailed to LoRa: Zephyr's `lora_modem_config` has no
-GFSK field at all, the driver below it hardcodes `MODEM_LORA` in eight places and restarts
-reception by itself, and the Semtech layer below that has a GFSK path wired for LoRaWAN — wrong
-Gaussian filter, three-byte sync word, whitening on, the wrong CRC. So I drove the chip with my own
-opcodes over the SPI path the firmware already used for FANET's sync word.
+Then the software. There are three layers of it, and each one is built only for LoRa. Zephyr is the
+operating system the firmware runs on. Its `lora_modem_config` has no GFSK field at all. The driver
+below it hardcodes `MODEM_LORA` in eight places and restarts reception by itself. The Semtech layer
+below that does have a GFSK path, but it is set up for LoRaWAN: the wrong Gaussian filter, a
+three-byte sync word, whitening on, and the wrong CRC. So I drove the chip with my own commands.
+They go over SPI, the wired link between the processor and the radio chip, which the firmware
+already used for FANET's sync word.
 
-The first frame end to end was undramatic in the best way: 15 blocks in, 15 decoded, zero CRC
-failures, zero Manchester errors, RSSI around −56 dBm. Frames reach the phone raw with the CRC
-already checked; descrambling and parsing happen in my app, where protocol knowledge can be updated
-in an afternoon.
+The first frame from end to end was undramatic in the best way. 15 blocks in, 15 decoded, zero CRC
+failures, zero Manchester errors, and a signal strength (RSSI) of around −56 dBm. Frames reach the
+phone raw, with the CRC already checked. Descrambling and parsing happen in my app, where protocol
+knowledge can be updated in an afternoon.
 
 ## Where this runs
 
-The bench work ran on my [FANET bridge](/blog/flybeeper-fanet/) boards and a Nordic dev kit — the
-same nRF52832 and SX1262 as the [FANET Vario](/blog/flybeeper-fanet-vario/), whose firmware now
-builds with all of this inside it, switched off. If you want the part I actually ship today — a
-solar FANET beacon and barometric vario — it is
+The bench work ran on my [FANET bridge](/blog/flybeeper-fanet/) boards and a Nordic dev kit. They
+have the same nRF52832 processor and SX1262 radio as the [FANET Vario](/blog/flybeeper-fanet-vario/).
+Its firmware now builds with all of this inside it, switched off. If you want the part I actually
+ship today, a solar FANET beacon and barometric vario, it is
 [on sale](https://market.flybeeper.com/device/fanet-vario).
 
-*If you work with ADS-L, OGN or M-band receivers and something above looks wrong — especially the
-Direct-slot reading or the clock budget — I would genuinely like to know: hello@alpisto.eu.*
+*If you work with ADS-L, OGN or M-band receivers and something above looks wrong, especially the
+reading of the Direct slot or the clock budget, I would genuinely like to know: hello@alpisto.eu.*
