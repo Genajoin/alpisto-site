@@ -1,0 +1,113 @@
+---
+/**
+ * The vario axis split into what the vario does there: sink tone, held sink
+ * tone, silence, held climb tone, early exit, climb tone. Hatched = depends
+ * on where you came from.
+ *
+ * Usage in MDX:  <VarioZones zones={preset.zones} />  (zones in cm/s, null = open end)
+ */
+import type { ZoneData } from '../lib/vario-sound'
+import { ms, ZONE_LABEL } from '../lib/vario-sound'
+
+interface Props {
+  zones: ZoneData[]
+  range?: [number, number]
+  compact?: boolean
+  legend?: boolean
+}
+const { zones, range = [-3.2, 1.2], compact = false, legend = false } = Astro.props
+const [lo, hi] = range
+const W = 640
+const BAR_Y = compact ? 2 : 4
+const BAR_H = compact ? 16 : 26
+const x = (v: number) => ((Math.max(lo, Math.min(hi, v)) - lo) / (hi - lo)) * W
+const uid = Math.random().toString(36).slice(2, 8)
+
+const segs = zones
+  .map(z => ({ ...z, x0: x(z.from === null ? lo : z.from / 100), x1: x(z.to === null ? hi : z.to / 100) }))
+  .filter(z => z.x1 - z.x0 > 0.5)
+
+// Boundary values under the bar, staggered into two rows where they crowd.
+const bounds = [...new Set(zones.flatMap(z => [z.from, z.to]).filter((v): v is number => v !== null))]
+  .map(v => v / 100)
+  .filter(v => v > lo && v < hi)
+  .sort((a, b) => a - b)
+const labels = bounds.map((v, i) => ({ v, x: x(v), row: 0, i }))
+for (let i = 1; i < labels.length; i++) {
+  if (labels[i].x - labels[i - 1].x < 46 && labels[i - 1].row === 0)
+    labels[i].row = 1
+}
+const H = compact ? BAR_Y + BAR_H + 26 : BAR_Y + BAR_H + 34
+const zeroX = x(0)
+const kinds = [...new Set(segs.map(s => s.kind))]
+---
+<div class={`vario-zones${compact ? ' vario-zones--compact' : ''}`}>
+  <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={segs.map(s => `${ZONE_LABEL[s.kind]} ${s.from === null ? 'below' : ms(s.from / 100)}…${s.to === null ? 'above' : ms(s.to / 100)}`).join(', ')}>
+    <defs>
+      <pattern id={`zh-cm-${uid}`} width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <rect width="7" height="7" class="z-climb-memory-bg" /><rect width="3" height="7" class="z-climb-memory-fg" />
+      </pattern>
+      <pattern id={`zh-sm-${uid}`} width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <rect width="7" height="7" class="z-sink-memory-bg" /><rect width="3" height="7" class="z-sink-memory-fg" />
+      </pattern>
+      <pattern id={`zh-ee-${uid}`} width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+        <rect width="6" height="6" class="z-early-bg" /><rect width="2" height="6" class="z-early-fg" />
+      </pattern>
+    </defs>
+    {segs.map(s => (
+      <rect
+        x={s.x0}
+        y={BAR_Y}
+        width={s.x1 - s.x0}
+        height={BAR_H}
+        class={`z z-${s.kind}`}
+        fill={s.kind === 'climb-memory' ? `url(#zh-cm-${uid})` : s.kind === 'sink-memory' ? `url(#zh-sm-${uid})` : s.kind === 'early-exit' ? `url(#zh-ee-${uid})` : undefined}
+      />
+    ))}
+    <rect x="0.5" y={BAR_Y} width={W - 1} height={BAR_H} class="z-frame" />
+    {zeroX > 0 && zeroX < W && <line x1={zeroX} x2={zeroX} y1={BAR_Y - 2} y2={BAR_Y + BAR_H + 2} class="z-zero" />}
+    {labels.map(l => (
+      <g>
+        <line x1={l.x} x2={l.x} y1={BAR_Y + BAR_H} y2={BAR_Y + BAR_H + 4 + l.row * 11} class="z-tick" />
+        <text x={l.x} y={BAR_Y + BAR_H + 14 + l.row * 11} text-anchor="middle" class="z-val">{ms(l.v)}</text>
+      </g>
+    ))}
+  </svg>
+  {legend && (
+    <div class="z-legend">
+      {kinds.map(k => <span><i class={`z-key z-key--${k}`}></i>{ZONE_LABEL[k]}</span>)}
+    </div>
+  )}
+</div>
+
+<style>
+  .vario-zones { margin: 0.5rem 0 1rem; }
+  .vario-zones svg { display: block; width: 100%; height: auto; }
+  .z-sink { fill: var(--color-cool); opacity: 0.35; }
+  .z-climb { fill: var(--color-accent); opacity: 0.4; }
+  .z-quiet { fill: var(--color-paper-alt); }
+  .z-climb-memory-bg, .z-sink-memory-bg, .z-early-bg { fill: var(--color-paper-card); }
+  .z-climb-memory-fg { fill: var(--color-accent); opacity: 0.55; }
+  .z-sink-memory-fg { fill: var(--color-cool); opacity: 0.45; }
+  .z-early-fg { fill: #c2410c; opacity: 0.7; }
+  .z-frame { fill: none; stroke: var(--color-ink); stroke-width: 1.5; }
+  .z-zero { stroke: var(--color-ink); stroke-width: 2; }
+  .z-tick { stroke: var(--color-ink-3); stroke-width: 1; }
+  .z-val { font-family: var(--font-mono); font-size: 10px; fill: var(--color-ink-2); }
+  .z-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    margin-top: 4px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-ink-3);
+  }
+  .z-key { display: inline-block; width: 14px; height: 10px; margin-right: 5px; vertical-align: -1px; border: 1px solid var(--color-ink-3); }
+  .z-key--sink { background: color-mix(in srgb, var(--color-cool) 35%, transparent); }
+  .z-key--climb { background: color-mix(in srgb, var(--color-accent) 40%, transparent); }
+  .z-key--quiet { background: var(--color-paper-alt); }
+  .z-key--climb-memory { background: repeating-linear-gradient(45deg, color-mix(in srgb, var(--color-accent) 55%, transparent) 0 3px, transparent 3px 6px); }
+  .z-key--sink-memory { background: repeating-linear-gradient(45deg, color-mix(in srgb, var(--color-cool) 45%, transparent) 0 3px, transparent 3px 6px); }
+  .z-key--early-exit { background: repeating-linear-gradient(-45deg, #c2410c 0 2px, transparent 2px 6px); }
+</style>

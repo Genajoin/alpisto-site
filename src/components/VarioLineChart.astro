@@ -1,0 +1,108 @@
+---
+/**
+ * A plain line chart for the vario-sound article: the tone curve, the
+ * averaging step response. Series are [x, y] points; drawn on the page's
+ * paper with the site's fonts.
+ */
+interface Series { pts: [number, number][], label: string, cls?: string, step?: boolean }
+interface Props {
+  series: Series[]
+  x: [number, number]
+  y: [number, number]
+  xTicks: number[]
+  yTicks: number[]
+  xUnit?: string
+  yUnit?: string
+  marks?: { x: number, label: string }[]
+  height?: number
+}
+const { series, x: xr, y: yr, xTicks, yTicks, xUnit = '', yUnit = '', marks = [], height = 220 } = Astro.props
+const W = 640
+const H = height
+const L = 46
+const R = 12
+const T = 10
+const B = 26
+const sx = (v: number) => L + ((v - xr[0]) / (xr[1] - xr[0])) * (W - L - R)
+const sy = (v: number) => T + (1 - (v - yr[0]) / (yr[1] - yr[0])) * (H - T - B)
+/** Points inside the x range, plus the line cut at its edges. */
+function clip(pts: [number, number][]): [number, number][] {
+  const at = (x: number): number => {
+    if (x <= pts[0][0])
+      return pts[0][1]
+    for (let i = 1; i < pts.length; i++) {
+      if (x <= pts[i][0]) {
+        const [x0, y0] = pts[i - 1]
+        const [x1, y1] = pts[i]
+        return x1 === x0 ? y0 : y0 + (y1 - y0) * (x - x0) / (x1 - x0)
+      }
+    }
+    return pts[pts.length - 1][1]
+  }
+  return [[xr[0], at(xr[0])], ...pts.filter(([px]) => px > xr[0] && px < xr[1]), [xr[1], at(xr[1])]]
+}
+function path(s: Series): string {
+  const pts = clip(s.pts)
+  if (s.step)
+    return pts.map(([px, py], i) => (i ? `H${sx(px).toFixed(1)}V${sy(py).toFixed(1)}` : `M${sx(px).toFixed(1)} ${sy(py).toFixed(1)}`)).join('')
+  return pts.map(([px, py], i) => `${i ? 'L' : 'M'}${sx(px).toFixed(1)} ${sy(py).toFixed(1)}`).join('')
+}
+const fmt = (v: number) => (v < 0 ? `−${Math.abs(v)}` : `${v}`)
+---
+<figure class="vario-line">
+  <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={series.map(s => s.label).join(', ')}>
+    {yTicks.map(t => (
+      <g>
+        <line x1={L} x2={W - R} y1={sy(t)} y2={sy(t)} class="vl-grid" />
+        <text x={L - 6} y={sy(t) + 3} text-anchor="end" class="vl-tick">{fmt(t)}</text>
+      </g>
+    ))}
+    {xTicks.map(t => (
+      <g>
+        <line x1={sx(t)} x2={sx(t)} y1={T} y2={H - B} class={t === 0 ? 'vl-zero' : 'vl-grid'} />
+        <text x={sx(t)} y={H - B + 14} text-anchor="middle" class="vl-tick">{fmt(t)}</text>
+      </g>
+    ))}
+    {marks.map(m => (
+      <g>
+        <line x1={sx(m.x)} x2={sx(m.x)} y1={T} y2={H - B} class="vl-mark" />
+        <text x={sx(m.x) + 4} y={H - B - 6} class="vl-mark-label">{m.label}</text>
+      </g>
+    ))}
+    {series.map((s, i) => <path d={path(s)} class={`vl-line ${s.cls ?? `vl-s${i}`}`} />)}
+    <text x={W - R} y={H - B - 6} text-anchor="end" class="vl-unit">{xUnit}</text>
+    <text x={L + 6} y={T + 10} class="vl-unit">{yUnit}</text>
+  </svg>
+  <figcaption class="vl-legend">
+    {series.map((s, i) => <span><i class={`vl-key ${s.cls ?? `vl-s${i}`}`}></i>{s.label}</span>)}
+    <slot />
+  </figcaption>
+</figure>
+
+<style>
+  .vario-line { margin: 1.5rem 0; border: 2px solid var(--color-ink); background: var(--color-paper-card); padding: 10px 12px; }
+  .vario-line svg { display: block; width: 100%; height: auto; }
+  .vl-grid { stroke: var(--color-ink); opacity: 0.1; }
+  .vl-zero { stroke: var(--color-ink); opacity: 0.6; }
+  .vl-tick, .vl-unit { font-family: var(--font-mono); font-size: 10px; fill: var(--color-ink-3); }
+  .vl-mark { stroke: var(--color-accent); stroke-dasharray: 4 3; }
+  .vl-mark-label { font-family: var(--font-mono); font-size: 10px; fill: #c2410c; }
+  .vl-line { fill: none; stroke-width: 2.2; }
+  .vl-s0 { stroke: var(--color-ink); }
+  .vl-s1 { stroke: var(--color-accent); }
+  .vl-s2 { stroke: var(--color-cool); }
+  .vl-s3 { stroke: var(--color-ink-3); stroke-dasharray: 5 3; }
+  .vl-input { stroke: var(--color-ink-3); stroke-width: 1.2; stroke-dasharray: 3 3; }
+  .vl-legend {
+    text-transform: none;
+    letter-spacing: normal;
+    display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 6px;
+    font-family: var(--font-mono); font-size: 11px; color: var(--color-ink-3);
+  }
+  .vl-key { display: inline-block; width: 16px; height: 0; border-top: 2.5px solid; margin-right: 5px; vertical-align: middle; }
+  .vl-key.vl-s0 { border-color: var(--color-ink); }
+  .vl-key.vl-s1 { border-color: var(--color-accent); }
+  .vl-key.vl-s2 { border-color: var(--color-cool); }
+  .vl-key.vl-s3 { border-color: var(--color-ink-3); border-top-style: dashed; }
+  .vl-key.vl-input { border-color: var(--color-ink-3); border-top-style: dotted; }
+</style>

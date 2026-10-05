@@ -1,0 +1,65 @@
+---
+/**
+ * From pressure to beep: the path a reading takes inside a FlyBeeper vario,
+ * with the settings that act on each step.
+ */
+const W = 640
+const BOX_H = 64
+const row1 = [
+  { t: 'Pressure', s: 'sampled every 16 ms', setting: false },
+  { t: 'Filter', s: 'pressure → vertical speed', setting: false },
+  { t: 'Averaging', s: 'Vario averaging time', setting: true },
+]
+const row2 = [
+  { t: 'Decision', s: 'thresholds · holds · early exit', setting: true },
+  { t: 'Tone curve', s: '12 points: pitch, period, duty', setting: true },
+  { t: 'Piezo', s: 'beep … pause … beep', setting: false },
+]
+const bw = 176
+const gap = (W - 3 * bw) / 2
+const bx = (i: number) => i * (bw + gap)
+const y1 = 8
+const y2 = y1 + BOX_H + 64
+---
+<figure class="vario-pipe">
+  <svg viewBox={`0 0 ${W} ${y2 + BOX_H + 12}`} role="img" aria-label="Pressure is sampled every 16 ms, filtered into vertical speed and averaged; every 40 ms, between beeps, the vario decides whether to sound; the tone curve turns the reading into pitch and rhythm for the piezo.">
+    <defs>
+      <marker id="vp-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path d="M0 0 L10 5 L0 10 z" class="pipe-arrow" />
+      </marker>
+    </defs>
+    {row1.map((b, i) => (
+      <g>
+        <rect x={bx(i)} y={y1} width={bw} height={BOX_H} class={b.setting ? 'pipe-box pipe-box--set' : 'pipe-box'} />
+        <text x={bx(i) + 12} y={y1 + 26} class="pipe-t">{b.t}</text>
+        <text x={bx(i) + 12} y={y1 + 46} class="pipe-s">{b.s}</text>
+      </g>
+    ))}
+    {[0, 1].map(i => <line x1={bx(i) + bw} x2={bx(i + 1) - 2} y1={y1 + BOX_H / 2} y2={y1 + BOX_H / 2} class="pipe-link" marker-end="url(#vp-arrow)" />)}
+    <path d={`M${bx(2) + bw / 2} ${y1 + BOX_H} V${y1 + BOX_H + 30} H${bx(0) + bw / 2} V${y2 - 2}`} class="pipe-link" marker-end="url(#vp-arrow)" />
+    <text x={bx(1) + bw / 2} y={y1 + BOX_H + 24} text-anchor="middle" class="pipe-s">vario, cm/s</text>
+    <text x={bx(0) + bw / 2 + 8} y={y1 + BOX_H + 52} class="pipe-note">+ trend average, ~0.4 s, fixed</text>
+    {row2.map((b, i) => (
+      <g>
+        <rect x={bx(i)} y={y2} width={bw} height={BOX_H} class={b.setting ? 'pipe-box pipe-box--set' : 'pipe-box'} />
+        <text x={bx(i) + 12} y={y2 + 26} class="pipe-t">{b.t}</text>
+        <text x={bx(i) + 12} y={y2 + 46} class="pipe-s">{b.s}</text>
+      </g>
+    ))}
+    {[0, 1].map(i => <line x1={bx(i) + bw} x2={bx(i + 1) - 2} y1={y2 + BOX_H / 2} y2={y2 + BOX_H / 2} class="pipe-link" marker-end="url(#vp-arrow)" />)}
+  </svg>
+  <figcaption>Orange boxes are the steps you can change in the configurator. Everything after the averaging runs on a 40 ms loop.</figcaption>
+</figure>
+
+<style>
+  .vario-pipe { margin: 1.75rem 0; }
+  .vario-pipe svg { display: block; width: 100%; height: auto; }
+  .pipe-box { fill: var(--color-paper-card); stroke: var(--color-ink); stroke-width: 2; }
+  .pipe-box--set { stroke: var(--color-accent); stroke-width: 3; }
+  .pipe-t { font-family: var(--font-display); font-weight: 700; font-size: 16px; fill: var(--color-ink); }
+  .pipe-s { font-family: var(--font-mono); font-size: 10px; fill: var(--color-ink-3); }
+  .pipe-note { font-family: var(--font-mono); font-size: 10px; fill: #c2410c; }
+  .pipe-link { fill: none; stroke: var(--color-ink); stroke-width: 1.6; }
+  .pipe-arrow { fill: var(--color-ink); }
+  .vario-pipe figcaption { margin-top: 6px; font-family: var(--font-display); font-size: 13px; letter-spacing: normal; text-transform: none; color: var(--color-ink-2); }
+</style>

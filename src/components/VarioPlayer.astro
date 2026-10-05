@@ -1,0 +1,302 @@
+---
+/**
+ * One vario scenario, played through one or more sound settings: a time chart
+ * per setting (what the vario reads, the threshold in effect, where the tone
+ * is on and every single beep) and a Play button that sounds it, beep for beep,
+ * as the configurator's simulator would. Nothing plays until the reader asks.
+ *
+ * Usage in MDX:
+ *   import fade from '../../data/vario-sound/fade.json'
+ *   <VarioPlayer data={fade} show={['ema', 'th']} />
+ *
+ * `show`: extra lines — 'air' (the reading before averaging), 'ema' (the trend
+ * average), 'th' (the climb threshold in effect).
+ */
+import type { ParamsData } from '../lib/vario-sound'
+import { configLink, refLines } from '../lib/vario-sound'
+
+interface Variant {
+  key: string
+  label: string
+  params: ParamsData
+  link: string
+  t: number[]
+  air: number[]
+  v: number[]
+  ema: number[]
+  th: number[]
+  on: number[]
+  weak: number[]
+  beeps: [number, number, number][]
+}
+interface Props {
+  data: { key: string, lenS: number, range: [number, number], variants: Variant[] }
+  show?: ('air' | 'ema' | 'th')[]
+  caption?: string
+}
+const { data, show = [], caption } = Astro.props
+
+const W = 640
+const H = 190
+const PAD_L = 4
+const PAD_R = 92
+const PAD_T = 8
+const BEEP_H = 10
+const PLOT_B = H - BEEP_H - 10
+const plotW = W - PAD_L - PAD_R
+const [lo, hi] = data.range
+const x = (t: number) => PAD_L + (t / data.lenS) * plotW
+const y = (v: number) => PAD_T + (1 - (v - lo) / (hi - lo)) * (PLOT_B - PAD_T)
+const clampY = (v: number) => y(Math.max(lo, Math.min(hi, v)))
+
+function line(ts: number[], vs: number[]): string {
+  return ts.map((t, i) => `${i ? 'L' : 'M'}${x(t).toFixed(1)} ${clampY(vs[i]).toFixed(1)}`).join('')
+}
+function step(ts: number[], vs: number[]): string {
+  return ts.map((t, i) => (i ? `H${x(t).toFixed(1)}V${clampY(vs[i]).toFixed(1)}` : `M${x(t).toFixed(1)} ${clampY(vs[i]).toFixed(1)}`)).join('')
+}
+function runs(ts: number[], flags: number[]) {
+  const out: { x: number, w: number }[] = []
+  let start = -1
+  flags.forEach((f, i) => {
+    if (f && start < 0)
+      start = i
+    if ((!f || i === flags.length - 1) && start >= 0) {
+      const end = f ? i : i
+      out.push({ x: x(ts[start]), w: Math.max(x(ts[end]) - x(ts[start]), 1) })
+      start = -1
+    }
+  })
+  return out
+}
+
+const rows = data.variants.map(vr => ({
+  ...vr,
+  href: configLink(vr.link),
+  vario: line(vr.t, vr.v),
+  airPath: show.includes('air') ? line(vr.t, vr.air) : null,
+  emaPath: show.includes('ema') ? line(vr.t, vr.ema) : null,
+  thPath: show.includes('th') ? step(vr.t, vr.th) : null,
+  toneRuns: runs(vr.t, vr.on),
+  weakRuns: show.includes('th') ? runs(vr.t, vr.weak) : [],
+  refs: refLines(vr.params, lo, hi, y),
+  beepRects: vr.beeps.map(([t, d]) => ({ x: x(t), w: Math.max((d / data.lenS) * plotW, 1) })),
+  audio: JSON.stringify({ len: data.lenS, beeps: vr.beeps }),
+}))
+const secTicks = Array.from({ length: Math.floor(data.lenS) + 1 }, (_, i) => i).filter(s => s % 2 === 0)
+---
+<figure class="vario-player" data-scenario={data.key}>
+  {rows.map(r => (
+    <div class="vp-row" data-audio={r.audio} data-len={data.lenS}>
+      <div class="vp-head">
+        <button type="button" class="vp-play" aria-label={`Play: ${r.label}`}>▶ Play</button>
+        <span class="vp-label">{r.label}</span>
+        <a class="vp-link" href={r.href} target="_blank" rel="noopener">Open in configurator ↗</a>
+      </div>
+      <svg class="vp-svg" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Vario over ${data.lenS} seconds: ${r.label}`}>
+        {r.toneRuns.map(b => <rect class="vp-tone" x={b.x} y={PAD_T} width={b.w} height={PLOT_B - PAD_T} />)}
+        {secTicks.map(s => <line class="vp-grid" x1={x(s)} x2={x(s)} y1={PAD_T} y2={PLOT_B} />)}
+        {r.refs.map(ref => (
+          <g>
+            <line class={`vp-ref vp-ref--${ref.cls}`} x1={PAD_L} x2={PAD_L + plotW} y1={ref.y} y2={ref.y} />
+            <text class={`vp-ref-label vp-ref-label--${ref.cls}`} x={PAD_L + plotW + 4} y={ref.ly + 4}>{ref.label}</text>
+          </g>
+        ))}
+        {r.weakRuns.map(b => <rect class="vp-weak" x={b.x} y={PLOT_B - 4} width={b.w} height="4" />)}
+        {r.thPath && <path class="vp-th" d={r.thPath} />}
+        {r.emaPath && <path class="vp-ema" d={r.emaPath} />}
+        {r.airPath && <path class="vp-air" d={r.airPath} />}
+        <path class="vp-vario" d={r.vario} />
+        <line class="vp-axis" x1={PAD_L} x2={PAD_L + plotW} y1={PLOT_B + 4} y2={PLOT_B + 4} />
+        {r.beepRects.map(b => <rect class="vp-beep" x={b.x} y={PLOT_B + 6} width={b.w} height={BEEP_H} />)}
+        {secTicks.map(s => <text class="vp-sec" x={x(s) + 2} y={PAD_T + 10}>{s ? `${s} s` : ''}</text>)}
+        <line class="vp-head-line" x1={PAD_L} x2={PAD_L} y1={PAD_T} y2={H - 2} />
+      </svg>
+    </div>
+  ))}
+  <figcaption>
+    {caption && <span>{caption} </span>}
+    <span class="vp-legend">
+      <i class="k k-vario"></i>vario
+      {show.includes('air') && <><i class="k k-air"></i>reading before averaging</>}
+      {show.includes('ema') && <><i class="k k-ema"></i>trend average</>}
+      {show.includes('th') && <><i class="k k-th"></i>climb threshold in effect</>}
+      <i class="k k-tone"></i>tone on
+      <i class="k k-beep"></i>each beep
+      {show.includes('th') && <><i class="k k-weak"></i>climb weakening</>}
+    </span>
+  </figcaption>
+</figure>
+
+<style>
+  .vario-player {
+    margin: 1.75rem 0;
+    border: 2px solid var(--color-ink);
+    background: var(--color-paper-card);
+    padding: 10px 12px 12px;
+  }
+  .vp-row + .vp-row {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--color-ink-3);
+  }
+  .vp-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  .vp-play {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border: 2px solid var(--color-ink);
+    background: var(--color-paper);
+    color: var(--color-ink);
+    cursor: pointer;
+    min-width: 76px;
+  }
+  .vp-play[aria-pressed='true'] {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-ink);
+  }
+  .vp-label { font-weight: 700; color: var(--color-ink); }
+  .vario-player .vp-link {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--color-ink-3);
+  }
+  .vp-svg { display: block; width: 100%; height: auto; margin-top: 6px; }
+  .vp-tone { fill: var(--color-accent); opacity: 0.13; }
+  .vp-grid { stroke: var(--color-ink); opacity: 0.08; stroke-width: 1; }
+  .vp-ref { stroke: var(--color-ink-3); stroke-width: 1; stroke-dasharray: 4 4; opacity: 0.6; }
+  .vp-ref--on, .vp-ref--early { stroke: var(--color-accent); }
+  .vp-ref--off { stroke: #c2410c; }
+  .vp-ref--sink, .vp-ref--sinkoff { stroke: var(--color-cool); }
+  .vp-ref-label { font-family: var(--font-mono); font-size: 10px; fill: var(--color-ink-3); }
+  .vp-ref-label--on, .vp-ref-label--early { fill: #c2410c; }
+  .vp-ref-label--off { fill: #c2410c; }
+  .vp-ref-label--sink, .vp-ref-label--sinkoff { fill: var(--color-cool); }
+  .vp-weak { fill: #c2410c; opacity: 0.8; }
+  .vp-th { fill: none; stroke: var(--color-accent); stroke-width: 2.5; }
+  .vp-ema { fill: none; stroke: var(--color-ink-3); stroke-width: 1.6; stroke-dasharray: 5 3; }
+  .vp-air { fill: none; stroke: var(--color-cool); stroke-width: 1.3; opacity: 0.75; }
+  .vp-vario { fill: none; stroke: var(--color-ink); stroke-width: 2.2; }
+  .vp-axis { stroke: var(--color-ink); stroke-width: 1; }
+  .vp-beep { fill: var(--color-ink); }
+  .vp-sec { font-family: var(--font-mono); font-size: 9px; fill: var(--color-ink-3); }
+  .vp-head-line { stroke: var(--color-accent); stroke-width: 2; opacity: 0; }
+  .vp-row.is-playing .vp-head-line { opacity: 1; }
+  .vario-player figcaption {
+    margin-top: 10px;
+    font-family: var(--font-display);
+    text-transform: none;
+    letter-spacing: normal;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--color-ink-2);
+  }
+  .vp-legend {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-ink-3);
+  }
+  .k { display: inline-block; width: 14px; height: 3px; margin-left: 8px; vertical-align: middle; }
+  .k-vario { background: var(--color-ink); }
+  .k-air { background: var(--color-cool); }
+  .k-ema { background: repeating-linear-gradient(90deg, var(--color-ink-3) 0 3px, transparent 3px 5px); }
+  .k-th { background: var(--color-accent); }
+  .k-tone { height: 10px; background: var(--color-accent); opacity: 0.25; }
+  .k-beep { width: 4px; height: 10px; background: var(--color-ink); }
+  .k-weak { height: 4px; background: #c2410c; }
+</style>
+
+<script>
+  // Plays a row's beeps through Web Audio, scheduled ahead on the audio clock
+  // so the rhythm is exact, and moves the play head along the chart.
+  let ctx: AudioContext | null = null
+  let current: { row: HTMLElement, stop: () => void } | null = null
+
+  const VOLUME = 0.12
+  const PLOT_X0 = 4
+  const PLOT_W = 640 - 4 - 92
+
+  function stopCurrent() {
+    if (!current)
+      return
+    const c = current
+    current = null
+    c.stop()
+  }
+
+  function play(row: HTMLElement) {
+    const btn = row.querySelector<HTMLButtonElement>('.vp-play')!
+    if (current?.row === row) {
+      stopCurrent()
+      return
+    }
+    stopCurrent()
+    ctx ??= new AudioContext()
+    if (ctx.state === 'suspended')
+      void ctx.resume()
+    const { len, beeps } = JSON.parse(row.dataset.audio!) as { len: number, beeps: [number, number, number][] }
+    const master = ctx.createGain()
+    master.gain.value = VOLUME
+    master.connect(ctx.destination)
+    const t0 = ctx.currentTime + 0.08
+    for (const [t, d, f] of beeps) {
+      const osc = ctx.createOscillator()
+      const g = ctx.createGain()
+      osc.type = 'square'
+      osc.frequency.value = f
+      const a = t0 + t
+      // 3 ms edges: no clicks, still a hard beep.
+      g.gain.setValueAtTime(0, a)
+      g.gain.linearRampToValueAtTime(1, a + 0.003)
+      g.gain.setValueAtTime(1, a + Math.max(d - 0.003, 0.003))
+      g.gain.linearRampToValueAtTime(0, a + d)
+      osc.connect(g).connect(master)
+      osc.start(a)
+      osc.stop(a + d + 0.01)
+    }
+    const head = row.querySelector<SVGLineElement>('.vp-head-line')!
+    row.classList.add('is-playing')
+    btn.setAttribute('aria-pressed', 'true')
+    btn.textContent = '■ Stop'
+    const audio = ctx
+    let raf = 0
+    const tick = () => {
+      const el = audio.currentTime - t0
+      const xPos = PLOT_X0 + Math.max(0, Math.min(1, el / len)) * PLOT_W
+      head.setAttribute('x1', String(xPos))
+      head.setAttribute('x2', String(xPos))
+      if (el >= len) {
+        stopCurrent()
+        return
+      }
+      raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    current = {
+      row,
+      stop: () => {
+        cancelAnimationFrame(raf)
+        master.disconnect()
+        row.classList.remove('is-playing')
+        btn.setAttribute('aria-pressed', 'false')
+        btn.textContent = '▶ Play'
+      },
+    }
+  }
+
+  for (const row of document.querySelectorAll<HTMLElement>('.vario-player .vp-row'))
+    row.querySelector('.vp-play')?.addEventListener('click', () => play(row))
+</script>
