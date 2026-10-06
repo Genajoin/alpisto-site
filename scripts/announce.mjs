@@ -201,7 +201,9 @@ const broadcast = await api('/broadcasts', {
   from: FROM,
   reply_to: REPLY_TO,
   subject,
-  name: `${new Date().toISOString().slice(0, 10)} · ${posts.map(p => p.slug).join(' + ')}`,
+  // Resend caps the name at 70 characters; several long slugs overflow it (422).
+  // A cut name may drop later slugs, so --once sees only the ones that still fit.
+  name: `${new Date().toISOString().slice(0, 10)} · ${posts.map(p => p.slug).join(' + ')}`.slice(0, 70),
   html,
   text,
 })
