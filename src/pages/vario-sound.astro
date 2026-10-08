@@ -92,7 +92,7 @@ const description =
 
 <script>
   import { DEFAULT_KNOBS, generate, tidy, type Knobs, type Sound } from '../lib/vario-wizard/generator'
-  import { paramsOf, simulate, toneAt, type Beep } from '../lib/vario-wizard/engine'
+  import { TICK_MS, paramsOf, simulate, toneAt, type Beep } from '../lib/vario-wizard/engine'
   import { CLIPS, type ClipKey } from '../lib/vario-wizard/scenarios'
   import { REFINES, STEPS } from '../lib/vario-wizard/steps'
   import { appLink, decodeState, encodeState } from '../lib/vario-wizard/share'
@@ -107,37 +107,85 @@ const description =
 
   // ---------- sound ----------
   let ctx: AudioContext | null = null
-  let playing: { btn: HTMLButtonElement, stop: () => void } | null = null
+  let playing: { btn: HTMLButtonElement, label: string, paused: boolean, stop: () => void } | null = null
   const VOLUME = 0.12
 
   function stopPlaying() {
     const p = playing
     playing = null
     p?.stop()
+    // A paused context stays paused: wake it so the next sound plays.
+    if (p?.paused)
+      void ctx?.resume()
   }
 
-  const beepsCache = new Map<string, Beep[]>()
-  function beepsFor(k: Knobs, clip: ClipKey): Beep[] {
+  interface Run { beeps: Beep[], track: number[] }
+  const runCache = new Map<string, Run>()
+  function runFor(k: Knobs, clip: ClipKey): Run {
     const key = clip + JSON.stringify(tidy(k))
-    let b = beepsCache.get(key)
-    if (!b) {
+    let r = runCache.get(key)
+    if (!r) {
       const s = generate(k)
-      b = simulate(s.curves, s.trigger, CLIPS[clip].air, CLIPS[clip].lenMs)
-      beepsCache.set(key, b)
+      const track: number[] = []
+      r = { beeps: simulate(s.curves, s.trigger, CLIPS[clip].air, CLIPS[clip].lenMs, track), track }
+      runCache.set(key, r)
     }
-    return b
+    return r
+  }
+  const beepsFor = (k: Knobs, clip: ClipKey) => runFor(k, clip).beeps
+
+  /** Moves the chart's cursor to the vario the instrument hears now; null hides it. */
+  function moveCursor(chart: SVGSVGElement | null | undefined, cm: number | null) {
+    const g = chart?.querySelector<SVGGElement>('.vw-cursor')
+    if (!chart || !g)
+      return
+    if (cm === null) {
+      g.style.opacity = '0'
+      return
+    }
+    const d = chart.dataset
+    const lo = Number(d.lo), hi = Number(d.hi), x0 = Number(d.x0), x1 = Number(d.x1)
+    const v = Math.max(lo, Math.min(hi, cm / 100))
+    const x = x0 + (v - lo) / (hi - lo) * (x1 - x0)
+    const curves = JSON.parse(d.curves!) as Sound['curves']
+    const t = toneAt(curves, cm)
+    const yf = Number(d.py) + Number(d.ph) - (t.f / Number(d.fmax)) * Number(d.ph)
+    const yc = Number(d.qy) + Number(d.qh) - Math.min(1, t.cycle / 1000) * Number(d.qh)
+    g.querySelector('line')!.setAttribute('x1', String(x))
+    g.querySelector('line')!.setAttribute('x2', String(x))
+    const [cf, cc] = g.querySelectorAll('circle')
+    cf!.setAttribute('cx', String(x)); cf!.setAttribute('cy', String(yf))
+    cc!.setAttribute('cx', String(x)); cc!.setAttribute('cy', String(yc))
+    const label = g.querySelector('text')!
+    label.textContent = `${ms(cm / 100)} m/s · ${Math.round(t.f)} Hz`
+    const right = x > (x0 + x1) / 2
+    label.setAttribute('x', String(right ? x - 8 : x + 8))
+    label.setAttribute('text-anchor', right ? 'end' : 'start')
+    g.style.opacity = '1'
   }
 
-  function play(btn: HTMLButtonElement, k: Knobs, clip: ClipKey, svg?: SVGSVGElement) {
+  function play(btn: HTMLButtonElement, k: Knobs, clip: ClipKey, svg?: SVGSVGElement, chart?: SVGSVGElement | null) {
+    // The same button pauses and resumes: the audio clock stops, so do the beeps and the cursors.
     if (playing?.btn === btn) {
-      stopPlaying()
+      const p = playing
+      p.paused = !p.paused
+      if (p.paused) {
+        void ctx?.suspend()
+        btn.textContent = p.label
+        btn.setAttribute('aria-pressed', 'false')
+      }
+      else {
+        void ctx?.resume()
+        btn.textContent = '❚❚ Pause'
+        btn.setAttribute('aria-pressed', 'true')
+      }
       return
     }
     stopPlaying()
     ctx ??= new AudioContext()
     if (ctx.state === 'suspended')
       void ctx.resume()
-    const beeps = beepsFor(k, clip)
+    const { beeps, track } = runFor(k, clip)
     const len = CLIPS[clip].lenMs / 1000
     const master = ctx.createGain()
     master.gain.value = VOLUME
@@ -159,7 +207,7 @@ const description =
     }
     const label = btn.textContent
     btn.setAttribute('aria-pressed', 'true')
-    btn.textContent = '■ Stop'
+    btn.textContent = '❚❚ Pause'
     const head = svg?.querySelector<SVGLineElement>('.vw-head')
     const audio = ctx
     let raf = 0
@@ -171,6 +219,8 @@ const description =
         head.setAttribute('x2', String(x))
         head.style.opacity = '1'
       }
+      const i = Math.floor(el * 1000 / TICK_MS)
+      moveCursor(chart, el >= 0 && i < track.length ? track[i]! : null)
       if (el >= len) {
         stopPlaying()
         return
@@ -180,13 +230,16 @@ const description =
     raf = requestAnimationFrame(tick)
     playing = {
       btn,
+      label: label ?? '▶ Play',
+      paused: false,
       stop: () => {
         cancelAnimationFrame(raf)
         master.disconnect()
         btn.setAttribute('aria-pressed', 'false')
-        btn.textContent = label
+        btn.textContent = label ?? '▶ Play'
         if (head)
           head.style.opacity = '0'
+        moveCursor(chart, null)
       },
     }
   }
@@ -287,7 +340,9 @@ const description =
     labels += `<text class="t" x="${L}" y="${Q.y - 12}">${narrow ? 'Period, ms · beep (fill)' : 'Period, ms (line) and beep length (fill)'}</text>`
     labels += `<text x="${W - R}" y="${Q.y + Q.h + 36}" text-anchor="end">vario, m/s</text>`
     const H = Q.y + Q.h + 44
-    return `<svg class="vw-chart" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Pitch and rhythm of your sound over the vario">${grid}${bands}${data}<g class="vw-labels">${labels}</g></svg>`
+    const cursor = `<g class="vw-cursor" style="opacity:0"><line x1="0" x2="0" y1="${P.y}" y2="${Q.y + Q.h}" stroke="var(--color-accent)" stroke-width="2" fill="none"/><circle r="5" fill="var(--color-accent)" stroke="var(--color-ink)" stroke-width="1.5"/><circle r="5" fill="var(--color-accent)" stroke="var(--color-ink)" stroke-width="1.5"/><text class="t" x="0" y="${P.y + P.h + 15}"></text></g>`
+    const dataAttrs = `data-lo="${lo}" data-hi="${hi}" data-x0="${L}" data-x1="${W - R}" data-py="${P.y}" data-ph="${P.h}" data-qy="${Q.y}" data-qh="${Q.h}" data-fmax="${fMax}" data-curves='${JSON.stringify(s.curves)}'`
+    return `<svg class="vw-chart" ${dataAttrs} viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Pitch and rhythm of your sound over the vario">${grid}${bands}${data}<g class="vw-labels">${labels}</g>${cursor}</svg>`
   }
 
   function tableHtml(s: Sound): string {
@@ -364,8 +419,8 @@ const description =
         <div id="vw-trace"></div>
         <div class="vw-opts">${opts}</div>
         <div class="vw-preview" id="vw-preview">
-          <div class="vw-pv-text" id="vw-pv-text"></div>
           <div class="vw-pv-chart" id="vw-pv-chart"></div>
+          <div class="vw-pv-text" id="vw-pv-text"></div>
         </div>
         <div class="vw-nav">
           <button type="button" class="vw-btn" data-back ${stepIndex === 0 ? 'disabled' : ''}>← Back</button>
@@ -401,7 +456,7 @@ const description =
       b.addEventListener('click', () => {
         const key = b.dataset.listen!
         const svg = shown === key ? traceBox.querySelector('svg') ?? undefined : show(key)
-        play(b, optionKnobs(step, key), clip, svg)
+        play(b, optionKnobs(step, key), clip, svg, chartBox.querySelector('svg'))
       })
     }
     for (const b of root.querySelectorAll<HTMLButtonElement>('[data-pick]')) {
@@ -486,13 +541,13 @@ const description =
     redraw = () => { resChart.innerHTML = curveSvg(s, resChart.clientWidth) }
     redraw()
     const flightBtn = root.querySelector<HTMLButtonElement>('#vw-flight')!
-    flightBtn.addEventListener('click', () => play(flightBtn, knobs, 'flight', root.querySelector<SVGSVGElement>('#vw-flight-trace svg')!))
+    flightBtn.addEventListener('click', () => play(flightBtn, knobs, 'flight', root.querySelector<SVGSVGElement>('#vw-flight-trace svg')!, resChart.querySelector('svg')))
     for (const b of root.querySelectorAll<HTMLButtonElement>('[data-ref-play]')) {
       b.addEventListener('click', () => {
         const r = REFINES.find((x) => x.key === b.dataset.refPlay)!
         const d = Number(b.dataset.dir) as -1 | 0 | 1
         const k = d === 0 ? knobs : tidy({ ...knobs, ...r.move(knobs, d) })
-        play(b, k, r.clip)
+        play(b, k, r.clip, undefined, resChart.querySelector('svg'))
       })
     }
     for (const b of root.querySelectorAll<HTMLButtonElement>('[data-ref-take]')) {

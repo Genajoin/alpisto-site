@@ -99,9 +99,12 @@ function averageStep(avg: number, input: number, averageMs: number): number {
 
 /**
  * Every beep the instrument plays for a vario trace. `air(tMs)` is the vario
- * before the instrument's averaging, cm/s.
+ * before the instrument's averaging, cm/s. `track`, if given, receives the
+ * averaged vario the instrument works from, one value per 40 ms tick.
  */
-export function simulate(c: Curves, t: Trigger, air: (tMs: number) => number, lenMs: number): Beep[] {
+export const TICK_MS = TICK
+
+export function simulate(c: Curves, t: Trigger, air: (tMs: number) => number, lenMs: number, track?: number[]): Beep[] {
   const p = paramsOf(t)
   const avgMs = Math.round(t.average * 1000)
   const beeps: Beep[] = []
@@ -151,6 +154,7 @@ export function simulate(c: Curves, t: Trigger, air: (tMs: number) => number, le
       continue
     smooth = averageStep(smooth, air(now), avgMs)
     v = Math.round(smooth)
+    track?.push(v)
     emaX10 = Math.trunc(emaX10 * 9 / 10) + v
     if (phase === 'sample')
       continue
