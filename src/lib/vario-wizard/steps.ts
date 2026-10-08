@@ -101,7 +101,7 @@ export const STEPS: Step[] = [
     options: [
       { key: 'both', label: 'A', hint: 'beeps get both faster and higher', apply: () => ({ tempoLow: 600, tempoHigh: 180, pitchLow: 600, pitchHigh: 1400, dutyLow: 50, dutyHigh: 50, shape: 'linear', nearZero: 'silent', average: 0.4 }) },
       { key: 'tempo', label: 'B', hint: 'the rhythm tells the climb', apply: () => ({ tempoLow: 700, tempoHigh: 130, pitchLow: 600, pitchHigh: 800, dutyLow: 50, dutyHigh: 50, shape: 'linear', nearZero: 'silent', average: 0.4 }) },
-      { key: 'pitch', label: 'C', hint: 'the pitch tells the climb', apply: () => ({ tempoLow: 480, tempoHigh: 400, pitchLow: 550, pitchHigh: 1800, dutyLow: 50, dutyHigh: 50, shape: 'linear', nearZero: 'silent', average: 0.4 }) },
+      { key: 'pitch', label: 'C', hint: 'the tone tells the climb', apply: () => ({ tempoLow: 480, tempoHigh: 400, pitchLow: 550, pitchHigh: 1800, dutyLow: 50, dutyHigh: 50, shape: 'linear', nearZero: 'silent', average: 0.4 }) },
     ],
   },
   {
@@ -133,8 +133,8 @@ export const STEPS: Step[] = [
     lead: 'Listen to each: the climb grows from zero to +4 m/s.',
     clip: 'climb',
     options: [
-      { key: 'tempo', label: 'The beeps come faster', hint: 'the pitch barely moves', apply: () => ({ tempoLow: 700, tempoHigh: 130, pitchLow: 600, pitchHigh: 800, dutyLow: 50, dutyHigh: 50 }) },
-      { key: 'pitch', label: 'The pitch goes up', hint: 'the rhythm barely moves', apply: () => ({ tempoLow: 480, tempoHigh: 400, pitchLow: 550, pitchHigh: 1800, dutyLow: 50, dutyHigh: 50 }) },
+      { key: 'tempo', label: 'The beeps come faster', hint: 'the tone barely moves', apply: () => ({ tempoLow: 700, tempoHigh: 130, pitchLow: 600, pitchHigh: 800, dutyLow: 50, dutyHigh: 50 }) },
+      { key: 'pitch', label: 'The tone goes up', hint: 'the rhythm barely moves', apply: () => ({ tempoLow: 480, tempoHigh: 400, pitchLow: 550, pitchHigh: 1800, dutyLow: 50, dutyHigh: 50 }) },
       { key: 'both', label: 'Both, faster and higher', apply: () => ({ tempoLow: 600, tempoHigh: 180, pitchLow: 600, pitchHigh: 1400, dutyLow: 50, dutyHigh: 50 }) },
       { key: 'long', label: 'The beeps get longer', hint: 'almost a steady tone in a strong core', apply: () => ({ tempoLow: 600, tempoHigh: 200, pitchLow: 600, pitchHigh: 1300, dutyLow: 30, dutyHigh: 85 }) },
     ],
@@ -351,12 +351,12 @@ export interface Refine {
 export const REFINES: Refine[] = [
   {
     key: 'tempo', title: 'Beep rhythm', a: 'Slower', b: 'Faster', clip: 'climb',
-    explain: 'How often the climb beeps come, at every climb strength. The pitch stays.',
+    explain: 'How often the climb beeps come, at every climb strength. The tone stays.',
     move: (k, d) => ({ tempoLow: k.tempoLow * (d > 0 ? 0.85 : 1.18), tempoHigh: k.tempoHigh * (d > 0 ? 0.85 : 1.18) }),
   },
   {
-    key: 'pitch', title: 'Pitch', a: 'Lower', b: 'Higher', clip: 'climb',
-    explain: 'The whole climb tone moves up or down by about a tone. The rhythm stays.',
+    key: 'pitch', title: 'Tone', a: 'Lower', b: 'Higher', clip: 'climb',
+    explain: 'How high the climb beeps sound: the whole climb moves up or down by about 12 %. The rhythm stays.',
     move: (k, d) => ({ pitchLow: k.pitchLow * (d > 0 ? 1.12 : 0.89), pitchHigh: k.pitchHigh * (d > 0 ? 1.12 : 0.89) }),
   },
   {

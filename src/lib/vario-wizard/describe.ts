@@ -35,7 +35,7 @@ export function describe(s: Sound, k: Knobs): Fact[] {
         ? `rare ticks from ${ms(k.nearFrom)} m/s`
         : `a soft ${hz(s.curves.freqDots[2]!)} sound from ${ms(k.nearFrom)} m/s`)
   const at = [start + 1, 100, 300, 500]
-  add('pitch', 'Pitch at the start, +1, +3, +5 m/s', at.map((v) => hz(toneAt(s.curves, v).f)).join(' · '))
+  add('pitch', 'Tone at the start, +1, +3, +5 m/s', at.map((v) => hz(toneAt(s.curves, v).f)).join(' · '))
   add('beepStart', 'Beep at the start', beepAt(s, start + 1))
   add('beep1', 'Beep at +1 m/s', beepAt(s, 100))
   add('beep3', 'Beep at +3 m/s', beepAt(s, 300))

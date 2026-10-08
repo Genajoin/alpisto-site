@@ -318,9 +318,9 @@ const description =
     </svg>`
   }
 
-  /** Pitch and rhythm over the vario axis; silent stretches drawn pale. */
+  /** Tone and rhythm over the vario axis; silent stretches drawn pale. */
   /**
-   * Pitch and rhythm over the vario axis, drawn at the container's own width so
+   * Tone and rhythm over the vario axis, drawn at the container's own width so
    * the text stays readable on a phone; silent stretches drawn pale.
    */
   function curveSvg(s: Sound, width: number, before?: Sound): string {
@@ -395,13 +395,13 @@ const description =
           labels += `<text x="${(a + b) / 2}" y="${P.y + 16}" text-anchor="middle">silent</text>`
       }
     }
-    labels += `<text class="t" x="${L}" y="${P.y - 10}">Pitch, Hz</text>`
+    labels += `<text class="t" x="${L}" y="${P.y - 10}">Tone, Hz</text>`
     labels += `<text class="t" x="${L}" y="${Q.y - 12}">${narrow ? 'Period, ms · beep (fill)' : 'Period, ms (line) and beep length (fill)'}</text>`
     labels += `<text x="${W - R}" y="${Q.y + Q.h + 36}" text-anchor="end">vario, m/s</text>`
     const H = Q.y + Q.h + 44
     const cursor = `<g class="vw-cursor" style="opacity:0"><line x1="0" x2="0" y1="${P.y}" y2="${Q.y + Q.h}" stroke="var(--color-accent)" stroke-width="2" fill="none"/><circle r="5" fill="var(--color-accent)" stroke="var(--color-ink)" stroke-width="1.5"/><circle r="5" fill="var(--color-accent)" stroke="var(--color-ink)" stroke-width="1.5"/><text class="t" x="0" y="${P.y + P.h + 15}"></text></g>`
     const dataAttrs = `data-lo="${lo}" data-hi="${hi}" data-x0="${L}" data-x1="${W - R}" data-py="${P.y}" data-ph="${P.h}" data-qy="${Q.y}" data-qh="${Q.h}" data-fmax="${fMax}" data-curves='${JSON.stringify(s.curves)}'`
-    return `<svg class="vw-chart" ${dataAttrs} viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Pitch and rhythm of your sound over the vario">${grid}${bands}${data}<g class="vw-labels">${labels}</g>${cursor}</svg>`
+    return `<svg class="vw-chart" ${dataAttrs} viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Tone and rhythm of your sound over the vario">${grid}${bands}${data}<g class="vw-labels">${labels}</g>${cursor}</svg>`
   }
 
   function tableHtml(s: Sound, before?: Sound): string {
@@ -421,7 +421,7 @@ const description =
     const never = t.sinkOn <= -10
     const val = (x: number) => `${ms(x)} m/s`
     return `<div class="vw-tablewrap"><table class="vw-table">
-      <thead><tr><th>Vario, m/s</th><th>Pitch, Hz</th><th>Period, ms</th><th>Beep, ms</th><th>Beep share, %</th><th></th></tr></thead>
+      <thead><tr><th>Vario, m/s</th><th>Tone, Hz</th><th>Period, ms</th><th>Beep, ms</th><th>Beep share, %</th><th></th></tr></thead>
       <tbody>${rows}</tbody></table></div>
       <div class="vw-tablewrap" style="margin-top:14px"><table class="vw-table">
       <thead><tr><th>When it sounds</th><th>Value</th></tr></thead><tbody>
@@ -670,7 +670,7 @@ const description =
         <div id="vw-res-table"></div>
       </div>
       <div class="vw-cta">
-        <p>On a FlyBeeper this sound plays on the instrument and, if you like, on your phone at the same moment: the phone speaker plays the real pitches, much louder than a piezo.</p>
+        <p>On a FlyBeeper this sound plays on the instrument and, if you like, on your phone at the same moment: the phone speaker plays the real tones, much louder than a piezo.</p>
         <div class="vw-nav">
           <a class="vw-btn accent" id="vw-app" href="#" target="_blank" rel="noopener">Put it on my FlyBeeper</a>
           <button type="button" class="vw-btn" id="vw-copy" style="color:var(--color-paper);background:transparent;border-color:var(--color-paper)">Copy link to this sound</button>
