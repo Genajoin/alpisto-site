@@ -49,6 +49,7 @@ export function describe(s: Sound, k: Knobs): Fact[] {
     const fb = toneAt(s.curves, Math.max(-1000, p.sinkOn - 200)).f
     const pitch = Math.abs(fa - fb) < 5 ? hz(fa) : `${hz(fa)} falling to ${hz(fb)} at ${ms((p.sinkOn - 200) / 100)}`
     add('sink', 'Sink alarm', `below ${ms(k.sinkOn)} m/s, ${style}, ${pitch}`)
+    add('sinkStop', 'On the way out of sink it stops at', `${ms(p.sinkOff / 100)} m/s`)
   }
   const react = k.average <= 0.15 ? 'instant' : k.average <= 0.4 ? 'balanced' : 'calm'
   add('react', 'Reaction', `${react}, averaging ${k.average.toFixed(2)} s`)

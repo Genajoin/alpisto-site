@@ -40,6 +40,8 @@ export interface Knobs {
   nearFrom: number
   /** Sink alarm, m/s; −10 = never. */
   sinkOn: number
+  /** On the way out of sink the alarm holds this much longer, m/s. */
+  sinkHold: number
   sinkStyle: SinkStyle
   /** Sink tone at the alarm, Hz. */
   sinkPitch: number
@@ -62,6 +64,7 @@ export const DEFAULT_KNOBS: Knobs = {
   nearZero: 'silent',
   nearFrom: -0.5,
   sinkOn: -2.5,
+  sinkHold: 0,
   sinkStyle: 'continuous',
   sinkPitch: 420,
   sinkFalls: true,
@@ -92,6 +95,7 @@ export function tidy(k: Knobs): Knobs {
     hold: clamp(Math.round(k.hold * 100) / 100, 0, 0.3),
     nearFrom: Math.round(nearFrom * 100) / 100,
     sinkOn: Math.round(sinkOn * 100) / 100,
+    sinkHold: clamp(Math.round((k.sinkHold ?? 0) * 100) / 100, 0, 1),
     average: clamp(Math.round(k.average * 100) / 100, 0.05, 2),
   }
 }
@@ -103,7 +107,13 @@ export interface Sound {
 
 export function generate(input: Knobs): Sound {
   const k = tidy(input)
-  const c0 = r(k.climbStart * 100)
+  // Near zero first: the climb curve has to start above it.
+  const n0 = r(k.nearFrom * 100)
+  // Climb beeps start where the climb tone can still be heard: with silence near
+  // zero that is the bottom of the hold, so the held stretch plays the slowest
+  // climb beep and never the near-zero ticks. With a near-zero sound the hold
+  // belongs to that sound, and the climb beeps start at climbStart.
+  const c0 = Math.max(n0 + 2, r((k.nearZero === 'silent' ? k.climbStart - k.hold : k.climbStart) * 100))
   const top = 500
   const climbAt = (v: number) => {
     const b = bend(clamp((v - c0) / (top - c0), 0, 1), k.shape)
@@ -129,7 +139,6 @@ export function generate(input: Knobs): Sound {
   })
 
   // Near zero.
-  const n0 = r(k.nearFrom * 100)
   const near = k.nearZero === 'tone'
     ? { f: 330, cycle: 1000, duty: 15 }
     : { f: k.pitchLow, cycle: 800, duty: 5 }
@@ -163,7 +172,8 @@ export function generate(input: Knobs): Sound {
     climbOn,
     climbOff,
     sinkOn: k.sinkOn,
-    sinkOff: k.sinkOn,
+    // The hold never reaches the near-zero sound or the climb tone.
+    sinkOff: Math.round(Math.min(k.sinkOn + k.sinkHold, climbOff - 0.05) * 100) / 100,
     hyst: 0,
     average: k.average,
   }

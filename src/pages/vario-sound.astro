@@ -75,7 +75,16 @@ const description =
   .vw-table tr.is-silent td { color: var(--color-ink-3); }
   .vw-note { font-size: 14px; color: var(--color-ink-3); margin: 10px 0 0; max-width: 70ch; }
   .vw-refine { display: grid; gap: 10px; }
-  .vw-ref { display: grid; grid-template-columns: 9rem 1fr; gap: 10px 14px; align-items: center; border-top: 1px solid var(--color-paper-alt); padding-top: 10px; }
+  .vw-h2-s { font-size: clamp(22px, 3vw, 28px); }
+  .vw-ref-text { display: grid; gap: 2px; min-width: 0; }
+  .vw-now { font-family: var(--font-mono); font-size: 13px; color: var(--color-ink-2); margin-top: 4px; }
+  .vw-now .was { color: var(--color-ink-3); text-decoration: line-through; }
+  .vw-ab { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 18px; padding-top: 16px; border-top: 2px solid var(--color-ink); }
+  .vw-seg { display: inline-flex; }
+  .vw-seg .vw-btn + .vw-btn { border-left: 0; }
+  .vw-seg .vw-btn[aria-pressed='true'] { background: var(--color-ink); color: var(--color-paper); }
+  .vw-table td.is-changed { color: var(--color-accent); font-weight: 600; }
+  .vw-ref { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 18px; align-items: center; border-top: 1px solid var(--color-paper-alt); padding-top: 12px; }
   .vw-ref-btns { display: flex; gap: 8px; flex-wrap: wrap; }
   .vw-cta { border: 2px solid var(--color-ink); background: var(--color-ink); color: var(--color-paper); padding: 24px; }
   .vw-cta p { margin: 0 0 14px; max-width: 62ch; font-size: 17px; line-height: 1.55; }
@@ -93,7 +102,7 @@ const description =
 <script>
   import { DEFAULT_KNOBS, generate, tidy, type Knobs, type Sound } from '../lib/vario-wizard/generator'
   import { TICK_MS, paramsOf, simulate, toneAt, type Beep } from '../lib/vario-wizard/engine'
-  import { CLIPS, type ClipKey } from '../lib/vario-wizard/scenarios'
+  import { CLIPS, CLIP_TEXT, type ClipKey } from '../lib/vario-wizard/scenarios'
   import { REFINES, STEPS } from '../lib/vario-wizard/steps'
   import { appLink, decodeState, encodeState } from '../lib/vario-wizard/share'
   import { describe, diff } from '../lib/vario-wizard/describe'
@@ -107,7 +116,7 @@ const description =
 
   // ---------- sound ----------
   let ctx: AudioContext | null = null
-  let playing: { btn: HTMLButtonElement, label: string, paused: boolean, stop: () => void } | null = null
+  let playing: { btn: HTMLButtonElement, label: string, paused: boolean, stop: () => void, swap: () => void } | null = null
   const VOLUME = 0.12
 
   function stopPlaying() {
@@ -164,8 +173,21 @@ const description =
     g.style.opacity = '1'
   }
 
-  function play(btn: HTMLButtonElement, k: Knobs, clip: ClipKey, svg?: SVGSVGElement, chart?: SVGSVGElement | null) {
-    // The same button pauses and resumes: the audio clock stops, so do the beeps and the cursors.
+  interface PlaySpec {
+    /** The sound to play; asked again whenever playback is rescheduled. */
+    k: () => Knobs
+    clip: ClipKey
+    trace?: SVGSVGElement | null
+    chart?: () => SVGSVGElement | null | undefined
+    loop?: boolean
+  }
+
+  /**
+   * Plays a clip on the audio clock. The same button pauses and resumes (the
+   * clock stops, so do the beeps and both cursors). `swap()` reschedules from
+   * the current moment with whatever `spec.k()` returns now, for before/after.
+   */
+  function play(btn: HTMLButtonElement, spec: PlaySpec) {
     if (playing?.btn === btn) {
       const p = playing
       p.paused = !p.paused
@@ -185,61 +207,77 @@ const description =
     ctx ??= new AudioContext()
     if (ctx.state === 'suspended')
       void ctx.resume()
-    const { beeps, track } = runFor(k, clip)
-    const len = CLIPS[clip].lenMs / 1000
-    const master = ctx.createGain()
-    master.gain.value = VOLUME
-    master.connect(ctx.destination)
-    const t0 = ctx.currentTime + 0.08
-    for (const { t, d, f } of beeps) {
-      const osc = ctx.createOscillator()
-      const g = ctx.createGain()
-      osc.type = 'square'
-      osc.frequency.value = f
-      const a = t0 + t
-      g.gain.setValueAtTime(0, a)
-      g.gain.linearRampToValueAtTime(1, a + 0.003)
-      g.gain.setValueAtTime(1, a + Math.max(d - 0.003, 0.003))
-      g.gain.linearRampToValueAtTime(0, a + d)
-      osc.connect(g).connect(master)
-      osc.start(a)
-      osc.stop(a + d + 0.01)
+    const audio = ctx
+    const len = CLIPS[spec.clip].lenMs / 1000
+    let master: GainNode | null = null
+    let t0 = 0
+    let from = 0
+    const schedule = (start: number) => {
+      master?.disconnect()
+      const m = audio.createGain()
+      m.gain.value = VOLUME
+      m.connect(audio.destination)
+      master = m
+      t0 = audio.currentTime + 0.05
+      from = start
+      for (const { t, d, f } of runFor(spec.k(), spec.clip).beeps) {
+        if (t < start)
+          continue
+        const osc = audio.createOscillator()
+        const g = audio.createGain()
+        osc.type = 'square'
+        osc.frequency.value = f
+        const at = t0 + (t - start)
+        g.gain.setValueAtTime(0, at)
+        g.gain.linearRampToValueAtTime(1, at + 0.003)
+        g.gain.setValueAtTime(1, at + Math.max(d - 0.003, 0.003))
+        g.gain.linearRampToValueAtTime(0, at + d)
+        osc.connect(g).connect(m)
+        osc.start(at)
+        osc.stop(at + d + 0.01)
+      }
     }
-    const label = btn.textContent
+    const position = () => Math.max(0, audio.currentTime - t0 + from)
+    schedule(0)
+    const label = btn.textContent ?? '▶ Play'
     btn.setAttribute('aria-pressed', 'true')
     btn.textContent = '❚❚ Pause'
-    const head = svg?.querySelector<SVGLineElement>('.vw-head')
-    const audio = ctx
+    const head = spec.trace?.querySelector<SVGLineElement>('.vw-head')
     let raf = 0
     const tick = () => {
-      const el = audio.currentTime - t0
+      const el = position()
       if (head) {
         const x = TR.l + Math.max(0, Math.min(1, el / len)) * (TR.w - TR.l - TR.r)
         head.setAttribute('x1', String(x))
         head.setAttribute('x2', String(x))
         head.style.opacity = '1'
       }
+      const track = runFor(spec.k(), spec.clip).track
       const i = Math.floor(el * 1000 / TICK_MS)
-      moveCursor(chart, el >= 0 && i < track.length ? track[i]! : null)
+      moveCursor(spec.chart?.(), i < track.length ? track[i]! : null)
       if (el >= len) {
-        stopPlaying()
-        return
+        if (!spec.loop) {
+          stopPlaying()
+          return
+        }
+        schedule(0)
       }
       raf = requestAnimationFrame(tick)
     }
     raf = requestAnimationFrame(tick)
     playing = {
       btn,
-      label: label ?? '▶ Play',
+      label,
       paused: false,
+      swap: () => schedule(position()),
       stop: () => {
         cancelAnimationFrame(raf)
-        master.disconnect()
+        master?.disconnect()
         btn.setAttribute('aria-pressed', 'false')
-        btn.textContent = label ?? '▶ Play'
+        btn.textContent = label
         if (head)
           head.style.opacity = '0'
-        moveCursor(chart, null)
+        moveCursor(spec.chart?.(), null)
       },
     }
   }
@@ -276,7 +314,7 @@ const description =
    * Pitch and rhythm over the vario axis, drawn at the container's own width so
    * the text stays readable on a phone; silent stretches drawn pale.
    */
-  function curveSvg(s: Sound, width: number): string {
+  function curveSvg(s: Sound, width: number, before?: Sound): string {
     const W = Math.round(Math.max(320, Math.min(960, width)))
     const narrow = W < 560
     const L = narrow ? 40 : 52, R = 12
@@ -320,6 +358,18 @@ const description =
       grid += `<line x1="${L}" x2="${W - R}" y1="${yc(c)}" y2="${yc(c)}" stroke="var(--color-ink)" opacity="0.06" fill="none"/>`
       labels += `<text x="${L - 6}" y="${yc(c) + 4}" text-anchor="end">${c}</text>`
     }
+    if (before && JSON.stringify(before.curves) !== JSON.stringify(s.curves)) {
+      const fb: string[] = []
+      const cb: string[] = []
+      for (let cm = lo * 100; cm <= hi * 100; cm += 4) {
+        const t = toneAt(before.curves, cm)
+        fb.push(`${x(cm / 100).toFixed(1)},${yf(t.f).toFixed(1)}`)
+        cb.push(`${x(cm / 100).toFixed(1)},${yc(t.cycle).toFixed(1)}`)
+      }
+      data += `<polyline points="${fb.join(' ')}" fill="none" stroke="var(--color-ink-3)" stroke-width="1.6" stroke-dasharray="5 4"/>`
+      data += `<polyline points="${cb.join(' ')}" fill="none" stroke="var(--color-ink-3)" stroke-width="1.4" stroke-dasharray="5 4"/>`
+      labels += `<text x="${W - R}" y="${P.y - 10}" text-anchor="end">dashed: before fine-tuning</text>`
+    }
     for (const r of runs) {
       const col = r.heard ? 'var(--color-ink)' : 'var(--color-ink-3)'
       const op = r.heard ? 1 : 0.4
@@ -345,27 +395,34 @@ const description =
     return `<svg class="vw-chart" ${dataAttrs} viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Pitch and rhythm of your sound over the vario">${grid}${bands}${data}<g class="vw-labels">${labels}</g>${cursor}</svg>`
   }
 
-  function tableHtml(s: Sound): string {
+  function tableHtml(s: Sound, before?: Sound): string {
     const c = s.curves
+    const o = before?.curves
     const p = paramsOf(s.trigger)
+    const cell = (v: string | number, was?: string | number) =>
+      was !== undefined && String(was) !== String(v) ? `<td class="is-changed" title="was ${was}">${v}</td>` : `<td>${v}</td>`
     const rows = c.varioDots.map((v, i) => {
-      const silent = !(v > p.climbOff || v < p.sinkOn)
+      const silent = !(v > p.climbOff || v < p.sinkOff)
       const beep = Math.trunc(c.cycleDots[i]! * c.dutyDots[i]! / 100)
-      return `<tr class="${silent ? 'is-silent' : ''}"><td>${ms(v / 100)}</td><td>${c.freqDots[i]}</td><td>${c.cycleDots[i]}</td><td>${beep}</td><td>${c.dutyDots[i]}</td><td>${silent ? 'silent' : ''}</td></tr>`
+      const beepWas = o ? Math.trunc(o.cycleDots[i]! * o.dutyDots[i]! / 100) : undefined
+      return `<tr class="${silent ? 'is-silent' : ''}">${cell(ms(v / 100), o ? ms(o.varioDots[i]! / 100) : undefined)}${cell(c.freqDots[i]!, o?.freqDots[i])}${cell(c.cycleDots[i]!, o?.cycleDots[i])}${cell(beep, beepWas)}${cell(c.dutyDots[i]!, o?.dutyDots[i])}<td>${silent ? 'silent' : ''}</td></tr>`
     }).join('')
     const t = s.trigger
+    const w = before?.trigger
     const never = t.sinkOn <= -10
+    const val = (x: number) => `${ms(x)} m/s`
     return `<div class="vw-tablewrap"><table class="vw-table">
       <thead><tr><th>Vario, m/s</th><th>Pitch, Hz</th><th>Period, ms</th><th>Beep, ms</th><th>Beep share, %</th><th></th></tr></thead>
       <tbody>${rows}</tbody></table></div>
       <div class="vw-tablewrap" style="margin-top:14px"><table class="vw-table">
       <thead><tr><th>When it sounds</th><th>Value</th></tr></thead><tbody>
-      <tr><td>Climb tone on above</td><td>${ms(t.climbOn)} m/s</td></tr>
-      <tr><td>Climb tone held down to</td><td>${ms(t.climbOff)} m/s</td></tr>
-      <tr><td>Sink tone on below</td><td>${never ? 'never' : `${ms(t.sinkOn)} m/s`}</td></tr>
-      <tr><td>Vario averaging</td><td>${t.average.toFixed(2)} s</td></tr>
+      <tr><td>Climb tone on above</td>${cell(val(t.climbOn), w ? val(w.climbOn) : undefined)}</tr>
+      <tr><td>Climb tone held down to</td>${cell(val(t.climbOff), w ? val(w.climbOff) : undefined)}</tr>
+      <tr><td>Sink tone on below</td>${cell(never ? 'never' : val(t.sinkOn), w ? (w.sinkOn <= -10 ? 'never' : val(w.sinkOn)) : undefined)}</tr>
+      <tr><td>Sink tone held up to</td>${cell(never ? '—' : val(t.sinkOff), w ? (w.sinkOn <= -10 ? '—' : val(w.sinkOff)) : undefined)}</tr>
+      <tr><td>Vario averaging</td>${cell(`${t.average.toFixed(2)} s`, w ? `${w.average.toFixed(2)} s` : undefined)}</tr>
       </tbody></table></div>
-      <p class="vw-note">Between the points a vario draws straight lines. Most varios that take a tone table take these columns; copy the numbers into yours. Points in grey lie in silence with these thresholds.</p>`
+      <p class="vw-note">Between the points a vario draws straight lines. Most varios that take a tone table take these columns; copy the numbers into yours. Points in grey lie in silence with these thresholds${o ? '; numbers in orange moved with fine-tuning' : ''}.</p>`
   }
 
   // ---------- screens ----------
@@ -456,7 +513,7 @@ const description =
       b.addEventListener('click', () => {
         const key = b.dataset.listen!
         const svg = shown === key ? traceBox.querySelector('svg') ?? undefined : show(key)
-        play(b, optionKnobs(step, key), clip, svg, chartBox.querySelector('svg'))
+        play(b, { k: () => optionKnobs(step, key), clip, trace: svg, chart: () => chartBox.querySelector('svg') })
       })
     }
     for (const b of root.querySelectorAll<HTMLButtonElement>('[data-pick]')) {
@@ -490,17 +547,34 @@ const description =
     else renderStep()
   }
 
+  /** The sound as the answers left it; fine-tuning is compared against it. */
+  let fineBase: Knobs | null = null
+  let abSide: 'before' | 'after' = 'after'
+  let abClip: ClipKey = 'climb'
+
+  function refineNow(key: string, k: Knobs): string {
+    const s = generate(k)
+    if (key === 'tempo') {
+      const t = toneAt(s.curves, 100)
+      return `at +1 m/s a ${Math.round(t.cycle * t.duty / 100)} ms beep every ${Math.round(t.cycle)} ms`
+    }
+    if (key === 'pitch')
+      return `${Math.round(toneAt(s.curves, 100).f)} Hz at +1 m/s`
+    if (key === 'start')
+      return `above ${ms(k.climbStart)} m/s`
+    return `averaging ${k.average.toFixed(2)} s`
+  }
+
   function renderResult() {
     stopPlaying()
-    const s = generate(knobs)
+    fineBase ??= tidy(knobs)
+    abSide = 'after'
     const refines = REFINES.map((r) => `
-      <div class="vw-ref"><div><strong>${esc(r.title)}</strong></div>
+      <div class="vw-ref" data-ref="${r.key}">
+        <div class="vw-ref-text"><strong>${esc(r.title)}</strong><span class="vw-opt-hint">${esc(r.explain)}</span><span class="vw-now" data-now="${r.key}"></span></div>
         <div class="vw-ref-btns">
-          <button type="button" class="vw-btn play" data-ref-play="${r.key}" data-dir="-1" aria-pressed="false">▶ ${esc(r.a)}</button>
-          <button type="button" class="vw-btn play" data-ref-play="${r.key}" data-dir="0" aria-pressed="false">▶ as is</button>
-          <button type="button" class="vw-btn play" data-ref-play="${r.key}" data-dir="1" aria-pressed="false">▶ ${esc(r.b)}</button>
-          <button type="button" class="vw-btn" data-ref-take="${r.key}" data-dir="-1">Take ${esc(r.a)}</button>
-          <button type="button" class="vw-btn" data-ref-take="${r.key}" data-dir="1">Take ${esc(r.b)}</button>
+          <button type="button" class="vw-btn" data-move="${r.key}" data-dir="-1">${esc(r.a)}</button>
+          <button type="button" class="vw-btn" data-move="${r.key}" data-dir="1">${esc(r.b)}</button>
         </div></div>`).join('')
     root.innerHTML = `
       <div class="vw-card">
@@ -508,7 +582,23 @@ const description =
         <h2 class="vw-h2">Listen to a whole flight with it</h2>
         <p class="vw-qlead">A glide, the air improving, into the core, a few turns, the climb fading, out into sink.</p>
         <button type="button" class="vw-btn accent play" id="vw-flight" aria-pressed="false">▶ Play the flight</button>
-        <div id="vw-flight-trace">${traceSvg(knobs, 'flight')}</div>
+        <div id="vw-flight-trace"></div>
+      </div>
+      <div class="vw-card">
+        <p class="vw-sub">Fine-tune</p>
+        <h2 class="vw-h2 vw-h2-s">Adjust one thing at a time</h2>
+        <p class="vw-qlead">A change applies at once. The chart below draws the sound before fine-tuning as a dashed line, and the table marks the numbers that moved. To hear it, play the clip: it loops, and Before / After switches the sound at the same moment of the clip.</p>
+        <div class="vw-refine">${refines}</div>
+        <div class="vw-ab">
+          <button type="button" class="vw-btn accent play" id="vw-ab-play" aria-pressed="false">▶ Play</button>
+          <div class="vw-seg" role="group" aria-label="Which sound">
+            <button type="button" class="vw-btn" data-side="before">Before</button>
+            <button type="button" class="vw-btn" data-side="after">After</button>
+          </div>
+          <button type="button" class="vw-btn" id="vw-ab-reset">Undo fine-tuning</button>
+        </div>
+        <p class="vw-pv-cliplabel" id="vw-ab-clip"></p>
+        <div id="vw-ab-trace"></div>
       </div>
       <div class="vw-card">
         <p class="vw-sub">Chart</p>
@@ -516,17 +606,12 @@ const description =
       </div>
       <div class="vw-card">
         <p class="vw-sub">Tone table</p>
-        ${tableHtml(s)}
-      </div>
-      <div class="vw-card">
-        <p class="vw-sub">Fine-tune</p>
-        <p class="vw-qlead">Listen to both sides, take the one you prefer. The chart and the table follow.</p>
-        <div class="vw-refine">${refines}</div>
+        <div id="vw-res-table"></div>
       </div>
       <div class="vw-cta">
         <p>On a FlyBeeper this sound plays on the instrument and, if you like, on your phone at the same moment: the phone speaker plays the real pitches, much louder than a piezo.</p>
         <div class="vw-nav">
-          <a class="vw-btn accent" href="${esc(appLink(s))}" target="_blank" rel="noopener">Put it on my FlyBeeper</a>
+          <a class="vw-btn accent" id="vw-app" href="#" target="_blank" rel="noopener">Put it on my FlyBeeper</a>
           <button type="button" class="vw-btn" id="vw-copy" style="color:var(--color-paper);background:transparent;border-color:var(--color-paper)">Copy link to this sound</button>
           <span class="vw-copied" id="vw-copied"></span>
         </div>
@@ -538,27 +623,88 @@ const description =
       </div>`
 
     const resChart = root.querySelector<HTMLElement>('#vw-res-chart')!
-    redraw = () => { resChart.innerHTML = curveSvg(s, resChart.clientWidth) }
-    redraw()
+    const flightBox = root.querySelector<HTMLElement>('#vw-flight-trace')!
+    const abBox = root.querySelector<HTMLElement>('#vw-ab-trace')!
+    const abPlay = root.querySelector<HTMLButtonElement>('#vw-ab-play')!
     const flightBtn = root.querySelector<HTMLButtonElement>('#vw-flight')!
-    flightBtn.addEventListener('click', () => play(flightBtn, knobs, 'flight', root.querySelector<SVGSVGElement>('#vw-flight-trace svg')!, resChart.querySelector('svg')))
-    for (const b of root.querySelectorAll<HTMLButtonElement>('[data-ref-play]')) {
+    const changed = () => JSON.stringify(tidy(knobs)) !== JSON.stringify(fineBase)
+    const abKnobs = () => (abSide === 'before' ? fineBase! : knobs)
+
+    const update = () => {
+      const s = generate(knobs)
+      const before = changed() ? generate(fineBase!) : undefined
+      redraw = () => { resChart.innerHTML = curveSvg(s, resChart.clientWidth, before) }
+      redraw()
+      root.querySelector('#vw-res-table')!.innerHTML = tableHtml(s, before)
+      for (const r of REFINES) {
+        const now = refineNow(r.key, knobs)
+        const was = refineNow(r.key, fineBase!)
+        root.querySelector(`[data-now="${r.key}"]`)!.innerHTML = now === was
+          ? `Now: ${esc(now)}`
+          : `Was: <span class="was">${esc(was)}</span><br>Now: <b>${esc(now)}</b>`
+      }
+      for (const b of root.querySelectorAll<HTMLButtonElement>('[data-side]')) {
+        b.setAttribute('aria-pressed', String(b.dataset.side === abSide))
+        b.disabled = !changed()
+      }
+      root.querySelector<HTMLButtonElement>('#vw-ab-reset')!.disabled = !changed()
+      root.querySelector('#vw-ab-clip')!.textContent = `Clip: ${CLIP_TEXT[abClip]} · loops · playing: ${abSide === 'before' ? 'before' : 'after'} fine-tuning`
+      root.querySelector<HTMLAnchorElement>('#vw-app')!.href = appLink(s)
+      if (playing?.btn !== flightBtn)
+        flightBox.innerHTML = traceSvg(knobs, 'flight')
+      if (playing?.btn === abPlay)
+        playing.swap()
+      else abBox.innerHTML = traceSvg(abKnobs(), abClip)
+      saveHash()
+    }
+
+    const startAb = () => play(abPlay, { k: abKnobs, clip: abClip, trace: abBox.querySelector('svg'), chart: () => resChart.querySelector('svg'), loop: true })
+    abPlay.addEventListener('click', () => {
+      if (playing?.btn !== abPlay)
+        abBox.innerHTML = traceSvg(abKnobs(), abClip)
+      startAb()
+    })
+    for (const b of root.querySelectorAll<HTMLButtonElement>('[data-move]')) {
       b.addEventListener('click', () => {
-        const r = REFINES.find((x) => x.key === b.dataset.refPlay)!
-        const d = Number(b.dataset.dir) as -1 | 0 | 1
-        const k = d === 0 ? knobs : tidy({ ...knobs, ...r.move(knobs, d) })
-        play(b, k, r.clip, undefined, resChart.querySelector('svg'))
+        const r = REFINES.find((x) => x.key === b.dataset.move)!
+        const dir = Number(b.dataset.dir) as -1 | 1
+        knobs = tidy({ ...knobs, ...r.move(knobs, dir) })
+        answers[`refine.${r.key}`] = String(Number(answers[`refine.${r.key}`] ?? 0) + dir)
+        abSide = 'after'
+        if (abClip !== r.clip) {
+          abClip = r.clip
+          // Another knob, another clip: restart it from the top.
+          if (playing?.btn === abPlay) {
+            stopPlaying()
+            abBox.innerHTML = traceSvg(abKnobs(), abClip)
+            update()
+            startAb()
+            return
+          }
+        }
+        update()
       })
     }
-    for (const b of root.querySelectorAll<HTMLButtonElement>('[data-ref-take]')) {
+    for (const b of root.querySelectorAll<HTMLButtonElement>('[data-side]')) {
       b.addEventListener('click', () => {
-        const r = REFINES.find((x) => x.key === b.dataset.refTake)!
-        knobs = tidy({ ...knobs, ...r.move(knobs, Number(b.dataset.dir) as -1 | 1) })
-        answers[`refine.${r.key}`] = String((Number(answers[`refine.${r.key}`] ?? 0)) + Number(b.dataset.dir))
-        saveHash()
-        renderResult()
+        abSide = b.dataset.side as 'before' | 'after'
+        update()
       })
     }
+    root.querySelector('#vw-ab-reset')!.addEventListener('click', () => {
+      knobs = { ...fineBase! }
+      for (const r of REFINES)
+        delete answers[`refine.${r.key}`]
+      abSide = 'after'
+      update()
+    })
+    flightBtn.addEventListener('click', () => {
+      if (playing?.btn !== flightBtn)
+        flightBox.innerHTML = traceSvg(knobs, 'flight')
+      play(flightBtn, { k: () => knobs, clip: 'flight', trace: flightBox.querySelector('svg'), chart: () => resChart.querySelector('svg') })
+    })
+    update()
+
     root.querySelector('#vw-copy')!.addEventListener('click', async () => {
       const out = root.querySelector('#vw-copied')!
       try {
@@ -570,6 +716,7 @@ const description =
     })
     root.querySelector('#vw-back')!.addEventListener('click', () => {
       stepIndex = STEPS.length - 1
+      fineBase = null
       knobs = undo.pop() ?? knobs
       delete answers[STEPS[stepIndex]!.key]
       renderStep()
@@ -577,6 +724,7 @@ const description =
     root.querySelector('#vw-restart')!.addEventListener('click', () => {
       knobs = { ...DEFAULT_KNOBS }
       answers = {}
+      fineBase = null
       undo.length = 0
       stepIndex = 0
       window.history.replaceState(null, '', location.pathname)

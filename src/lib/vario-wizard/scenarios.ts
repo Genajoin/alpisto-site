@@ -5,6 +5,17 @@
  * the way it behaves in real air.
  */
 
+/** What a clip is, in a few words, for the page. */
+export const CLIP_TEXT: Record<string, string> = {
+  flight: 'a whole flight',
+  climb: 'the climb grows from 0 to +4 m/s',
+  start: 'from a small sink into a weak climb',
+  fade: 'a +1.5 climb fades out in bumpy air',
+  near: 'the sink eases off to a small minus',
+  sink: 'into sink down to −4.5 m/s and out again',
+  bumpy: 'a +1.5 thermal in rough air',
+}
+
 export type ClipKey = 'flight' | 'climb' | 'start' | 'fade' | 'near' | 'sink' | 'bumpy'
 
 export interface Clip {
@@ -84,8 +95,8 @@ export const CLIPS: Record<ClipKey, Clip> = {
   fade: clip([[0, 1.5], [2, 1.5], [12, -0.8], [14, -0.8]], 16, 500, 17, [-1.5, 2.5]),
   // Gliding, the sink eases off to a small minus, then the first weak lift.
   near: clip([[0, -1.6], [2, -1.6], [8, -0.3], [11, -0.3], [14, 0.4]], 8, 400, 19, [-2.5, 1]),
-  // Into stronger and stronger sink.
-  sink: clip([[0, -1], [1, -1], [10, -4.5], [13, -4.5]], 10, 400, 23, [-5, 0.5]),
+  // Into stronger and stronger sink, and out of it again.
+  sink: clip([[0, -1], [1, -1], [8, -4.5], [10, -4.5], [17, -1], [18, -1]], 10, 400, 23, [-5, 0.5]),
   // A +1.5 thermal in rough air.
   bumpy: clip([[0, 1.5], [12, 1.5]], 70, 300, 29, [-1.5, 4]),
 }

@@ -104,7 +104,8 @@ export const STEPS: Step[] = [
   },
   {
     key: 'sinkFrom',
-    title: 'When should the sink alarm start?',
+    title: 'Sinking deeper and deeper: from what sink should the alarm switch on?',
+    lead: 'The clip goes down into −4.5 m/s and back out.',
     clip: 'sink',
     options: [
       { key: '-1.5', label: 'From −1.5 m/s', apply: () => ({ sinkOn: -1.5 }) },
@@ -113,6 +114,17 @@ export const STEPS: Step[] = [
       { key: '-3', label: 'From −3', apply: () => ({ sinkOn: -3 }) },
       { key: '-4', label: 'From −4', apply: () => ({ sinkOn: -4 }) },
       { key: 'never', label: 'Never', apply: () => ({ sinkOn: -10 }) },
+    ],
+  },
+  {
+    key: 'sinkHold',
+    title: 'The sink eases off again: when should the alarm stop?',
+    lead: 'Stopping a little later keeps it from flickering on and off at the edge.',
+    clip: 'sink',
+    options: [
+      { key: 'same', label: 'At the same value it started', apply: () => ({ sinkHold: 0 }) },
+      { key: 'little', label: 'A little later, 0.3 m/s weaker', apply: () => ({ sinkHold: 0.3 }) },
+      { key: 'more', label: 'Later, 0.6 m/s weaker', apply: () => ({ sinkHold: 0.6 }) },
     ],
   },
   {
@@ -150,10 +162,12 @@ export const STEPS: Step[] = [
   },
 ]
 
-/** Fine-tuning on the result: one knob, a step either way. */
+/** Fine-tuning on the result: one knob, a step either way, applied at once. */
 export interface Refine {
   key: string
   title: string
+  /** What changes, in plain words. */
+  explain: string
   a: string
   b: string
   clip: ClipKey
@@ -161,8 +175,24 @@ export interface Refine {
 }
 
 export const REFINES: Refine[] = [
-  { key: 'tempo', title: 'Beeps', a: 'slower', b: 'faster', clip: 'climb', move: (k, d) => ({ tempoLow: k.tempoLow * (d > 0 ? 0.85 : 1.18), tempoHigh: k.tempoHigh * (d > 0 ? 0.85 : 1.18) }) },
-  { key: 'pitch', title: 'Pitch', a: 'lower', b: 'higher', clip: 'climb', move: (k, d) => ({ pitchLow: k.pitchLow * (d > 0 ? 1.12 : 0.89), pitchHigh: k.pitchHigh * (d > 0 ? 1.12 : 0.89) }) },
-  { key: 'start', title: 'Climb tone starts', a: 'earlier', b: 'later', clip: 'start', move: (k, d) => ({ climbStart: k.climbStart + (d > 0 ? 0.05 : -0.05) }) },
-  { key: 'react', title: 'Reaction', a: 'quicker', b: 'calmer', clip: 'bumpy', move: (k, d) => ({ average: k.average * (d > 0 ? 1.5 : 0.67) }) },
+  {
+    key: 'tempo', title: 'Beep rhythm', a: 'Slower', b: 'Faster', clip: 'climb',
+    explain: 'How often the climb beeps come, at every climb strength. The pitch stays.',
+    move: (k, d) => ({ tempoLow: k.tempoLow * (d > 0 ? 0.85 : 1.18), tempoHigh: k.tempoHigh * (d > 0 ? 0.85 : 1.18) }),
+  },
+  {
+    key: 'pitch', title: 'Pitch', a: 'Lower', b: 'Higher', clip: 'climb',
+    explain: 'The whole climb tone moves up or down by about a tone. The rhythm stays.',
+    move: (k, d) => ({ pitchLow: k.pitchLow * (d > 0 ? 1.12 : 0.89), pitchHigh: k.pitchHigh * (d > 0 ? 1.12 : 0.89) }),
+  },
+  {
+    key: 'start', title: 'Climb tone starts', a: 'Earlier', b: 'Later', clip: 'start',
+    explain: 'How much climb it takes before the first beep, in steps of 0.05 m/s.',
+    move: (k, d) => ({ climbStart: k.climbStart + (d > 0 ? 0.05 : -0.05) }),
+  },
+  {
+    key: 'react', title: 'Reaction', a: 'Quicker', b: 'Calmer', clip: 'bumpy',
+    explain: 'How closely the sound follows the air. Quicker hears a thermal sooner, with more stray beeps in rough air.',
+    move: (k, d) => ({ average: k.average * (d > 0 ? 1.5 : 0.67) }),
+  },
 ]
