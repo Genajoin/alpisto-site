@@ -120,7 +120,7 @@ export const STEPS: Step[] = [
   {
     key: 'rTempo',
     kind: 'sound',
-    title: (a) => `The beeps of the ${instrument(a.instrument)?.label}: faster or slower?`,
+    title: 'The beeps: faster or slower?',
     lead: 'The whole climb keeps its shape; only the rhythm moves. The climb grows from 0 to +4 m/s.',
     clip: 'climb',
     options: [
@@ -132,7 +132,7 @@ export const STEPS: Step[] = [
   {
     key: 'rTone',
     kind: 'sound',
-    title: (a) => `The tone of the ${instrument(a.instrument)?.label}: higher or lower?`,
+    title: 'The tone: higher or lower?',
     lead: 'The whole climb keeps its shape; only the tone moves.',
     clip: 'climb',
     options: [
@@ -145,7 +145,7 @@ export const STEPS: Step[] = [
     key: 'rBend',
     kind: 'sound',
     title: 'Where should the sound change most?',
-    lead: 'This vario has its own curve. Keep it, or move it a good part of the way towards an even one or towards more detail in weak lift.',
+    lead: 'Your sound has its own curve. Keep it, or move it a good part of the way towards an even one or towards more detail in weak lift.',
     clip: 'climb',
     options: [
       { key: 'same', label: 'Keep its curve' },
