@@ -8,6 +8,7 @@
 /** What a clip is, in a few words, for the page. */
 export const CLIP_TEXT: Record<string, string> = {
   flight: 'a whole flight',
+  mini: 'a short thermal: in, some climb, out into sink',
   climb: 'the climb grows from 0 to +4 m/s',
   start: 'from a small sink into a weak climb',
   fade: 'a +1.5 climb fades out in bumpy air',
@@ -16,7 +17,7 @@ export const CLIP_TEXT: Record<string, string> = {
   bumpy: 'a +1.5 thermal in rough air',
 }
 
-export type ClipKey = 'flight' | 'climb' | 'start' | 'fade' | 'near' | 'sink' | 'bumpy'
+export type ClipKey = 'mini' | 'flight' | 'climb' | 'start' | 'fade' | 'near' | 'sink' | 'bumpy'
 
 export interface Clip {
   lenMs: number
@@ -87,6 +88,8 @@ export const CLIPS: Record<ClipKey, Clip> = {
     [[0, -1.2], [6, -1.2], [10, -0.4], [13, 0.6], [16, 2.3], [30, 2.1], [35, 0.3], [38, -0.5], [42, -3.2], [46, -1.4]],
     14, 400, 7, [-4, 4], circling(16, 30, 0.9, 7),
   ),
+  // A short thermal: glide, in, a few seconds of climb, out into sink.
+  mini: clip([[0, -1.2], [2, -1.2], [5, 1.6], [9, 2.2], [11, 0.4], [13, -2.8], [15, -2.8], [17, -1.2]], 12, 400, 31, [-4, 3.5]),
   // The climb grows steadily from zero to +4.
   climb: clip([[0, 0], [1, 0], [13, 4], [14, 4]], 4, 200, 11, [-1, 5]),
   // Slowly from a small sink across zero into a weak climb.

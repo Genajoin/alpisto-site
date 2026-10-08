@@ -3,20 +3,35 @@
  * as they are, too, so the same page can later count them for everyone.
  */
 import type { ClipKey } from './scenarios'
-import type { Knobs } from './generator'
+import { DEFAULT_KNOBS, type Knobs } from './generator'
+import { INSTRUMENTS, instrument, knobsLike } from './fit'
+
+export type Answers = Record<string, string>
 
 export interface Option {
   key: string
   label: string
   hint?: string
   /** What this answer does to the sound; absent = the answer is only recorded. */
-  apply?: (k: Knobs) => Partial<Knobs>
+  apply?: (k: Knobs, a: Answers) => Partial<Knobs>
 }
+
+/**
+ * sound  — each answer can be shown and played before it is chosen;
+ * listen — one sound to play, the answers only judge it;
+ * info   — a quick answer, no sound (multi: several at once);
+ * text   — a line of free text.
+ */
+export type StepKind = 'sound' | 'listen' | 'info' | 'text'
 
 export interface Step {
   key: string
-  title: string
-  lead?: string
+  kind: StepKind
+  multi?: boolean
+  /** Optional steps say so and offer to skip to the result. */
+  optional?: boolean
+  title: string | ((a: Answers) => string)
+  lead?: string | ((a: Answers) => string)
   /** The clip each option plays; absent = nothing to listen to. */
   clip?: ClipKey
   options: Option[]
@@ -24,9 +39,22 @@ export interface Step {
 
 export const STEPS: Step[] = [
   {
+    key: 'years',
+    kind: 'info',
+    title: 'How long have you been flying?',
+    lead: 'A few quick questions first, to pick the shortest way to your sound.',
+    options: [
+      { key: '0', label: 'Less than a year' },
+      { key: '1-2', label: '1 to 2 years' },
+      { key: '3-5', label: '3 to 5 years' },
+      { key: '6-10', label: '6 to 10 years' },
+      { key: '10+', label: 'More than 10 years' },
+    ],
+  },
+  {
     key: 'where',
+    kind: 'info',
     title: 'Where do you fly most?',
-    lead: 'This sets a starting point. Every next answer changes the sound you hear.',
     options: [
       { key: 'mountains', label: 'Mountains', hint: 'strong, rough thermals', apply: () => ({ climbStart: 0.2, hold: 0.1, sinkOn: -3, average: 0.5 }) },
       { key: 'flatland', label: 'Flatland', hint: 'weak, broken thermals', apply: () => ({ climbStart: 0.05, hold: 0.05, nearZero: 'ticks', nearFrom: -0.3, average: 0.3 }) },
@@ -36,7 +64,71 @@ export const STEPS: Step[] = [
     ],
   },
   {
+    key: 'instrument',
+    kind: 'info',
+    title: 'What do you fly with now?',
+    lead: 'The vario whose sound you are used to.',
+    options: INSTRUMENTS.map((i) => ({ key: i.key, label: i.label })),
+  },
+  {
+    key: 'happy',
+    kind: 'info',
+    title: (a) => `Do you like how your ${instrument(a.instrument)?.label ?? 'vario'} sounds?`,
+    options: [
+      { key: 'yes', label: 'Yes, I like it', apply: (k, a) => knobsLike(a.instrument, k) ?? {} },
+      { key: 'mostly', label: 'Mostly, I would change a thing or two', apply: (k, a) => knobsLike(a.instrument, k) ?? {} },
+      { key: 'no', label: 'No' },
+    ],
+  },
+  {
+    key: 'familiar',
+    kind: 'listen',
+    title: (a) => `Here is a sound close to your ${instrument(a.instrument)?.label}. Is this what you are used to?`,
+    lead: 'Play it: a glide, into a thermal, a few turns, out into sink.',
+    clip: 'flight',
+    options: [
+      { key: 'yes', label: 'Yes, that is it' },
+      { key: 'adjust', label: 'Close; I will adjust it at the end' },
+      { key: 'no', label: 'No, let me build my own', apply: (_k, a) => fromWhere(a) },
+    ],
+  },
+  {
+    key: 'bSound',
+    kind: 'sound',
+    title: 'Which of these is easier to follow?',
+    lead: 'Three complete sounds on a short thermal: in, a few seconds of climb, out into sink.',
+    clip: 'mini',
+    options: [
+      { key: 'both', label: 'A', hint: 'beeps get both faster and higher', apply: () => ({ tempoLow: 600, tempoHigh: 180, pitchLow: 600, pitchHigh: 1400, dutyLow: 50, dutyHigh: 50, shape: 'linear', nearZero: 'silent', average: 0.4 }) },
+      { key: 'tempo', label: 'B', hint: 'the rhythm tells the climb', apply: () => ({ tempoLow: 700, tempoHigh: 130, pitchLow: 600, pitchHigh: 800, dutyLow: 50, dutyHigh: 50, shape: 'linear', nearZero: 'silent', average: 0.4 }) },
+      { key: 'pitch', label: 'C', hint: 'the pitch tells the climb', apply: () => ({ tempoLow: 480, tempoHigh: 400, pitchLow: 550, pitchHigh: 1800, dutyLow: 50, dutyHigh: 50, shape: 'linear', nearZero: 'silent', average: 0.4 }) },
+    ],
+  },
+  {
+    key: 'bStart',
+    kind: 'sound',
+    title: 'Should it beep in very weak lift?',
+    lead: 'The air goes slowly from a small sink into a weak climb.',
+    clip: 'start',
+    options: [
+      { key: 'real', label: 'Only when it really climbs', hint: 'from +0.2 m/s', apply: () => ({ climbStart: 0.2, hold: 0.1 }) },
+      { key: 'any', label: 'At every bit of lift', hint: 'from +0.05 m/s', apply: () => ({ climbStart: 0.05, hold: 0.05 }) },
+    ],
+  },
+  {
+    key: 'bSink',
+    kind: 'sound',
+    title: 'Do you want a sink alarm?',
+    clip: 'sink',
+    options: [
+      { key: 'early', label: 'Yes, warn me early', hint: 'from −2 m/s', apply: () => ({ sinkOn: -2, sinkHold: 0.3, sinkStyle: 'continuous', sinkFalls: true }) },
+      { key: 'late', label: 'Only in strong sink', hint: 'from −3 m/s', apply: () => ({ sinkOn: -3, sinkHold: 0.3, sinkStyle: 'continuous', sinkFalls: true }) },
+      { key: 'never', label: 'No sink alarm', apply: () => ({ sinkOn: -10 }) },
+    ],
+  },
+  {
     key: 'growth',
+    kind: 'sound',
     title: 'As the climb gets stronger, what should change?',
     lead: 'Listen to each: the climb grows from zero to +4 m/s.',
     clip: 'climb',
@@ -49,6 +141,7 @@ export const STEPS: Step[] = [
   },
   {
     key: 'detail',
+    kind: 'sound',
     title: 'Where do you want to hear small differences?',
     clip: 'climb',
     options: [
@@ -58,6 +151,7 @@ export const STEPS: Step[] = [
   },
   {
     key: 'top',
+    kind: 'sound',
     title: 'How high should a strong climb sound?',
     clip: 'climb',
     options: [
@@ -68,6 +162,7 @@ export const STEPS: Step[] = [
   },
   {
     key: 'start',
+    kind: 'sound',
     title: 'From what climb should it start beeping?',
     lead: 'The air goes slowly from a small sink into a weak climb.',
     clip: 'start',
@@ -80,6 +175,7 @@ export const STEPS: Step[] = [
   },
   {
     key: 'fade',
+    kind: 'sound',
     title: 'The climb fades to zero. What should the vario do?',
     lead: 'A +1.5 climb weakens in bumpy air.',
     clip: 'fade',
@@ -92,6 +188,7 @@ export const STEPS: Step[] = [
   },
   {
     key: 'near',
+    kind: 'sound',
     title: 'The air rises, but slower than you sink. What then?',
     lead: 'Gliding, the sink eases off to a small minus before the first weak lift.',
     clip: 'near',
@@ -104,6 +201,7 @@ export const STEPS: Step[] = [
   },
   {
     key: 'sinkFrom',
+    kind: 'sound',
     title: 'Sinking deeper and deeper: from what sink should the alarm switch on?',
     lead: 'The clip goes down into −4.5 m/s and back out.',
     clip: 'sink',
@@ -118,6 +216,7 @@ export const STEPS: Step[] = [
   },
   {
     key: 'sinkHold',
+    kind: 'sound',
     title: 'The sink eases off again: when should the alarm stop?',
     lead: 'Stopping a little later keeps it from flickering on and off at the edge.',
     clip: 'sink',
@@ -129,6 +228,7 @@ export const STEPS: Step[] = [
   },
   {
     key: 'sinkStyle',
+    kind: 'sound',
     title: 'How should the sink alarm sound?',
     clip: 'sink',
     options: [
@@ -140,6 +240,7 @@ export const STEPS: Step[] = [
   },
   {
     key: 'reaction',
+    kind: 'sound',
     title: 'Quick or calm?',
     lead: 'A +1.5 thermal in rough air.',
     clip: 'bumpy',
@@ -151,8 +252,9 @@ export const STEPS: Step[] = [
   },
   {
     key: 'volume',
-    title: 'And the volume?',
-    lead: 'No sound to compare here: we only want to know.',
+    kind: 'info',
+    optional: true,
+    title: 'How should the volume behave?',
     options: [
       { key: 'constant', label: 'Always the same' },
       { key: 'climb', label: 'Louder in a stronger climb' },
@@ -160,7 +262,78 @@ export const STEPS: Step[] = [
       { key: 'sink', label: 'Quieter in sink than in lift' },
     ],
   },
+  {
+    key: 'sets',
+    kind: 'info',
+    optional: true,
+    title: 'How many sounds would you use?',
+    options: [
+      { key: 'one', label: 'One for everything' },
+      { key: 'sets', label: 'Two or three, for different conditions' },
+      { key: 'own', label: 'I build my own for each situation' },
+    ],
+  },
+  {
+    key: 'hear',
+    kind: 'info',
+    multi: true,
+    optional: true,
+    title: 'Where do you want to hear the vario?',
+    lead: 'Pick all that apply.',
+    options: [
+      { key: 'instrument', label: 'On the instrument' },
+      { key: 'phone', label: 'On the phone speaker' },
+      { key: 'headset', label: 'In earphones or a helmet headset' },
+    ],
+  },
+  {
+    key: 'annoy',
+    kind: 'text',
+    optional: true,
+    title: 'What annoys you in the sound of your vario?',
+    lead: 'One line is enough.',
+    options: [],
+  },
 ]
+
+const TUNE = ['growth', 'detail', 'top', 'start', 'fade', 'near', 'sinkFrom', 'sinkHold', 'sinkStyle', 'reaction']
+const BEGINNER = ['bSound', 'bStart', 'bSink']
+const FINAL = ['volume', 'sets', 'hear', 'annoy']
+
+/** The starting sound for where a pilot flies, without anything a familiar vario added. */
+function fromWhere(a: Answers): Knobs {
+  const o = STEPS.find((x) => x.key === 'where')!.options.find((x) => x.key === a.where)
+  return { ...DEFAULT_KNOBS, ...(o?.apply?.(DEFAULT_KNOBS, a) ?? {}) }
+}
+
+export function isBeginner(a: Answers): boolean {
+  return a.years === '0' || a.years === '1-2' || a.where === 'learning'
+}
+
+/** The questions for these answers, in order; it grows as the answers come. */
+export function flow(a: Answers): string[] {
+  const out = ['years', 'where', 'instrument']
+  const inst = instrument(a.instrument)
+  if (a.instrument && a.instrument !== 'none' && a.instrument !== 'phone')
+    out.push('happy')
+  if (isBeginner(a)) {
+    out.push(...BEGINNER)
+  }
+  else if (inst?.entry && (a.happy === 'yes' || a.happy === 'mostly')) {
+    out.push('familiar')
+    if (a.familiar === 'no')
+      out.push(...TUNE)
+  }
+  else {
+    out.push(...TUNE)
+  }
+  out.push(...FINAL)
+  return out
+}
+
+export function stepByKey(key: string): Step {
+  return STEPS.find((s) => s.key === key)!
+}
 
 /** Fine-tuning on the result: one knob, a step either way, applied at once. */
 export interface Refine {

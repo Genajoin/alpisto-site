@@ -75,6 +75,12 @@ const description =
   .vw-table tr.is-silent td { color: var(--color-ink-3); }
   .vw-note { font-size: 14px; color: var(--color-ink-3); margin: 10px 0 0; max-width: 70ch; }
   .vw-refine { display: grid; gap: 10px; }
+  .vw-choice { display: grid; gap: 2px; text-align: left; font: inherit; font-size: 17px; font-weight: 500; color: var(--color-ink); border: 1px solid var(--color-ink); background: var(--color-paper); padding: 14px 16px; cursor: pointer; }
+  .vw-choice:hover, .vw-choice:focus-visible { background: var(--color-ink); color: var(--color-paper); outline: none; }
+  .vw-choice:hover .vw-opt-hint, .vw-choice:focus-visible .vw-opt-hint { color: var(--color-paper-alt); }
+  .vw-choice.is-picked, .vw-choice[aria-pressed='true'] { outline: 3px solid var(--color-accent); outline-offset: -1px; }
+  .vw-opts-grid { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+  .vw-text { width: 100%; font: inherit; font-size: 16px; border: 1px solid var(--color-ink); background: var(--color-paper); padding: 12px; box-sizing: border-box; }
   .vw-h2-s { font-size: clamp(22px, 3vw, 28px); }
   .vw-ref-text { display: grid; gap: 2px; min-width: 0; }
   .vw-now { font-family: var(--font-mono); font-size: 13px; color: var(--color-ink-2); margin-top: 4px; }
@@ -103,16 +109,19 @@ const description =
   import { DEFAULT_KNOBS, generate, tidy, type Knobs, type Sound } from '../lib/vario-wizard/generator'
   import { TICK_MS, paramsOf, simulate, toneAt, type Beep } from '../lib/vario-wizard/engine'
   import { CLIPS, CLIP_TEXT, type ClipKey } from '../lib/vario-wizard/scenarios'
-  import { REFINES, STEPS } from '../lib/vario-wizard/steps'
+  import { REFINES, flow, stepByKey, type Answers, type Step } from '../lib/vario-wizard/steps'
+  import { instrument } from '../lib/vario-wizard/fit'
   import { appLink, decodeState, encodeState } from '../lib/vario-wizard/share'
   import { describe, diff } from '../lib/vario-wizard/describe'
 
   const root = document.getElementById('vw')!
   let knobs: Knobs = { ...DEFAULT_KNOBS }
-  let answers: Record<string, string> = {}
+  let answers: Answers = {}
   /** Knobs before each answered step, so Back undoes it. */
-  const undo: Knobs[] = []
-  let stepIndex = 0
+  /** State before each answered step, so Back undoes it. */
+  const undo: { knobs: Knobs, answers: Answers }[] = []
+  /** Position in flow(answers); past its end is the result. */
+  let pos = 0
 
   // ---------- sound ----------
   let ctx: AudioContext | null = null
@@ -430,21 +439,24 @@ const description =
     window.history.replaceState(null, '', `#s=${encodeState({ k: tidy(knobs), a: answers })}`)
   }
 
-  function optionKnobs(step: (typeof STEPS)[number], key: string): Knobs {
+  const titleOf = (step: Step) => (typeof step.title === 'function' ? step.title(answers) : step.title)
+  const leadOf = (step: Step) => (typeof step.lead === 'function' ? step.lead(answers) : step.lead)
+
+  function optionKnobs(step: Step, key: string): Knobs {
     const o = step.options.find((x) => x.key === key)!
-    return tidy({ ...knobs, ...(o.apply?.(knobs) ?? {}) })
+    return tidy({ ...knobs, ...(o.apply?.(knobs, { ...answers, [step.key]: key }) ?? {}) })
   }
 
   /** What an answer changes, line by line, against the sound so far. */
-  function diffHtml(step: (typeof STEPS)[number], key: string | null): string {
+  function diffHtml(step: Step | null, key: string | null): string {
     const base = describe(generate(knobs), tidy(knobs))
-    if (key === null) {
+    if (key === null || !step) {
       return `<p class="vw-pv-title">Your sound so far</p><dl class="vw-facts">${base.map((f) => `<div><dt>${esc(f.label)}</dt><dd>${esc(f.value)}</dd></div>`).join('')}</dl>`
     }
     const o = step.options.find((x) => x.key === key)!
     const k = optionKnobs(step, key)
     const lines = diff(base, describe(generate(k), k))
-    const head = `<p class="vw-pv-title">«${esc(o.label)}»</p>`
+    const head = `<p class="vw-pv-title">«${esc(o.label)}»${o.hint ? ` <span class="vw-opt-hint">${esc(o.hint)}</span>` : ''}</p>`
     if (!o.apply)
       return `${head}<p class="vw-pv-same">This answer is only counted, it does not change the sound.</p>`
     if (!lines.length)
@@ -452,38 +464,109 @@ const description =
     return `${head}<p class="vw-pv-same">Compared with your sound so far:</p><dl class="vw-facts">${lines.map(([l, x, y]) => `<div><dt>${esc(l)}</dt><dd><span class="was">${esc(x)}</span> → <b>${esc(y)}</b></dd></div>`).join('')}</dl>`
   }
 
+  /** Record an answer (or a skip, value null) and go on. */
+  function answer(step: Step, value: string | null) {
+    stopPlaying()
+    undo.push({ knobs: { ...knobs }, answers: { ...answers } })
+    if (value !== null) {
+      answers[step.key] = value
+      const o = step.options.find((x) => x.key === value)
+      if (o?.apply)
+        knobs = tidy({ ...knobs, ...o.apply(knobs, answers) })
+    }
+    pos++
+    next()
+  }
+
+  function goBack() {
+    const u = undo.pop()
+    if (!u)
+      return
+    knobs = u.knobs
+    answers = u.answers
+    pos = Math.max(0, pos - 1)
+    renderStep()
+  }
+
   function renderStep() {
     stopPlaying()
-    const step = STEPS[stepIndex]!
+    const keys = flow(answers)
+    if (pos >= keys.length) {
+      renderResult()
+      return
+    }
+    const step = stepByKey(keys[pos]!)
     const clip: ClipKey = step.clip ?? 'flight'
-    const done = Math.round(stepIndex / STEPS.length * 100)
-    const opts = step.options.map((o) => {
-      const picked = answers[step.key] === o.key ? ' is-picked' : ''
-      return `<div class="vw-opt${picked}" data-opt="${o.key}">
-        <div class="vw-opt-text"><div class="vw-opt-label">${esc(o.label)}</div>${o.hint ? `<div class="vw-opt-hint">${esc(o.hint)}</div>` : ''}</div>
-        <div class="vw-opt-btns">
-          <button type="button" class="vw-btn" data-show="${o.key}">Show</button>
-          <button type="button" class="vw-btn play" data-listen="${o.key}" aria-pressed="false">▶ Play</button>
-          <button type="button" class="vw-btn ink" data-pick="${o.key}">Choose</button>
-        </div></div>`
-    }).join('')
+    const done = Math.round(pos / keys.length * 100)
+    // Until the profile questions are answered the way ahead is not known: no total yet.
+    const pathKnown = answers.instrument !== undefined && (!keys.includes('happy') || answers.happy !== undefined || pos > keys.indexOf('happy'))
+    const lead = leadOf(step)
+    const picked = (k: string) => (answers[step.key] ?? '').split(',').includes(k)
+    let body = ''
+    if (step.kind === 'sound') {
+      body = `<div class="vw-opts">${step.options.map((o) => `<div class="vw-opt${picked(o.key) ? ' is-picked' : ''}" data-opt="${o.key}">
+          <div class="vw-opt-text"><div class="vw-opt-label">${esc(o.label)}</div>${o.hint ? `<div class="vw-opt-hint">${esc(o.hint)}</div>` : ''}</div>
+          <div class="vw-opt-btns">
+            <button type="button" class="vw-btn" data-show="${o.key}">Show</button>
+            <button type="button" class="vw-btn play" data-listen="${o.key}" aria-pressed="false">▶ Play</button>
+            <button type="button" class="vw-btn ink" data-pick="${o.key}">Choose</button>
+          </div></div>`).join('')}</div>`
+    }
+    else if (step.kind === 'listen') {
+      body = `<div class="vw-nav" style="margin-top:0"><button type="button" class="vw-btn accent play" id="vw-listen" aria-pressed="false">▶ Play</button></div>
+        <div class="vw-opts" style="margin-top:14px">${step.options.map((o) => `<button type="button" class="vw-choice" data-pick="${o.key}">${esc(o.label)}</button>`).join('')}</div>`
+    }
+    else if (step.kind === 'info' && step.multi) {
+      body = `<div class="vw-opts">${step.options.map((o) => `<button type="button" class="vw-choice" data-toggle="${o.key}" aria-pressed="${picked(o.key)}">${esc(o.label)}</button>`).join('')}</div>
+        <div class="vw-nav"><button type="button" class="vw-btn ink" id="vw-continue">Continue</button></div>`
+    }
+    else if (step.kind === 'info') {
+      body = `<div class="vw-opts${step.options.length > 6 ? ' vw-opts-grid' : ''}">${step.options.map((o) => `<button type="button" class="vw-choice${picked(o.key) ? ' is-picked' : ''}" data-pick="${o.key}">${esc(o.label)}${o.hint ? `<span class="vw-opt-hint">${esc(o.hint)}</span>` : ''}</button>`).join('')}</div>`
+    }
+    else {
+      body = `<textarea class="vw-text" id="vw-text" maxlength="300" rows="3">${esc(answers[step.key] ?? '')}</textarea>
+        <div class="vw-nav"><button type="button" class="vw-btn ink" id="vw-continue">Continue</button></div>`
+    }
+    const withSound = step.kind === 'sound' || step.kind === 'listen'
     root.innerHTML = `
-      <div><div class="vw-progress"><span>Question ${stepIndex + 1} of ${STEPS.length}</span><span>${done} %</span></div><div class="vw-bar"><i style="width:${done}%"></i></div></div>
+      <div><div class="vw-progress"><span>${pathKnown ? `Question ${pos + 1} of ${keys.length}` : `Question ${pos + 1} · getting to know you`}</span><span>${pathKnown ? `${done} %` : ''}</span></div><div class="vw-bar"><i style="width:${pathKnown ? done : 0}%"></i></div></div>
       <div class="vw-card">
-        <h2 class="vw-q">${esc(step.title)}</h2>
-        ${step.lead ? `<p class="vw-qlead">${esc(step.lead)}</p>` : ''}
-        <p class="vw-pv-cliplabel">${step.clip ? 'Play uses this clip:' : 'Play uses a whole flight:'}</p>
-        <div id="vw-trace"></div>
-        <div class="vw-opts">${opts}</div>
-        <div class="vw-preview" id="vw-preview">
-          <div class="vw-pv-chart" id="vw-pv-chart"></div>
-          <div class="vw-pv-text" id="vw-pv-text"></div>
-        </div>
+        ${step.optional ? '<p class="vw-sub">Optional · no sound · helps us</p>' : ''}
+        <h2 class="vw-q">${esc(titleOf(step))}</h2>
+        ${lead ? `<p class="vw-qlead">${esc(lead)}</p>` : ''}
+        ${withSound ? `<p class="vw-pv-cliplabel">${step.clip ? `Play uses this clip: ${esc(CLIP_TEXT[clip] ?? '')}` : 'Play uses a whole flight'}</p><div id="vw-trace"></div>` : ''}
+        ${body}
+        ${withSound ? `<div class="vw-preview" id="vw-preview"><div class="vw-pv-chart" id="vw-pv-chart"></div><div class="vw-pv-text" id="vw-pv-text"></div></div>` : ''}
         <div class="vw-nav">
-          <button type="button" class="vw-btn" data-back ${stepIndex === 0 ? 'disabled' : ''}>← Back</button>
+          <button type="button" class="vw-btn" data-back ${undo.length === 0 ? 'disabled' : ''}>← Back</button>
           <button type="button" class="vw-btn" data-skip>Skip</button>
+          ${step.optional ? '<button type="button" class="vw-btn" data-finish>Skip to my sound</button>' : ''}
         </div>
       </div>`
+
+    root.querySelector('[data-back]')!.addEventListener('click', goBack)
+    root.querySelector('[data-skip]')!.addEventListener('click', () => answer(step, null))
+    root.querySelector('[data-finish]')?.addEventListener('click', () => {
+      undo.push({ knobs: { ...knobs }, answers: { ...answers } })
+      pos = flow(answers).length
+      next()
+    })
+    for (const b of root.querySelectorAll<HTMLButtonElement>('[data-pick]'))
+      b.addEventListener('click', () => answer(step, b.dataset.pick!))
+    for (const b of root.querySelectorAll<HTMLButtonElement>('[data-toggle]'))
+      b.addEventListener('click', () => b.setAttribute('aria-pressed', String(b.getAttribute('aria-pressed') !== 'true')))
+    root.querySelector('#vw-continue')?.addEventListener('click', () => {
+      if (step.kind === 'text') {
+        const v = root.querySelector<HTMLTextAreaElement>('#vw-text')!.value.trim().slice(0, 300)
+        answer(step, v || null)
+        return
+      }
+      const on = [...root.querySelectorAll<HTMLButtonElement>('[data-toggle][aria-pressed="true"]')].map((b) => b.dataset.toggle!)
+      answer(step, on.length ? on.join(',') : null)
+    })
+    if (!withSound)
+      return
+
     const traceBox = root.querySelector<HTMLElement>('#vw-trace')!
     const chartBox = root.querySelector<HTMLElement>('#vw-pv-chart')!
     const textBox = root.querySelector<HTMLElement>('#vw-pv-text')!
@@ -494,7 +577,7 @@ const description =
       const k = key === null ? tidy(knobs) : optionKnobs(step, key)
       redraw = () => { chartBox.innerHTML = curveSvg(generate(k), chartBox.clientWidth) }
       redraw()
-      textBox.innerHTML = diffHtml(step, key)
+      textBox.innerHTML = diffHtml(step.kind === 'sound' ? step : null, key)
       traceBox.innerHTML = traceSvg(k, clip)
       for (const row of root.querySelectorAll<HTMLElement>('[data-opt]'))
         row.classList.toggle('is-shown', row.dataset.opt === key)
@@ -507,6 +590,8 @@ const description =
       return traceBox.querySelector('svg') ?? undefined
     }
     show(null)
+    const listen = root.querySelector<HTMLButtonElement>('#vw-listen')
+    listen?.addEventListener('click', () => play(listen, { k: () => knobs, clip, trace: traceBox.querySelector('svg'), chart: () => chartBox.querySelector('svg') }))
     for (const b of root.querySelectorAll<HTMLButtonElement>('[data-show]'))
       b.addEventListener('click', () => show(shown === b.dataset.show ? null : b.dataset.show!, true))
     for (const b of root.querySelectorAll<HTMLButtonElement>('[data-listen]')) {
@@ -516,35 +601,11 @@ const description =
         play(b, { k: () => optionKnobs(step, key), clip, trace: svg, chart: () => chartBox.querySelector('svg') })
       })
     }
-    for (const b of root.querySelectorAll<HTMLButtonElement>('[data-pick]')) {
-      b.addEventListener('click', () => {
-        const key = b.dataset.pick!
-        undo.push({ ...knobs })
-        knobs = optionKnobs(step, key)
-        answers[step.key] = key
-        next()
-      })
-    }
-    root.querySelector('[data-skip]')!.addEventListener('click', () => {
-      undo.push({ ...knobs })
-      next()
-    })
-    root.querySelector('[data-back]')!.addEventListener('click', () => {
-      if (stepIndex === 0)
-        return
-      stepIndex--
-      knobs = undo.pop() ?? knobs
-      delete answers[STEPS[stepIndex]!.key]
-      renderStep()
-    })
   }
 
   function next() {
-    stepIndex++
     saveHash()
-    if (stepIndex >= STEPS.length)
-      renderResult()
-    else renderStep()
+    renderStep()
   }
 
   /** The sound as the answers left it; fine-tuning is compared against it. */
@@ -715,10 +776,13 @@ const description =
       }
     })
     root.querySelector('#vw-back')!.addEventListener('click', () => {
-      stepIndex = STEPS.length - 1
       fineBase = null
-      knobs = undo.pop() ?? knobs
-      delete answers[STEPS[stepIndex]!.key]
+      if (undo.length) {
+        goBack()
+        return
+      }
+      // Opened from a link: no history, start from the last question with these answers.
+      pos = flow(answers).length - 1
       renderStep()
     })
     root.querySelector('#vw-restart')!.addEventListener('click', () => {
@@ -726,7 +790,7 @@ const description =
       answers = {}
       fineBase = null
       undo.length = 0
-      stepIndex = 0
+      pos = 0
       window.history.replaceState(null, '', location.pathname)
       renderStep()
     })
@@ -745,7 +809,7 @@ const description =
   if (shared) {
     knobs = tidy({ ...DEFAULT_KNOBS, ...shared.k })
     answers = shared.a
-    stepIndex = STEPS.length
+    pos = flow(answers).length
     renderResult()
   } else {
     renderStep()
