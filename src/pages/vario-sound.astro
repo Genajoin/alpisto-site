@@ -37,10 +37,11 @@ const description =
   .vw-opt { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 14px; border: 1px solid var(--color-ink); background: var(--color-paper); padding: 12px 14px; min-width: 0; }
   .vw-opt.is-shown { background: var(--color-paper-card); box-shadow: inset 6px 0 0 var(--color-accent); }
   .vw-opt-btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-  .vw-preview { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 20px; border-top: 1px solid var(--color-paper-alt); border-bottom: 1px solid var(--color-paper-alt); padding: 16px 0; margin-bottom: 8px; scroll-margin-top: 16px; }
+  .vw-preview { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; border-top: 2px solid var(--color-ink); padding: 18px 0 0; margin-top: 20px; scroll-margin-top: 16px; }
   .vw-pv-title { font-weight: 600; font-size: 17px; margin: 0 0 4px; }
   .vw-pv-same { color: var(--color-ink-3); font-size: 14px; margin: 0 0 8px; }
-  .vw-facts { display: grid; grid-template-columns: 1fr; gap: 2px 0; margin: 0; font-size: 14px; }
+  .vw-facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 24px; margin: 0; font-size: 15px; }
+  .vw-facts > div { min-width: 0; }
   .vw-facts dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-ink-3); margin-top: 8px; }
   .vw-facts dd { margin: 0; font-variant-numeric: tabular-nums; }
   .vw-facts .was { color: var(--color-ink-3); text-decoration: line-through; }
@@ -60,10 +61,12 @@ const description =
   .vw-btn:disabled { opacity: 0.35; cursor: default; background: var(--color-paper); color: var(--color-ink); }
   .vw-nav { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
   .vw-trace { display: block; width: 100%; height: auto; margin-top: 12px; }
-  .vw-trace text, .vw-chart text { font-family: var(--font-mono); font-size: 11px; fill: var(--color-ink-3); }
+  .vw-trace text { font-family: var(--font-mono); font-size: 11px; fill: var(--color-ink-3); }
+  .vw-chart text { font-family: var(--font-mono); font-size: 12.5px; fill: var(--color-ink-2); paint-order: stroke; stroke: var(--color-paper-card); stroke-width: 4px; stroke-linejoin: round; }
+  .vw-chart text.t { font-size: 13px; fill: var(--color-ink); }
   .vw-h2 { font-size: clamp(26px, 4vw, 40px); line-height: 1.05; margin: 0 0 10px; font-weight: 600; }
   .vw-sub { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-ink-3); margin: 0 0 10px; }
-  .vw-chart { display: block; width: 100%; height: auto; }
+  .vw-chart { display: block; max-width: 100%; height: auto; }
   .vw-tablewrap { overflow-x: auto; }
   .vw-table { border-collapse: collapse; width: 100%; min-width: 520px; font-family: var(--font-mono); font-size: 14px; font-variant-numeric: tabular-nums; }
   .vw-table th, .vw-table td { border-bottom: 1px solid var(--color-paper-alt); padding: 7px 10px; text-align: right; white-space: nowrap; }
@@ -83,7 +86,6 @@ const description =
     .vw-card { padding: 16px; }
     .vw-opt { grid-template-columns: 1fr; }
     .vw-opt-btns { justify-content: flex-start; }
-    .vw-preview { grid-template-columns: 1fr; }
     .vw-ref { grid-template-columns: 1fr; }
   }
 </style>
@@ -217,15 +219,21 @@ const description =
   }
 
   /** Pitch and rhythm over the vario axis; silent stretches drawn pale. */
-  function curveSvg(s: Sound): string {
-    const W = 720, L = 52, R = 14
+  /**
+   * Pitch and rhythm over the vario axis, drawn at the container's own width so
+   * the text stays readable on a phone; silent stretches drawn pale.
+   */
+  function curveSvg(s: Sound, width: number): string {
+    const W = Math.round(Math.max(320, Math.min(960, width)))
+    const narrow = W < 560
+    const L = narrow ? 40 : 52, R = 12
     const lo = -4, hi = 6
     const x = (v: number) => L + (v - lo) / (hi - lo) * (W - L - R)
     const p = paramsOf(s.trigger)
     // Heard: above the climb threshold (held down to climbOff) and below the sink alarm.
     const heard = (cm: number) => cm > p.climbOff || cm < p.sinkOn
-    const P = { y: 14, h: 120 }
-    const Q = { y: 182, h: 110 }
+    const P = { y: 26, h: narrow ? 120 : 150 }
+    const Q = { y: P.y + P.h + 44, h: narrow ? 110 : 140 }
     const fMax = Math.max(...s.curves.freqDots.filter((_, i) => s.curves.varioDots[i]! <= hi * 100)) * 1.1
     const yf = (f: number) => P.y + P.h - (f / fMax) * P.h
     const yc = (msv: number) => Q.y + Q.h - Math.min(1, msv / 1000) * Q.h
@@ -239,37 +247,47 @@ const description =
       prevHeard = h
       runs[runs.length - 1]!.pts.push({ v: cm / 100, f: t.f, c: t.cycle, b: t.cycle * t.duty / 100 })
     }
-    let body = ''
+    // Layers, bottom to top: grid, silent bands, data, labels.
+    let grid = ''
+    let bands = ''
+    let data = ''
+    let labels = ''
+    const step = narrow ? 2 : 1
+    for (let v = lo; v <= hi; v++) {
+      grid += `<line x1="${x(v)}" x2="${x(v)}" y1="${P.y}" y2="${Q.y + Q.h}" stroke="var(--color-ink)" opacity="${v === 0 ? 0.35 : 0.08}" fill="none"/>`
+      if ((v - lo) % step === 0 || v === 0)
+        labels += `<text x="${x(v)}" y="${Q.y + Q.h + 17}" text-anchor="middle">${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v)}</text>`
+    }
+    const fTicks = (narrow ? [500, 1000, 2000, 3000, 4000] : [500, 1000, 1500, 2000, 3000, 4000]).filter((f) => f < fMax)
+    for (const f of fTicks) {
+      grid += `<line x1="${L}" x2="${W - R}" y1="${yf(f)}" y2="${yf(f)}" stroke="var(--color-ink)" opacity="0.06" fill="none"/>`
+      labels += `<text x="${L - 6}" y="${yf(f) + 4}" text-anchor="end">${f}</text>`
+    }
+    for (const c of [250, 500, 750, 1000]) {
+      grid += `<line x1="${L}" x2="${W - R}" y1="${yc(c)}" y2="${yc(c)}" stroke="var(--color-ink)" opacity="0.06" fill="none"/>`
+      labels += `<text x="${L - 6}" y="${yc(c) + 4}" text-anchor="end">${c}</text>`
+    }
     for (const r of runs) {
       const col = r.heard ? 'var(--color-ink)' : 'var(--color-ink-3)'
-      const op = r.heard ? 1 : 0.35
+      const op = r.heard ? 1 : 0.4
       const fl = r.pts.map((q) => `${x(q.v).toFixed(1)},${yf(q.f).toFixed(1)}`).join(' ')
       const cl = r.pts.map((q) => `${x(q.v).toFixed(1)},${yc(q.c).toFixed(1)}`).join(' ')
       const area = `M${x(r.pts[0]!.v)},${Q.y + Q.h} ` + r.pts.map((q) => `L${x(q.v).toFixed(1)},${yc(q.b).toFixed(1)}`).join(' ') + ` L${x(r.pts[r.pts.length - 1]!.v)},${Q.y + Q.h} Z`
-      body += `<path d="${area}" fill="var(--color-accent)" opacity="${r.heard ? 0.35 : 0.12}"/>`
-      body += `<polyline points="${fl}" fill="none" stroke="${col}" stroke-width="2.2" opacity="${op}"/>`
-      body += `<polyline points="${cl}" fill="none" stroke="${col}" stroke-width="1.6" opacity="${op}"/>`
+      data += `<path d="${area}" fill="var(--color-accent)" opacity="${r.heard ? 0.35 : 0.12}"/>`
+      data += `<polyline points="${fl}" fill="none" stroke="${col}" stroke-width="2.4" opacity="${op}"/>`
+      data += `<polyline points="${cl}" fill="none" stroke="${col}" stroke-width="1.8" opacity="${op}"/>`
       if (!r.heard) {
         const a = x(r.pts[0]!.v), b = x(r.pts[r.pts.length - 1]!.v)
-        body = `<rect x="${a}" y="${P.y}" width="${b - a}" height="${Q.y + Q.h - P.y}" fill="var(--color-paper-alt)" opacity="0.6"/>` + body
-        if (b - a > 60)
-          body += `<text x="${(a + b) / 2}" y="${P.y + 12}" text-anchor="middle">silent</text>`
+        bands += `<rect x="${a}" y="${P.y}" width="${b - a}" height="${Q.y + Q.h - P.y}" fill="var(--color-paper-alt)" opacity="0.7"/>`
+        if (b - a > 50)
+          labels += `<text x="${(a + b) / 2}" y="${P.y + 16}" text-anchor="middle">silent</text>`
       }
     }
-    let axes = ''
-    for (let v = lo; v <= hi; v++) {
-      axes += `<line x1="${x(v)}" x2="${x(v)}" y1="${P.y}" y2="${Q.y + Q.h}" stroke="var(--color-ink)" opacity="${v === 0 ? 0.35 : 0.08}" fill="none"/>`
-      axes += `<text x="${x(v)}" y="${Q.y + Q.h + 16}" text-anchor="middle">${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v)}</text>`
-    }
-    const fTicks = [500, 1000, 1500, 2000, 3000, 4000].filter((f) => f < fMax)
-    for (const f of fTicks)
-      axes += `<text x="${L - 6}" y="${yf(f) + 4}" text-anchor="end">${f}</text><line x1="${L}" x2="${W - R}" y1="${yf(f)}" y2="${yf(f)}" stroke="var(--color-ink)" opacity="0.06" fill="none"/>`
-    for (const c of [250, 500, 750, 1000])
-      axes += `<text x="${L - 6}" y="${yc(c) + 4}" text-anchor="end">${c}</text><line x1="${L}" x2="${W - R}" y1="${yc(c)}" y2="${yc(c)}" stroke="var(--color-ink)" opacity="0.06" fill="none"/>`
-    axes += `<text x="${L}" y="${P.y - 2}">Pitch, Hz</text>`
-    axes += `<text x="${L}" y="${Q.y - 14}">Period, ms (line) and beep length (fill)</text>`
-    axes += `<text x="${W - R}" y="${Q.y + Q.h + 32}" text-anchor="end">vario, m/s</text>`
-    return `<svg class="vw-chart" viewBox="0 0 ${W} ${Q.y + Q.h + 38}" role="img" aria-label="Pitch and rhythm of your sound over the vario">${axes}${body}</svg>`
+    labels += `<text class="t" x="${L}" y="${P.y - 10}">Pitch, Hz</text>`
+    labels += `<text class="t" x="${L}" y="${Q.y - 12}">${narrow ? 'Period, ms · beep (fill)' : 'Period, ms (line) and beep length (fill)'}</text>`
+    labels += `<text x="${W - R}" y="${Q.y + Q.h + 36}" text-anchor="end">vario, m/s</text>`
+    const H = Q.y + Q.h + 44
+    return `<svg class="vw-chart" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Pitch and rhythm of your sound over the vario">${grid}${bands}${data}<g class="vw-labels">${labels}</g></svg>`
   }
 
   function tableHtml(s: Sound): string {
@@ -309,7 +327,7 @@ const description =
   function diffHtml(step: (typeof STEPS)[number], key: string | null): string {
     const base = describe(generate(knobs), tidy(knobs))
     if (key === null) {
-      return `<p class="vw-pv-title">Your sound so far</p><dl class="vw-facts">${base.map((f) => `<dt>${esc(f.label)}</dt><dd>${esc(f.value)}</dd>`).join('')}</dl>`
+      return `<p class="vw-pv-title">Your sound so far</p><dl class="vw-facts">${base.map((f) => `<div><dt>${esc(f.label)}</dt><dd>${esc(f.value)}</dd></div>`).join('')}</dl>`
     }
     const o = step.options.find((x) => x.key === key)!
     const k = optionKnobs(step, key)
@@ -319,7 +337,7 @@ const description =
       return `${head}<p class="vw-pv-same">This answer is only counted, it does not change the sound.</p>`
     if (!lines.length)
       return `${head}<p class="vw-pv-same">Sounds the same as your sound so far.</p>`
-    return `${head}<p class="vw-pv-same">Compared with your sound so far:</p><dl class="vw-facts">${lines.map(([l, x, y]) => `<dt>${esc(l)}</dt><dd><span class="was">${esc(x)}</span> → <b>${esc(y)}</b></dd>`).join('')}</dl>`
+    return `${head}<p class="vw-pv-same">Compared with your sound so far:</p><dl class="vw-facts">${lines.map(([l, x, y]) => `<div><dt>${esc(l)}</dt><dd><span class="was">${esc(x)}</span> → <b>${esc(y)}</b></dd></div>`).join('')}</dl>`
   }
 
   function renderStep() {
@@ -342,13 +360,13 @@ const description =
       <div class="vw-card">
         <h2 class="vw-q">${esc(step.title)}</h2>
         ${step.lead ? `<p class="vw-qlead">${esc(step.lead)}</p>` : ''}
-        <div class="vw-preview" id="vw-preview">
-          <div class="vw-pv-chart" id="vw-pv-chart"></div>
-          <div class="vw-pv-text" id="vw-pv-text"></div>
-        </div>
         <p class="vw-pv-cliplabel">${step.clip ? 'Play uses this clip:' : 'Play uses a whole flight:'}</p>
         <div id="vw-trace"></div>
         <div class="vw-opts">${opts}</div>
+        <div class="vw-preview" id="vw-preview">
+          <div class="vw-pv-text" id="vw-pv-text"></div>
+          <div class="vw-pv-chart" id="vw-pv-chart"></div>
+        </div>
         <div class="vw-nav">
           <button type="button" class="vw-btn" data-back ${stepIndex === 0 ? 'disabled' : ''}>← Back</button>
           <button type="button" class="vw-btn" data-skip>Skip</button>
@@ -362,14 +380,16 @@ const description =
     const show = (key: string | null, scroll = false) => {
       shown = key
       const k = key === null ? tidy(knobs) : optionKnobs(step, key)
-      chartBox.innerHTML = curveSvg(generate(k))
+      redraw = () => { chartBox.innerHTML = curveSvg(generate(k), chartBox.clientWidth) }
+      redraw()
       textBox.innerHTML = diffHtml(step, key)
       traceBox.innerHTML = traceSvg(k, clip)
       for (const row of root.querySelectorAll<HTMLElement>('[data-opt]'))
         row.classList.toggle('is-shown', row.dataset.opt === key)
+      // The description sits under the answers; bring it into view only when it is off screen.
       if (scroll) {
         const r = preview.getBoundingClientRect()
-        if (r.top < 0 || r.top > window.innerHeight * 0.6)
+        if (r.top > window.innerHeight - 80)
           preview.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }
       return traceBox.querySelector('svg') ?? undefined
@@ -437,7 +457,7 @@ const description =
       </div>
       <div class="vw-card">
         <p class="vw-sub">Chart</p>
-        ${curveSvg(s)}
+        <div id="vw-res-chart"></div>
       </div>
       <div class="vw-card">
         <p class="vw-sub">Tone table</p>
@@ -462,6 +482,9 @@ const description =
         <button type="button" class="vw-btn" id="vw-restart">Start over</button>
       </div>`
 
+    const resChart = root.querySelector<HTMLElement>('#vw-res-chart')!
+    redraw = () => { resChart.innerHTML = curveSvg(s, resChart.clientWidth) }
+    redraw()
     const flightBtn = root.querySelector<HTMLButtonElement>('#vw-flight')!
     flightBtn.addEventListener('click', () => play(flightBtn, knobs, 'flight', root.querySelector<SVGSVGElement>('#vw-flight-trace svg')!))
     for (const b of root.querySelectorAll<HTMLButtonElement>('[data-ref-play]')) {
@@ -505,6 +528,14 @@ const description =
       renderStep()
     })
   }
+
+  /** Redraws the chart on screen at its current width. */
+  let redraw: () => void = () => {}
+  let resizeTimer = 0
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer)
+    resizeTimer = window.setTimeout(() => redraw(), 150)
+  })
 
   // A shared link opens straight on the result.
   const shared = decodeState(location.hash)
