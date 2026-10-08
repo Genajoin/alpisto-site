@@ -64,10 +64,47 @@ export function soundLike(key: string | undefined): Partial<Knobs> | null {
     dutyLow: at(c.dutyDots, lo),
     dutyHigh: at(c.dutyDots, 500),
   }
-  // Weak-lift emphasis: more than a third of the tone change already by +1 m/s.
-  const span = k.pitchHigh! - k.pitchLow!
-  const u = span > 0 ? (at(c.freqDots, 100) - k.pitchLow!) / span : 0
-  k.shape = u > 0.35 ? 'weak' : 'linear'
+  // The vario's own bend of each curve between its climb start and +5 m/s.
+  // Sample where the vario's own curve breaks: its points between the climb
+  // start and +5 m/s, thinned to four (the ones a straight line would miss
+  // most) or padded at the widest gaps; the fifth is +5 m/s itself.
+  const qOf = (v: number) => (v - lo) / (500 - lo)
+  let qs = c.varioDots.filter((v) => v > lo + 3 && v < 497).map(qOf)
+  const norm = (ys: number[]) => {
+    const a = at(ys, lo)
+    const b = at(ys, 500)
+    return (q: number) => (Math.abs(b - a) < 1 ? q : (at(ys, lo + (500 - lo) * q) - a) / (b - a))
+  }
+  const nf = norm(c.freqDots)
+  const nc = norm(c.cycleDots)
+  const miss = (list: number[], i: number) => {
+    const x = [0, ...list, 1]
+    const j = i + 1
+    const t = (x[j]! - x[j - 1]!) / (x[j + 1]! - x[j - 1]!)
+    const err = (n: (q: number) => number) => Math.abs(n(x[j]!) - (n(x[j - 1]!) + (n(x[j + 1]!) - n(x[j - 1]!)) * t))
+    return err(nf) + err(nc)
+  }
+  while (qs.length > 4) {
+    let worst = 0
+    for (let i = 1; i < qs.length; i++) {
+      if (miss(qs, i) < miss(qs, worst))
+        worst = i
+    }
+    qs.splice(worst, 1)
+  }
+  while (qs.length < 4) {
+    const x = [0, ...qs, 1]
+    let gi = 1
+    for (let i = 1; i < x.length; i++) {
+      if (x[i]! - x[i - 1]! > x[gi]! - x[gi - 1]!)
+        gi = i
+    }
+    qs = [...qs, (x[gi]! + x[gi - 1]!) / 2].sort((p, q) => p - q)
+  }
+  const q = [...qs, 1]
+  const nd = norm(c.dutyDots)
+  k.bend = { q, f: q.map(nf), c: q.map(nc), d: q.map(nd) }
+  k.shape = 'linear'
   // The sink tone as this vario plays it at its own alarm.
   const s0 = Math.round((e.trigger?.sinkOn ?? -2.5) * 100) - 1
   k.sinkPitch = at(c.freqDots, s0)

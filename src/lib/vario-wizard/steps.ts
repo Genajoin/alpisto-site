@@ -3,7 +3,7 @@
  * as they are, too, so the same page can later count them for everyone.
  */
 import type { ClipKey } from './scenarios'
-import { DEFAULT_KNOBS, type Knobs } from './generator'
+import { DEFAULT_KNOBS, blendBend, type Knobs } from './generator'
 import { INSTRUMENTS, instrument, soundLike } from './fit'
 
 export type Answers = Record<string, string>
@@ -113,9 +113,44 @@ export const STEPS: Step[] = [
     lead: (a) => `Its tone and rhythm; it switches on as set for ${WHERE_TEXT[a.where ?? ''] ?? 'your flying'}. Play it: a glide, into a thermal, a few turns, out into sink.`,
     clip: 'flight',
     options: [
-      { key: 'yes', label: 'Yes, that is it' },
-      { key: 'adjust', label: 'Close; I will adjust it at the end' },
-      { key: 'no', label: 'No, let me build my own', apply: () => soundOf(DEFAULT_KNOBS) },
+      { key: 'yes', label: 'Yes, that is it', hint: 'straight to the result; you can still fine-tune it there' },
+      { key: 'tune', label: 'Not quite, let\'s adjust it', hint: 'a few questions by ear, starting from this sound' },
+    ],
+  },
+  {
+    key: 'rTempo',
+    kind: 'sound',
+    title: (a) => `The beeps of the ${instrument(a.instrument)?.label}: faster or slower?`,
+    lead: 'The whole climb keeps its shape; only the rhythm moves. The climb grows from 0 to +4 m/s.',
+    clip: 'climb',
+    options: [
+      { key: 'slower', label: 'Slower', hint: 'about a quarter longer between beeps', apply: (k) => ({ tempoLow: k.tempoLow * 1.25, tempoHigh: k.tempoHigh * 1.25 }) },
+      { key: 'same', label: 'As it is' },
+      { key: 'faster', label: 'Faster', hint: 'about a fifth shorter between beeps', apply: (k) => ({ tempoLow: k.tempoLow * 0.8, tempoHigh: k.tempoHigh * 0.8 }) },
+    ],
+  },
+  {
+    key: 'rTone',
+    kind: 'sound',
+    title: (a) => `The tone of the ${instrument(a.instrument)?.label}: higher or lower?`,
+    lead: 'The whole climb keeps its shape; only the tone moves.',
+    clip: 'climb',
+    options: [
+      { key: 'lower', label: 'Lower', hint: 'by about two tones', apply: (k) => ({ pitchLow: k.pitchLow * 0.8, pitchHigh: k.pitchHigh * 0.8 }) },
+      { key: 'same', label: 'As it is' },
+      { key: 'higher', label: 'Higher', hint: 'by about two tones', apply: (k) => ({ pitchLow: k.pitchLow * 1.25, pitchHigh: k.pitchHigh * 1.25 }) },
+    ],
+  },
+  {
+    key: 'rBend',
+    kind: 'sound',
+    title: 'Where should the sound change most?',
+    lead: 'This vario has its own curve. Keep it, or move it a good part of the way towards an even one or towards more detail in weak lift.',
+    clip: 'climb',
+    options: [
+      { key: 'same', label: 'Keep its curve' },
+      { key: 'even', label: 'More evenly over the whole climb', apply: (k) => (k.bend ? { bend: blendBend(k.bend, 'linear', 0.6) } : { shape: 'linear' }) },
+      { key: 'weak', label: 'More in weak lift, below 1 m/s', apply: (k) => (k.bend ? { bend: blendBend(k.bend, 'weak', 0.6) } : { shape: 'weak' }) },
     ],
   },
   {
@@ -125,9 +160,9 @@ export const STEPS: Step[] = [
     lead: 'Three complete sounds on a short thermal: in, a few seconds of climb, out into sink.',
     clip: 'mini',
     options: [
-      { key: 'both', label: 'A', hint: 'beeps get both faster and higher', apply: () => ({ tempoLow: 600, tempoHigh: 180, pitchLow: 600, pitchHigh: 1400, dutyLow: 50, dutyHigh: 50, shape: 'linear' }) },
-      { key: 'tempo', label: 'B', hint: 'the rhythm tells the climb', apply: () => ({ tempoLow: 700, tempoHigh: 130, pitchLow: 600, pitchHigh: 800, dutyLow: 50, dutyHigh: 50, shape: 'linear' }) },
-      { key: 'pitch', label: 'C', hint: 'the tone tells the climb', apply: () => ({ tempoLow: 480, tempoHigh: 400, pitchLow: 550, pitchHigh: 1800, dutyLow: 50, dutyHigh: 50, shape: 'linear' }) },
+      { key: 'both', label: 'A', hint: 'beeps get both faster and higher', apply: () => ({ tempoLow: 600, tempoHigh: 180, pitchLow: 600, pitchHigh: 1400, dutyLow: 50, dutyHigh: 50, shape: 'linear', bend: undefined }) },
+      { key: 'tempo', label: 'B', hint: 'the rhythm tells the climb', apply: () => ({ tempoLow: 700, tempoHigh: 130, pitchLow: 600, pitchHigh: 800, dutyLow: 50, dutyHigh: 50, shape: 'linear', bend: undefined }) },
+      { key: 'pitch', label: 'C', hint: 'the tone tells the climb', apply: () => ({ tempoLow: 480, tempoHigh: 400, pitchLow: 550, pitchHigh: 1800, dutyLow: 50, dutyHigh: 50, shape: 'linear', bend: undefined }) },
     ],
   },
   {
@@ -159,10 +194,10 @@ export const STEPS: Step[] = [
     lead: 'Listen to each: the climb grows from zero to +4 m/s.',
     clip: 'climb',
     options: [
-      { key: 'tempo', label: 'The beeps come faster', hint: 'the tone barely moves', apply: () => ({ tempoLow: 700, tempoHigh: 130, pitchLow: 600, pitchHigh: 800, dutyLow: 50, dutyHigh: 50 }) },
-      { key: 'pitch', label: 'The tone goes up', hint: 'the rhythm barely moves', apply: () => ({ tempoLow: 480, tempoHigh: 400, pitchLow: 550, pitchHigh: 1800, dutyLow: 50, dutyHigh: 50 }) },
-      { key: 'both', label: 'Both, faster and higher', apply: () => ({ tempoLow: 600, tempoHigh: 180, pitchLow: 600, pitchHigh: 1400, dutyLow: 50, dutyHigh: 50 }) },
-      { key: 'long', label: 'The beeps get longer', hint: 'almost a steady tone in a strong core', apply: () => ({ tempoLow: 600, tempoHigh: 200, pitchLow: 600, pitchHigh: 1300, dutyLow: 30, dutyHigh: 85 }) },
+      { key: 'tempo', label: 'The beeps come faster', hint: 'the tone barely moves', apply: () => ({ tempoLow: 700, tempoHigh: 130, pitchLow: 600, pitchHigh: 800, dutyLow: 50, dutyHigh: 50, bend: undefined }) },
+      { key: 'pitch', label: 'The tone goes up', hint: 'the rhythm barely moves', apply: () => ({ tempoLow: 480, tempoHigh: 400, pitchLow: 550, pitchHigh: 1800, dutyLow: 50, dutyHigh: 50, bend: undefined }) },
+      { key: 'both', label: 'Both, faster and higher', apply: () => ({ tempoLow: 600, tempoHigh: 180, pitchLow: 600, pitchHigh: 1400, dutyLow: 50, dutyHigh: 50, bend: undefined }) },
+      { key: 'long', label: 'The beeps get longer', hint: 'almost a steady tone in a strong core', apply: () => ({ tempoLow: 600, tempoHigh: 200, pitchLow: 600, pitchHigh: 1300, dutyLow: 30, dutyHigh: 85, bend: undefined }) },
     ],
   },
   {
@@ -171,8 +206,8 @@ export const STEPS: Step[] = [
     title: 'Where do you want to hear small differences?',
     clip: 'climb',
     options: [
-      { key: 'weak', label: 'In weak lift, below 1 m/s', hint: 'most of the change happens early', apply: () => ({ shape: 'weak' }) },
-      { key: 'even', label: 'Evenly over the whole climb', apply: () => ({ shape: 'linear' }) },
+      { key: 'weak', label: 'In weak lift, below 1 m/s', hint: 'most of the change happens early', apply: () => ({ shape: 'weak', bend: undefined }) },
+      { key: 'even', label: 'Evenly over the whole climb', apply: () => ({ shape: 'linear', bend: undefined }) },
     ],
   },
   {
@@ -324,7 +359,8 @@ export const STEPS: Step[] = [
 ]
 
 const TUNE = ['growth', 'detail', 'top', 'start', 'fade', 'near', 'sinkFrom', 'sinkHold', 'sinkStyle', 'reaction']
-const BEGINNER = ['bSound', 'bStart', 'bSink']
+/** The full path's questions that set tone and rhythm from scratch. */
+const SOUND_STEPS = ['growth', 'detail', 'top']
 const FINAL = ['volume', 'sets', 'hear', 'annoy']
 
 export function isBeginner(a: Answers): boolean {
@@ -340,13 +376,20 @@ export function flow(a: Answers): string[] {
   out.push('where')
   if (known)
     out.push('familiar')
+  const adjust = known && a.familiar === 'tune'
   if (isBeginner(a)) {
     // A beginner who knows a sound starts from it; one who does not picks one by ear.
-    if (!known || a.familiar === 'no')
+    if (adjust)
+      out.push('rTempo', 'rTone')
+    else if (!known)
       out.push('bSound')
     out.push('bStart', 'bSink')
   }
-  else if (!known || a.familiar === 'no') {
+  else if (adjust) {
+    // From a familiar vario: its tone, rhythm and curve are moved, not replaced.
+    out.push('rTempo', 'rTone', 'rBend', ...TUNE.filter((k) => !SOUND_STEPS.includes(k)))
+  }
+  else if (!known) {
     out.push(...TUNE)
   }
   out.push(...FINAL)

@@ -19,6 +19,17 @@ export type Shape = 'linear' | 'weak'
 export type NearZero = 'silent' | 'ticks' | 'tone'
 export type SinkStyle = 'continuous' | 'pulsed' | 'slow'
 
+/** Where along the climb (0 = climb start, 1 = +5 m/s) a bend is sampled. */
+export const BEND_Q = [0.05, 0.15, 0.3, 0.55, 1]
+
+export interface Bend {
+  /** Where along the climb each value sits, increasing, last = 1; BEND_Q when absent. */
+  q?: number[]
+  f: number[]
+  c: number[]
+  d: number[]
+}
+
 export interface Knobs {
   /** Hz at the climb start and at +5 m/s. */
   pitchLow: number
@@ -31,6 +42,13 @@ export interface Knobs {
   dutyHigh: number
   /** 'weak': most of the change happens below +1 m/s. */
   shape: Shape
+  /**
+   * A vario's own bend of tone, period and beep share over the climb, from the
+   * climb start (0) to +5 m/s (1), sampled at BEND_Q; each 0…1 from the low to
+   * the high value. Replaces `shape` while present: a familiar vario keeps its
+   * nonlinear curve through every later answer.
+   */
+  bend?: Bend
   /** Climb beeps start here, m/s. */
   climbStart: number
   /** The climb tone holds this much below where it started, m/s. */
@@ -75,8 +93,35 @@ const clamp = (x: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, x
 const r = Math.round
 
 /** 0…1 → 0…1; 'weak' puts most of the change at the start. */
-function bend(u: number, shape: Shape): number {
+export function bend(u: number, shape: Shape): number {
   return shape === 'weak' ? Math.log1p(9 * u) / Math.log1p(9) : u
+}
+
+function bendAt(qs: number[], table: number[], u: number): number {
+  const xs = [0, ...qs]
+  const ys = [0, ...table]
+  for (let i = 1; i < xs.length; i++) {
+    if (u <= xs[i]!)
+      return ys[i - 1]! + (ys[i]! - ys[i - 1]!) * (u - xs[i - 1]!) / (xs[i]! - xs[i - 1]!)
+  }
+  return ys[ys.length - 1]!
+}
+
+/** A bend moved part of the way towards a plain shape: 0 keeps it, 1 replaces it. */
+export function blendBend(b: Bend, shape: Shape, w: number): Bend {
+  const qs = b.q ?? BEND_Q
+  const to = qs.map((q) => bend(q, shape))
+  const mix = (t: number[]) => t.map((y, i) => y + (to[i]! - y) * w)
+  return { q: qs, f: mix(b.f), c: mix(b.c), d: mix(b.d) }
+}
+
+function validBend(b: Bend | undefined): Bend | undefined {
+  const ok = (t: unknown) => Array.isArray(t) && t.length === BEND_Q.length && t.every((x) => Number.isFinite(x))
+  if (!b || !ok(b.f) || !ok(b.c) || !ok(b.d))
+    return undefined
+  const q = b.q && ok(b.q) && b.q.every((x, i) => x > (i ? b.q![i - 1]! + 0.01 : 0.01)) && b.q[b.q.length - 1] === 1 ? b.q : BEND_Q
+  const c2 = (t: number[]) => t.map((x) => Math.round(clamp(x, -0.5, 1.5) * 1000) / 1000)
+  return { q: q.map((x) => Math.round(x * 1000) / 1000), f: c2(b.f), c: c2(b.c), d: c2(b.d) }
 }
 
 /** Normalise knobs into ranges the instrument accepts and that make sense together. */
@@ -85,6 +130,7 @@ export function tidy(k: Knobs): Knobs {
   const nearFrom = clamp(k.nearFrom, Math.max(sinkOn + 0.1, -1.5), -0.1)
   return {
     ...k,
+    bend: validBend(k.bend),
     pitchLow: clamp(r(k.pitchLow), 200, 3500),
     pitchHigh: clamp(r(Math.max(k.pitchHigh, k.pitchLow + 50)), 250, 5000),
     tempoLow: clamp(r(k.tempoLow), 150, 1200),
@@ -116,15 +162,20 @@ export function generate(input: Knobs): Sound {
   const c0 = Math.max(n0 + 2, r((k.nearZero === 'silent' ? k.climbStart - k.hold : k.climbStart) * 100))
   const top = 500
   const climbAt = (v: number) => {
-    const b = bend(clamp((v - c0) / (top - c0), 0, 1), k.shape)
+    const u = clamp((v - c0) / (top - c0), 0, 1)
+    const b = bend(u, k.shape)
+    const bq = k.bend?.q ?? BEND_Q
+    const bf = k.bend ? bendAt(bq, k.bend.f, u) : b
+    const bc = k.bend ? bendAt(bq, k.bend.c, u) : b
+    const bd = k.bend ? bendAt(bq, k.bend.d, u) : b
     return {
-      f: k.pitchLow + (k.pitchHigh - k.pitchLow) * b,
-      cycle: k.tempoLow + (k.tempoHigh - k.tempoLow) * b,
-      duty: k.dutyLow + (k.dutyHigh - k.dutyLow) * b,
+      f: k.pitchLow + (k.pitchHigh - k.pitchLow) * bf,
+      cycle: k.tempoLow + (k.tempoHigh - k.tempoLow) * bc,
+      duty: k.dutyLow + (k.dutyHigh - k.dutyLow) * bd,
     }
   }
   // Climb points: denser where the curve bends.
-  const qs = k.shape === 'weak' ? [0.04, 0.12, 0.3, 0.6, 1] : [0.1, 0.25, 0.45, 0.7, 1]
+  const qs = k.bend ? (k.bend.q ?? BEND_Q) : k.shape === 'weak' ? [0.04, 0.12, 0.3, 0.6, 1] : [0.1, 0.25, 0.45, 0.7, 1]
   const climbV = [c0, ...qs.map((q) => r(c0 + (top - c0) * q)), 700, 1000]
   const climb = climbV.map((v) => {
     if (v <= top)
