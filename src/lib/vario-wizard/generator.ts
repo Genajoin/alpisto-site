@@ -127,7 +127,16 @@ function validBend(b: Bend | undefined): Bend | undefined {
 /** Normalise knobs into ranges the instrument accepts and that make sense together. */
 export function tidy(k: Knobs): Knobs {
   const sinkOn = clamp(k.sinkOn, -10, -1)
-  const nearFrom = clamp(k.nearFrom, Math.max(sinkOn + 0.1, -1.5), -0.1)
+  const r2 = (x: number) => Math.round(x * 100) / 100
+  // The climb tone may start below zero (it then beeps in weak sink, to centre
+  // weak lift), but not into the sink alarm, and with room for the near-zero
+  // stretch below it.
+  const floor = Math.max(sinkOn + 0.3, -1.3)
+  const climbStart = clamp(r2(k.climbStart), floor, 1)
+  const hold = clamp(r2(k.hold), 0, Math.max(0, Math.min(0.3, climbStart - floor + 0.1)))
+  // The near-zero sound (or the silent ticks of the curve) always lies below the
+  // climb beeps, so a low climb start pushes it down.
+  const nearFrom = clamp(Math.min(k.nearFrom, climbStart - hold - 0.1), Math.max(sinkOn + 0.1, -1.5), -0.1)
   return {
     ...k,
     bend: validBend(k.bend),
@@ -137,9 +146,9 @@ export function tidy(k: Knobs): Knobs {
     tempoHigh: clamp(r(Math.min(k.tempoHigh, k.tempoLow - 50)), 80, 1100),
     dutyLow: clamp(r(k.dutyLow), 10, 90),
     dutyHigh: clamp(r(k.dutyHigh), 10, 90),
-    climbStart: clamp(Math.round(k.climbStart * 100) / 100, 0, 1),
-    hold: clamp(Math.round(k.hold * 100) / 100, 0, 0.3),
-    nearFrom: Math.round(nearFrom * 100) / 100,
+    climbStart,
+    hold,
+    nearFrom: r2(nearFrom),
     sinkOn: Math.round(sinkOn * 100) / 100,
     sinkHold: clamp(Math.round((k.sinkHold ?? 0) * 100) / 100, 0, 1),
     average: clamp(Math.round(k.average * 100) / 100, 0.05, 2),

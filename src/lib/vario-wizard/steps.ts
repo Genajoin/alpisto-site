@@ -425,7 +425,7 @@ export const REFINES: Refine[] = [
   },
   {
     key: 'start', title: 'Climb tone starts', a: 'Earlier', b: 'Later', clip: 'start',
-    explain: 'How much climb it takes before the first beep, in steps of 0.05 m/s.',
+    explain: 'Where the climb beeps begin, in steps of 0.05 m/s. Below zero they start in weak sink too, to centre weak lift.',
     move: (k, d) => ({ climbStart: k.climbStart + (d > 0 ? 0.05 : -0.05) }),
   },
   {
