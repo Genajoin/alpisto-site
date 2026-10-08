@@ -1,0 +1,460 @@
+---
+import Page from '../layouts/Page.astro'
+import Eyebrow from '../components/v5/Eyebrow.astro'
+
+const title = 'Find your vario sound'
+const description =
+  'Ten questions answered by ear. Each answer changes the sound; at the end you get the tone table for any vario and a one-tap link for a FlyBeeper.'
+---
+
+<Page title={title} description={description}>
+  <section class="vw-wrap">
+    <Eyebrow color="ink-3">FlyBeeper · Vario sound</Eyebrow>
+    <h1 class="vw-h1">Find your vario sound</h1>
+    <p class="vw-lead">
+      Answer by ear. Every answer changes the sound, and you can listen to each choice before you pick it.
+      At the end you get the sound as a chart and as a tone table you can copy into any vario, and a link
+      that puts it on a FlyBeeper in one tap.
+    </p>
+    <div id="vw" class="vw-app" aria-live="polite">
+      <noscript><p>This page needs JavaScript to play the sounds.</p></noscript>
+    </div>
+  </section>
+</Page>
+
+<style is:global>
+  .vw-wrap { max-width: 960px; margin: 0 auto; padding: 56px 20px 96px; font-family: var(--font-display); color: var(--color-ink); }
+  .vw-h1 { font-size: clamp(34px, 6vw, 60px); line-height: 1.02; letter-spacing: -0.02em; margin: 14px 0 16px; font-weight: 600; text-wrap: balance; }
+  .vw-lead { font-size: 18px; line-height: 1.55; max-width: 62ch; color: var(--color-ink-2); margin: 0 0 36px; }
+  .vw-app { display: grid; gap: 28px; }
+  .vw-progress { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-ink-3); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .vw-bar { height: 4px; background: var(--color-paper-alt); margin-top: 8px; }
+  .vw-bar > i { display: block; height: 100%; background: var(--color-accent); }
+  .vw-card { border: 2px solid var(--color-ink); background: var(--color-paper-card); padding: 24px; }
+  .vw-q { font-size: clamp(22px, 3.2vw, 30px); line-height: 1.15; margin: 0 0 6px; font-weight: 600; text-wrap: balance; }
+  .vw-qlead { color: var(--color-ink-3); margin: 0 0 18px; }
+  .vw-opts { display: grid; gap: 10px; }
+  .vw-opt { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; border: 1px solid var(--color-ink); background: var(--color-paper); padding: 12px 14px; min-width: 0; }
+  .vw-opt.no-listen { grid-template-columns: 1fr auto; }
+  .vw-opt.is-picked { outline: 3px solid var(--color-accent); outline-offset: -1px; }
+  .vw-opt-text { min-width: 0; }
+  .vw-opt-label { font-size: 17px; font-weight: 500; }
+  .vw-opt-hint { font-size: 14px; color: var(--color-ink-3); }
+  .vw-btn { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; border: 2px solid var(--color-ink); background: var(--color-paper); color: var(--color-ink); padding: 9px 14px; cursor: pointer; white-space: nowrap; }
+  .vw-btn:hover, .vw-btn:focus-visible { background: var(--color-ink); color: var(--color-paper); outline: none; }
+  .vw-btn.ink { background: var(--color-ink); color: var(--color-paper); }
+  .vw-btn.ink:hover, .vw-btn.ink:focus-visible { background: var(--color-accent); color: var(--color-ink); border-color: var(--color-ink); }
+  .vw-btn.accent { background: var(--color-accent); color: var(--color-ink); }
+  .vw-btn.play { min-width: 92px; }
+  .vw-btn.play[aria-pressed='true'] { background: var(--color-accent); color: var(--color-ink); }
+  .vw-btn:disabled { opacity: 0.35; cursor: default; background: var(--color-paper); color: var(--color-ink); }
+  .vw-nav { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+  .vw-trace { display: block; width: 100%; height: auto; margin-top: 12px; }
+  .vw-trace text, .vw-chart text { font-family: var(--font-mono); font-size: 11px; fill: var(--color-ink-3); }
+  .vw-h2 { font-size: clamp(26px, 4vw, 40px); line-height: 1.05; margin: 0 0 10px; font-weight: 600; }
+  .vw-sub { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-ink-3); margin: 0 0 10px; }
+  .vw-chart { display: block; width: 100%; height: auto; }
+  .vw-tablewrap { overflow-x: auto; }
+  .vw-table { border-collapse: collapse; width: 100%; min-width: 520px; font-family: var(--font-mono); font-size: 14px; font-variant-numeric: tabular-nums; }
+  .vw-table th, .vw-table td { border-bottom: 1px solid var(--color-paper-alt); padding: 7px 10px; text-align: right; white-space: nowrap; }
+  .vw-table th { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-ink-3); font-weight: 500; }
+  .vw-table td:first-child, .vw-table th:first-child { text-align: left; }
+  .vw-table tr.is-silent td { color: var(--color-ink-3); }
+  .vw-note { font-size: 14px; color: var(--color-ink-3); margin: 10px 0 0; max-width: 70ch; }
+  .vw-refine { display: grid; gap: 10px; }
+  .vw-ref { display: grid; grid-template-columns: 9rem 1fr; gap: 10px 14px; align-items: center; border-top: 1px solid var(--color-paper-alt); padding-top: 10px; }
+  .vw-ref-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .vw-cta { border: 2px solid var(--color-ink); background: var(--color-ink); color: var(--color-paper); padding: 24px; }
+  .vw-cta p { margin: 0 0 14px; max-width: 62ch; font-size: 17px; line-height: 1.55; }
+  .vw-cta a { color: var(--color-accent); }
+  .vw-copied { font-family: var(--font-mono); font-size: 12px; color: var(--color-ink-3); align-self: center; }
+  @media (max-width: 600px) {
+    .vw-wrap { padding: 36px 16px 72px; }
+    .vw-card { padding: 16px; }
+    .vw-opt { grid-template-columns: 1fr auto; }
+    .vw-opt .vw-btn.play { grid-row: 2; grid-column: 1; justify-self: start; }
+    .vw-ref { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  import { DEFAULT_KNOBS, generate, tidy, type Knobs, type Sound } from '../lib/vario-wizard/generator'
+  import { paramsOf, simulate, toneAt, type Beep } from '../lib/vario-wizard/engine'
+  import { CLIPS, type ClipKey } from '../lib/vario-wizard/scenarios'
+  import { REFINES, STEPS } from '../lib/vario-wizard/steps'
+  import { appLink, decodeState, encodeState } from '../lib/vario-wizard/share'
+
+  const root = document.getElementById('vw')!
+  let knobs: Knobs = { ...DEFAULT_KNOBS }
+  let answers: Record<string, string> = {}
+  /** Knobs before each answered step, so Back undoes it. */
+  const undo: Knobs[] = []
+  let stepIndex = 0
+
+  // ---------- sound ----------
+  let ctx: AudioContext | null = null
+  let playing: { btn: HTMLButtonElement, stop: () => void } | null = null
+  const VOLUME = 0.12
+
+  function stopPlaying() {
+    const p = playing
+    playing = null
+    p?.stop()
+  }
+
+  const beepsCache = new Map<string, Beep[]>()
+  function beepsFor(k: Knobs, clip: ClipKey): Beep[] {
+    const key = clip + JSON.stringify(tidy(k))
+    let b = beepsCache.get(key)
+    if (!b) {
+      const s = generate(k)
+      b = simulate(s.curves, s.trigger, CLIPS[clip].air, CLIPS[clip].lenMs)
+      beepsCache.set(key, b)
+    }
+    return b
+  }
+
+  function play(btn: HTMLButtonElement, k: Knobs, clip: ClipKey, svg?: SVGSVGElement) {
+    if (playing?.btn === btn) {
+      stopPlaying()
+      return
+    }
+    stopPlaying()
+    ctx ??= new AudioContext()
+    if (ctx.state === 'suspended')
+      void ctx.resume()
+    const beeps = beepsFor(k, clip)
+    const len = CLIPS[clip].lenMs / 1000
+    const master = ctx.createGain()
+    master.gain.value = VOLUME
+    master.connect(ctx.destination)
+    const t0 = ctx.currentTime + 0.08
+    for (const { t, d, f } of beeps) {
+      const osc = ctx.createOscillator()
+      const g = ctx.createGain()
+      osc.type = 'square'
+      osc.frequency.value = f
+      const a = t0 + t
+      g.gain.setValueAtTime(0, a)
+      g.gain.linearRampToValueAtTime(1, a + 0.003)
+      g.gain.setValueAtTime(1, a + Math.max(d - 0.003, 0.003))
+      g.gain.linearRampToValueAtTime(0, a + d)
+      osc.connect(g).connect(master)
+      osc.start(a)
+      osc.stop(a + d + 0.01)
+    }
+    const label = btn.textContent
+    btn.setAttribute('aria-pressed', 'true')
+    btn.textContent = '■ Stop'
+    const head = svg?.querySelector<SVGLineElement>('.vw-head')
+    const audio = ctx
+    let raf = 0
+    const tick = () => {
+      const el = audio.currentTime - t0
+      if (head) {
+        const x = TR.l + Math.max(0, Math.min(1, el / len)) * (TR.w - TR.l - TR.r)
+        head.setAttribute('x1', String(x))
+        head.setAttribute('x2', String(x))
+        head.style.opacity = '1'
+      }
+      if (el >= len) {
+        stopPlaying()
+        return
+      }
+      raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    playing = {
+      btn,
+      stop: () => {
+        cancelAnimationFrame(raf)
+        master.disconnect()
+        btn.setAttribute('aria-pressed', 'false')
+        btn.textContent = label
+        if (head)
+          head.style.opacity = '0'
+      },
+    }
+  }
+
+  // ---------- drawing ----------
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!))
+  const ms = (v: number) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(2)}`
+
+  /** The clip's vario trace with the beeps under it. */
+  const TR = { w: 640, h: 84, l: 34, r: 6 }
+  function traceSvg(k: Knobs, clip: ClipKey): string {
+    const c = CLIPS[clip]
+    const [lo, hi] = c.range
+    const x = (tMs: number) => TR.l + (tMs / c.lenMs) * (TR.w - TR.l - TR.r)
+    const y = (cm: number) => 6 + (1 - (cm / 100 - lo) / (hi - lo)) * 52
+    const pts: string[] = []
+    for (let t = 0; t <= c.lenMs; t += 100)
+      pts.push(`${x(t).toFixed(1)},${y(Math.max(lo * 100, Math.min(hi * 100, c.air(t)))).toFixed(1)}`)
+    const beeps = beepsFor(k, clip)
+    const marks = beeps.map((b) => `<rect x="${x(b.t * 1000).toFixed(1)}" y="66" width="${Math.max(1, x(b.d * 1000) - TR.l).toFixed(1)}" height="12" fill="var(--color-ink)"/>`).join('')
+    return `<svg class="vw-trace" viewBox="0 0 ${TR.w} ${TR.h}" role="img" aria-label="Vario during the clip and the beeps">
+      <line x1="${TR.l}" x2="${TR.w - TR.r}" y1="${y(0)}" y2="${y(0)}" stroke="var(--color-ink-3)" stroke-dasharray="3 3" fill="none"/>
+      <text x="${TR.l - 6}" y="${y(0) + 4}" text-anchor="end">0</text>
+      <text x="${TR.l - 6}" y="${y(hi * 100) + 8}" text-anchor="end">${hi > 0 ? '+' : ''}${hi}</text>
+      <text x="${TR.l - 6}" y="${y(lo * 100)}" text-anchor="end">${lo < 0 ? '−' : ''}${Math.abs(lo)}</text>
+      <polyline points="${pts.join(' ')}" fill="none" stroke="var(--color-accent)" stroke-width="2"/>
+      ${marks}
+      <line class="vw-head" x1="${TR.l}" x2="${TR.l}" y1="2" y2="${TR.h - 2}" stroke="var(--color-ink)" stroke-width="2" style="opacity:0" fill="none"/>
+    </svg>`
+  }
+
+  /** Pitch and rhythm over the vario axis; silent stretches drawn pale. */
+  function curveSvg(s: Sound): string {
+    const W = 720, L = 52, R = 14
+    const lo = -4, hi = 6
+    const x = (v: number) => L + (v - lo) / (hi - lo) * (W - L - R)
+    const p = paramsOf(s.trigger)
+    // Heard: above the climb threshold (held down to climbOff) and below the sink alarm.
+    const heard = (cm: number) => cm > p.climbOff || cm < p.sinkOn
+    const P = { y: 14, h: 120 }
+    const Q = { y: 182, h: 110 }
+    const fMax = Math.max(...s.curves.freqDots.filter((_, i) => s.curves.varioDots[i]! <= hi * 100)) * 1.1
+    const yf = (f: number) => P.y + P.h - (f / fMax) * P.h
+    const yc = (msv: number) => Q.y + Q.h - Math.min(1, msv / 1000) * Q.h
+    let prevHeard: boolean | null = null
+    const runs: { heard: boolean, pts: { v: number, f: number, c: number, b: number }[] }[] = []
+    for (let cm = lo * 100; cm <= hi * 100; cm += 2) {
+      const t = toneAt(s.curves, cm)
+      const h = heard(cm)
+      if (h !== prevHeard)
+        runs.push({ heard: h, pts: [] })
+      prevHeard = h
+      runs[runs.length - 1]!.pts.push({ v: cm / 100, f: t.f, c: t.cycle, b: t.cycle * t.duty / 100 })
+    }
+    let body = ''
+    for (const r of runs) {
+      const col = r.heard ? 'var(--color-ink)' : 'var(--color-ink-3)'
+      const op = r.heard ? 1 : 0.35
+      const fl = r.pts.map((q) => `${x(q.v).toFixed(1)},${yf(q.f).toFixed(1)}`).join(' ')
+      const cl = r.pts.map((q) => `${x(q.v).toFixed(1)},${yc(q.c).toFixed(1)}`).join(' ')
+      const area = `M${x(r.pts[0]!.v)},${Q.y + Q.h} ` + r.pts.map((q) => `L${x(q.v).toFixed(1)},${yc(q.b).toFixed(1)}`).join(' ') + ` L${x(r.pts[r.pts.length - 1]!.v)},${Q.y + Q.h} Z`
+      body += `<path d="${area}" fill="var(--color-accent)" opacity="${r.heard ? 0.35 : 0.12}"/>`
+      body += `<polyline points="${fl}" fill="none" stroke="${col}" stroke-width="2.2" opacity="${op}"/>`
+      body += `<polyline points="${cl}" fill="none" stroke="${col}" stroke-width="1.6" opacity="${op}"/>`
+      if (!r.heard) {
+        const a = x(r.pts[0]!.v), b = x(r.pts[r.pts.length - 1]!.v)
+        body = `<rect x="${a}" y="${P.y}" width="${b - a}" height="${Q.y + Q.h - P.y}" fill="var(--color-paper-alt)" opacity="0.6"/>` + body
+        if (b - a > 60)
+          body += `<text x="${(a + b) / 2}" y="${P.y + 12}" text-anchor="middle">silent</text>`
+      }
+    }
+    let axes = ''
+    for (let v = lo; v <= hi; v++) {
+      axes += `<line x1="${x(v)}" x2="${x(v)}" y1="${P.y}" y2="${Q.y + Q.h}" stroke="var(--color-ink)" opacity="${v === 0 ? 0.35 : 0.08}" fill="none"/>`
+      axes += `<text x="${x(v)}" y="${Q.y + Q.h + 16}" text-anchor="middle">${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v)}</text>`
+    }
+    const fTicks = [500, 1000, 1500, 2000, 3000, 4000].filter((f) => f < fMax)
+    for (const f of fTicks)
+      axes += `<text x="${L - 6}" y="${yf(f) + 4}" text-anchor="end">${f}</text><line x1="${L}" x2="${W - R}" y1="${yf(f)}" y2="${yf(f)}" stroke="var(--color-ink)" opacity="0.06" fill="none"/>`
+    for (const c of [250, 500, 750, 1000])
+      axes += `<text x="${L - 6}" y="${yc(c) + 4}" text-anchor="end">${c}</text><line x1="${L}" x2="${W - R}" y1="${yc(c)}" y2="${yc(c)}" stroke="var(--color-ink)" opacity="0.06" fill="none"/>`
+    axes += `<text x="${L}" y="${P.y - 2}">Pitch, Hz</text>`
+    axes += `<text x="${L}" y="${Q.y - 14}">Period, ms (line) and beep length (fill)</text>`
+    axes += `<text x="${W - R}" y="${Q.y + Q.h + 32}" text-anchor="end">vario, m/s</text>`
+    return `<svg class="vw-chart" viewBox="0 0 ${W} ${Q.y + Q.h + 38}" role="img" aria-label="Pitch and rhythm of your sound over the vario">${axes}${body}</svg>`
+  }
+
+  function tableHtml(s: Sound): string {
+    const c = s.curves
+    const p = paramsOf(s.trigger)
+    const rows = c.varioDots.map((v, i) => {
+      const silent = !(v > p.climbOff || v < p.sinkOn)
+      const beep = Math.trunc(c.cycleDots[i]! * c.dutyDots[i]! / 100)
+      return `<tr class="${silent ? 'is-silent' : ''}"><td>${ms(v / 100)}</td><td>${c.freqDots[i]}</td><td>${c.cycleDots[i]}</td><td>${beep}</td><td>${c.dutyDots[i]}</td><td>${silent ? 'silent' : ''}</td></tr>`
+    }).join('')
+    const t = s.trigger
+    const never = t.sinkOn <= -10
+    return `<div class="vw-tablewrap"><table class="vw-table">
+      <thead><tr><th>Vario, m/s</th><th>Pitch, Hz</th><th>Period, ms</th><th>Beep, ms</th><th>Beep share, %</th><th></th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
+      <div class="vw-tablewrap" style="margin-top:14px"><table class="vw-table">
+      <thead><tr><th>When it sounds</th><th>Value</th></tr></thead><tbody>
+      <tr><td>Climb tone on above</td><td>${ms(t.climbOn)} m/s</td></tr>
+      <tr><td>Climb tone held down to</td><td>${ms(t.climbOff)} m/s</td></tr>
+      <tr><td>Sink tone on below</td><td>${never ? 'never' : `${ms(t.sinkOn)} m/s`}</td></tr>
+      <tr><td>Vario averaging</td><td>${t.average.toFixed(2)} s</td></tr>
+      </tbody></table></div>
+      <p class="vw-note">Between the points a vario draws straight lines. Most varios that take a tone table take these columns; copy the numbers into yours. Points in grey lie in silence with these thresholds.</p>`
+  }
+
+  // ---------- screens ----------
+  function saveHash() {
+    window.history.replaceState(null, '', `#s=${encodeState({ k: tidy(knobs), a: answers })}`)
+  }
+
+  function renderStep() {
+    stopPlaying()
+    const step = STEPS[stepIndex]!
+    const done = Math.round(stepIndex / STEPS.length * 100)
+    const opts = step.options.map((o) => {
+      const listen = step.clip
+        ? `<button type="button" class="vw-btn play" data-listen="${o.key}" aria-pressed="false">▶ Listen</button>`
+        : ''
+      const picked = answers[step.key] === o.key ? ' is-picked' : ''
+      return `<div class="vw-opt${picked}${step.clip ? '' : ' no-listen'}">${listen}<div class="vw-opt-text"><div class="vw-opt-label">${esc(o.label)}</div>${o.hint ? `<div class="vw-opt-hint">${esc(o.hint)}</div>` : ''}</div><button type="button" class="vw-btn ink" data-pick="${o.key}">Choose</button></div>`
+    }).join('')
+    root.innerHTML = `
+      <div><div class="vw-progress"><span>Question ${stepIndex + 1} of ${STEPS.length}</span><span>${done} %</span></div><div class="vw-bar"><i style="width:${done}%"></i></div></div>
+      <div class="vw-card">
+        <h2 class="vw-q">${esc(step.title)}</h2>
+        ${step.lead ? `<p class="vw-qlead">${esc(step.lead)}</p>` : ''}
+        ${step.clip ? `<div id="vw-trace"></div>` : ''}
+        <div class="vw-opts">${opts}</div>
+        <div class="vw-nav">
+          <button type="button" class="vw-btn" data-back ${stepIndex === 0 ? 'disabled' : ''}>← Back</button>
+          <button type="button" class="vw-btn" data-skip>Skip</button>
+        </div>
+      </div>`
+    const traceBox = root.querySelector<HTMLElement>('#vw-trace')
+    const showTrace = (k: Knobs) => {
+      if (traceBox && step.clip)
+        traceBox.innerHTML = traceSvg(k, step.clip)
+      return traceBox?.querySelector('svg') ?? undefined
+    }
+    showTrace(knobs)
+    for (const b of root.querySelectorAll<HTMLButtonElement>('[data-listen]')) {
+      b.addEventListener('click', () => {
+        const o = step.options.find((x) => x.key === b.dataset.listen)!
+        const k = { ...knobs, ...(o.apply?.(knobs) ?? {}) }
+        play(b, k, step.clip!, showTrace(k))
+      })
+    }
+    for (const b of root.querySelectorAll<HTMLButtonElement>('[data-pick]')) {
+      b.addEventListener('click', () => {
+        const o = step.options.find((x) => x.key === b.dataset.pick)!
+        undo.push({ ...knobs })
+        knobs = tidy({ ...knobs, ...(o.apply?.(knobs) ?? {}) })
+        answers[step.key] = o.key
+        next()
+      })
+    }
+    root.querySelector('[data-skip]')!.addEventListener('click', () => {
+      undo.push({ ...knobs })
+      next()
+    })
+    root.querySelector('[data-back]')!.addEventListener('click', () => {
+      if (stepIndex === 0)
+        return
+      stepIndex--
+      knobs = undo.pop() ?? knobs
+      delete answers[STEPS[stepIndex]!.key]
+      renderStep()
+    })
+  }
+
+  function next() {
+    stepIndex++
+    saveHash()
+    if (stepIndex >= STEPS.length)
+      renderResult()
+    else renderStep()
+  }
+
+  function renderResult() {
+    stopPlaying()
+    const s = generate(knobs)
+    const refines = REFINES.map((r) => `
+      <div class="vw-ref"><div><strong>${esc(r.title)}</strong></div>
+        <div class="vw-ref-btns">
+          <button type="button" class="vw-btn play" data-ref-play="${r.key}" data-dir="-1" aria-pressed="false">▶ ${esc(r.a)}</button>
+          <button type="button" class="vw-btn play" data-ref-play="${r.key}" data-dir="0" aria-pressed="false">▶ as is</button>
+          <button type="button" class="vw-btn play" data-ref-play="${r.key}" data-dir="1" aria-pressed="false">▶ ${esc(r.b)}</button>
+          <button type="button" class="vw-btn" data-ref-take="${r.key}" data-dir="-1">Take ${esc(r.a)}</button>
+          <button type="button" class="vw-btn" data-ref-take="${r.key}" data-dir="1">Take ${esc(r.b)}</button>
+        </div></div>`).join('')
+    root.innerHTML = `
+      <div class="vw-card">
+        <p class="vw-sub">Your vario sound</p>
+        <h2 class="vw-h2">Listen to a whole flight with it</h2>
+        <p class="vw-qlead">A glide, the air improving, into the core, a few turns, the climb fading, out into sink.</p>
+        <button type="button" class="vw-btn accent play" id="vw-flight" aria-pressed="false">▶ Play the flight</button>
+        <div id="vw-flight-trace">${traceSvg(knobs, 'flight')}</div>
+      </div>
+      <div class="vw-card">
+        <p class="vw-sub">Chart</p>
+        ${curveSvg(s)}
+      </div>
+      <div class="vw-card">
+        <p class="vw-sub">Tone table</p>
+        ${tableHtml(s)}
+      </div>
+      <div class="vw-card">
+        <p class="vw-sub">Fine-tune</p>
+        <p class="vw-qlead">Listen to both sides, take the one you prefer. The chart and the table follow.</p>
+        <div class="vw-refine">${refines}</div>
+      </div>
+      <div class="vw-cta">
+        <p>On a FlyBeeper this sound plays on the instrument and, if you like, on your phone at the same moment: the phone speaker plays the real pitches, much louder than a piezo.</p>
+        <div class="vw-nav">
+          <a class="vw-btn accent" href="${esc(appLink(s))}" target="_blank" rel="noopener">Put it on my FlyBeeper</a>
+          <button type="button" class="vw-btn" id="vw-copy" style="color:var(--color-paper);background:transparent;border-color:var(--color-paper)">Copy link to this sound</button>
+          <span class="vw-copied" id="vw-copied"></span>
+        </div>
+        <p style="margin-top:14px;font-size:15px">No FlyBeeper yet? <a href="/flybeeper">See the instruments</a>.</p>
+      </div>
+      <div class="vw-nav">
+        <button type="button" class="vw-btn" id="vw-back">← Change the last answer</button>
+        <button type="button" class="vw-btn" id="vw-restart">Start over</button>
+      </div>`
+
+    const flightBtn = root.querySelector<HTMLButtonElement>('#vw-flight')!
+    flightBtn.addEventListener('click', () => play(flightBtn, knobs, 'flight', root.querySelector<SVGSVGElement>('#vw-flight-trace svg')!))
+    for (const b of root.querySelectorAll<HTMLButtonElement>('[data-ref-play]')) {
+      b.addEventListener('click', () => {
+        const r = REFINES.find((x) => x.key === b.dataset.refPlay)!
+        const d = Number(b.dataset.dir) as -1 | 0 | 1
+        const k = d === 0 ? knobs : tidy({ ...knobs, ...r.move(knobs, d) })
+        play(b, k, r.clip)
+      })
+    }
+    for (const b of root.querySelectorAll<HTMLButtonElement>('[data-ref-take]')) {
+      b.addEventListener('click', () => {
+        const r = REFINES.find((x) => x.key === b.dataset.refTake)!
+        knobs = tidy({ ...knobs, ...r.move(knobs, Number(b.dataset.dir) as -1 | 1) })
+        answers[`refine.${r.key}`] = String((Number(answers[`refine.${r.key}`] ?? 0)) + Number(b.dataset.dir))
+        saveHash()
+        renderResult()
+      })
+    }
+    root.querySelector('#vw-copy')!.addEventListener('click', async () => {
+      const out = root.querySelector('#vw-copied')!
+      try {
+        await navigator.clipboard.writeText(location.href)
+        out.textContent = 'Copied'
+      } catch {
+        out.textContent = location.href
+      }
+    })
+    root.querySelector('#vw-back')!.addEventListener('click', () => {
+      stepIndex = STEPS.length - 1
+      knobs = undo.pop() ?? knobs
+      delete answers[STEPS[stepIndex]!.key]
+      renderStep()
+    })
+    root.querySelector('#vw-restart')!.addEventListener('click', () => {
+      knobs = { ...DEFAULT_KNOBS }
+      answers = {}
+      undo.length = 0
+      stepIndex = 0
+      window.history.replaceState(null, '', location.pathname)
+      renderStep()
+    })
+  }
+
+  // A shared link opens straight on the result.
+  const shared = decodeState(location.hash)
+  if (shared) {
+    knobs = tidy({ ...DEFAULT_KNOBS, ...shared.k })
+    answers = shared.a
+    stepIndex = STEPS.length
+    renderResult()
+  } else {
+    renderStep()
+  }
+</script>
