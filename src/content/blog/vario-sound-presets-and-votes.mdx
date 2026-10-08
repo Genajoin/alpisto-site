@@ -1,0 +1,249 @@
+---
+title: "The sound you already know: other varios' tones on a FlyBeeper, and a vote only pilots can cast"
+description: "A pilot who moves to a new vario brings their ears along. The FlyBeeper app now has one list of ready vario sounds: our own, the sounds of well-known varios and flight apps rebuilt from their manuals and measurements, community presets and sets of thresholds. This is where the numbers come from, how I measured XCTrack from a phone screen recording, why the Simple preset looks the way it does, and how a vote works that only a pilot with a FlyBeeper in hand can cast."
+pubDate: 2026-10-09
+tags: ["flybeeper", "fanet-vario", "sun-vario", "variometer", "audio", "app", "xctrack", "paragliding"]
+draft: true
+ctaTarget: "https://market.flybeeper.com/device/fanet-vario"
+toc: true
+---
+
+import VarioLineChart from '../../components/VarioLineChart.astro'
+import catalog from '../../data/vario-sound/catalog.json'
+
+export const byId = Object.fromEntries(catalog.map((e) => [e.id, e]))
+export const pitch = (id) => byId[id].curves.varioDots.map((v, i) => [v / 100, byId[id].curves.freqDots[i]])
+export const period = (id) => byId[id].curves.varioDots.map((v, i) => [v / 100, byId[id].curves.cycleDots[i]])
+export const beep = (id) => byId[id].curves.varioDots.map((v, i) => [v / 100, byId[id].curves.cycleDots[i] * byId[id].curves.dutyDots[i] / 100])
+export const sgn = (v) => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(2)
+export const GROUP = { flybeeper: 'FlyBeeper', brand: 'Varios and apps', community: 'Community', trigger: 'When it sounds' }
+
+The [previous article](/blog/how-a-flybeeper-vario-decides-when-to-beep) was about when a vario
+beeps: the averaging, two thresholds on each side, a memory of which tone is playing and an early
+exit. It ended with seven presets for those thresholds. This one is about the other half, how the
+beep sounds, and about what happened when both halves went into one list.
+
+The reason is simple. A pilot who has flown five years with one vario has that vario's sound in
+their head. They know what +0.5 sounds like and what +3 sounds like without looking. A new vario
+with a different curve is a new language in the one moment you least want to learn one. So the
+FlyBeeper app now lets you pick a ready sound, including sounds that are as close as I could get to
+the varios and flight apps people already fly with.
+
+In the previous article I left the brand names out of the table: the point there was the numbers.
+Here the names are the point. They belong to their owners, nobody of them endorsed anything below,
+and every entry says where its numbers come from.
+
+## One list instead of three
+
+Until now the sound settings had a strip of tone curves, a grid of "When it sounds" presets and two
+separate menus for your own profiles. They are now one list in the Sound section of a device's
+settings in the app, in four groups: our own sounds, the sounds of other varios and apps, presets
+from the community, and threshold sets on their own.
+
+An entry carries a tone curve, thresholds, or both. Above the list a switch says what a choice
+changes: everything, only the sound, or only when it sounds. So you can take the climb tone of one
+vario and the thresholds of another, and the app recognises the two parts separately: the line
+under the list reads like "Sound: SkyDrop · When it sounds: Sniffer". Own brings back the values
+you had before you started clicking. A star marks a favourite. Tap an entry and its
+description opens right under it: what it sounds like, the thresholds in numbers and the source.
+
+Everything runs on the same twelve-point curve the previous article described: for each of twelve
+vario values, a pitch, a period and a share of the period that sounds. Between the points the vario
+draws straight lines. Whatever another vario does, it has to fit into that, and the sections below
+are mostly about what fits and what does not.
+
+## Where the numbers come from
+
+Some sources are exact. XC Tracer publishes its tone table in every manual, in a format that is
+almost ours: twelve tones, each a climb rate, a pitch, a period and a duty. Both the current factory
+table and the older Mini 2016 one went in as they are. SkyDrop, XCSoar, GNUVario, BlueFly and Leaf
+are open source, so their curves come from the code. The four community presets, Tim Pentreath's,
+the lu-glidz sniffer, Matthss's Flymaster-like template and JP Philippe's, are files that people
+share for the XC Tracer editor.
+
+Others are partly rebuilt, and the app marks them so. The Flymaster manual gives the climb pitch as
+a formula and the rhythm only as a chart, which I digitised. The Skytraxx tone editor and the Syride
+configurator show their defaults on screen but publish no table. For the threshold sets, Gaggle
+publishes its three, and Digifly names its defaults in the manual.
+
+Two things never come across. Most other varios take a table longer than twelve points; where one
+did, I dropped the points whose loss changes the curve least and kept the error in the notes. And
+nobody states their averaging in seconds. Every manual has its own damping scale, so the brand
+entries leave the averaging as it is on your device.
+
+## XCTrack, measured from a screen recording
+
+XCTrack is on a great many pilots' phones, and its default sound is not published anywhere. Its manual describes it in words: the pitch rises linearly up to 6 m/s, the
+beeps get faster, a double beep in weak lift, a double sink alarm whose second tone drops a semitone
+for every 0.5 m/s. No numbers.
+
+The app has a sound page with a slider that plays the vario sound for any value from −7 to +7 m/s.
+So I recorded the phone's screen with the sound while moving the slider slowly from one end to the
+other, 38 seconds. In each frame I found the slider's knob; in the audio I found each beep, its
+pitch, its length and the time to the next one. Then the knob's position had to become metres per
+second, and that is less obvious than it looks: the slider is not linear. Its scale is sixteen
+columns, −7, −5, −4, −3, −2, −1, 0, 0.25, 0.5, 1, 1.5, 2, 3, 4, 5 and 7, spread evenly, so the
+half metre around zero takes as much room as the four metres from +3 to +7. With that scale the
+recording checks itself: the sink sound stops exactly at −2.0 and the first climb beep comes at
++0.09, and the phone's settings say −2.0 and +0.1.
+
+What it plays, with the default settings:
+
+<div style="overflow-x:auto">
+
+| Zone | Sound |
+|---|---|
+| Climb, from +0.1 | A beep of 100 ms whatever the climb, the pitch fixed within a beep. Pitch about 659 + 82 Hz per m/s, from 660 Hz at zero to 1238 Hz at +7. Period about 500 − 40 ms per m/s, from 495 ms to 215 ms. |
+| Weak lift, about −0.35 to +0.1 | Two short beeps at 330 Hz, 400 ms apart, once a second, the same whatever the value. |
+| Silence | From −2.0 to about −0.35. |
+| Sink, below −2.0 | Once a second a short 660 Hz beep, then a low tone that drops a semitone for each 0.5 m/s and gets longer: 523 Hz for 260 ms at −2, 330 Hz for 490 ms at −5 and below. |
+
+</div>
+
+The tones of the sink alarm and of the weak lift are exact notes of the scale, C down to E. The
+climb pitch rises more gently than the manual's octave up to 6 m/s: at +6 it is about 1150 Hz, not
+1320. And the sound lags the slider by about half a second, although the averaging is set to 0.1 s,
+so the app smooths its sound somewhere it does not show.
+
+Two of these things do not fit a FlyBeeper. Our curve cannot play two different tones in one period,
+so the sink alarm became its low tone alone, once a second at the same pitch and length. And the
+weak lift double beep cannot be a double beep. It became two entries: XCTrack, without the weak lift
+tone, and XCTrack Weak lift, where the climb tone starts at −0.35 and the band up to +0.1 plays single
+330 Hz beeps every half second, as many beeps as XCTrack plays, just evenly spaced.
+
+## SeeYou Navigator, with a logarithmic scale
+
+The SeeYou Navigator entry is close to the Oudie sound with its default logarithmic scale. Naviter's
+own help explains the idea: with a logarithmic scale the pitch changes fastest near zero, so the
+first few tenths of a climb are the easiest to hear apart. The entry plays 600 Hz at zero, 1063 Hz
+at +1 and 2200 Hz at +10, with a long beep, three quarters of every period.
+
+Naviter publishes no numbers for its defaults, so the climb part is close but not official, and the
+sink part is mine. A steady sink tone fits what the help says: beeping in sink is a separate mode
+there, the Pace-maker. So below −2.5 the entry plays a continuous tone that falls the same way the
+climb tone rises, fastest near the threshold: 400 Hz at −2.5, 345 at −4, 300 at −6, 260 at −10. The
+threshold of −2.5 is a guess as well; the help only says the vario is silent between zero and the
+value you set.
+
+## Simple
+
+The first entry in the list is ours, and it is the one I would give a pilot who has no sound in
+their head yet. It keeps the three zones that most varios share, a steady sink tone, quiet ticks
+near zero and climb beeps, and gives each zone one rule instead of hand-tuned points.
+
+The climb starts at 600 Hz and goes 150 Hz higher for each metre per second, up to 1050 Hz at +3,
+then flattens to 1550 Hz at +10. That keeps the whole climb on the part of our buzzer where loudness
+is even, below the dip around 1600–1800 Hz that the [piezo article](/blog/vario-piezo-tone-measured)
+measured. The beep is always half of the period, and the period goes from 600 ms to 150 ms, the same
+rhythm nearly every vario on the market uses. The sink tone is steady and falls with the sink, from
+580 Hz to 400 Hz. The ticks near zero, from −0.5 to +0.04, sit below the climb tone's hold of +0.05,
+so with Simple's own thresholds they never sound; pick Sniffer or Flatland under When it sounds and
+they do.
+
+The thresholds are what most of the market does: climb from +0.1, held to +0.05, sink below −2.5, no
+early exit. The averaging, 0.3 s, is calmer than our factory 0.1 s and gives fewer false beeps in
+choppy air, without the lag of the 0.6 s in Mountain.
+
+<VarioLineChart
+  series={[
+    { pts: pitch('fb.simple'), label: 'Simple' },
+    { pts: pitch('brand.xctracer'), label: 'XC Tracer' },
+    { pts: pitch('brand.xctrack'), label: 'XCTrack' },
+    { pts: pitch('brand.seeyou'), label: 'SeeYou Navigator' },
+  ]}
+  x={[-4, 6]}
+  y={[0, 2200]}
+  xTicks={[-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]}
+  yTicks={[0, 500, 1000, 1500, 2000]}
+  xUnit="vario, m/s"
+  yUnit="Hz"
+>
+  <span>Pitch of four entries. The curve is drawn everywhere; what you hear depends on the thresholds, and below them each entry is silent.</span>
+</VarioLineChart>
+
+<VarioLineChart
+  series={[
+    { pts: period('fb.simple'), label: 'Simple' },
+    { pts: period('brand.xctracer'), label: 'XC Tracer' },
+    { pts: period('brand.xctrack'), label: 'XCTrack' },
+    { pts: period('brand.seeyou'), label: 'SeeYou Navigator' },
+  ]}
+  x={[0.1, 6]}
+  y={[0, 700]}
+  xTicks={[1, 2, 3, 4, 5, 6]}
+  yTicks={[0, 100, 200, 300, 400, 500, 600, 700]}
+  xUnit="climb, m/s"
+  yUnit="ms"
+  height={190}
+>
+  <span>Time from one climb beep to the next, from +0.1. XCTrack keeps its beep at 100 ms, so its beeps sound short and dry; the others make the beep a share of the period.</span>
+</VarioLineChart>
+
+## The whole list
+
+<div class="not-prose" style="overflow-x:auto;margin:1.5rem 0">
+  <table style="border-collapse:collapse;font-size:13px;width:100%;min-width:560px">
+    <thead>
+      <tr style="text-align:left;font-family:var(--font-mono);font-size:11px;color:var(--color-ink-3)">
+        <th style="padding:4px 8px 4px 0">Entry</th>
+        <th style="padding:4px 8px">Group</th>
+        <th style="padding:4px 8px">Sound</th>
+        <th style="padding:4px 8px">Climb from</th>
+        <th style="padding:4px 8px">Sink below</th>
+        <th style="padding:4px 0 4px 8px">Source</th>
+      </tr>
+    </thead>
+    <tbody>
+      {catalog.map((e) => (
+        <tr style="border-top:1px solid color-mix(in srgb, var(--color-ink) 15%, transparent)">
+          <td style="padding:5px 8px 5px 0">{e.name}{e.approx ? ' *' : ''}</td>
+          <td style="padding:5px 8px;color:var(--color-ink-3)">{GROUP[e.group]}</td>
+          <td style="padding:5px 8px">{e.curves ? 'yes' : '—'}</td>
+          <td style="padding:5px 8px;font-family:var(--font-mono)">{e.trigger ? sgn(e.trigger.climbOn) : '—'}</td>
+          <td style="padding:5px 8px;font-family:var(--font-mono)">{e.trigger ? sgn(e.trigger.sinkOn) : '—'}</td>
+          <td style="padding:5px 0 5px 8px">{e.source ? <a href={e.source} target="_blank" rel="noopener">link ↗</a> : ''}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  <p style="font-size:12px;color:var(--color-ink-3);margin-top:6px">* numbers partly rebuilt from a manual, a chart or a measurement. Entries without thresholds change only the sound; threshold sets change only when it sounds.</p>
+</div>
+
+## A heart that only pilots see
+
+Next to each entry of the list there can be a heart with a number. It is a vote: I like this sound.
+After a season the numbers should say which sounds pilots actually keep, and that is worth more
+than any argument about curves.
+
+A vote in an app is easy to fake, and a rating that anyone can push with a script is worse than
+none. So a vote here needs two things that a script does not have: a FlyBeeper in your hand and a
+person behind it.
+
+The first is the instrument. Starting with the next firmware, each FANET and Sun vario makes itself a
+key of its own. The secret half never leaves the chip. When the app connects, the server
+sends a random challenge, the instrument signs it, and the server checks the signature against the
+instrument's public key. That proves a real FlyBeeper with current firmware is next to the phone,
+and nothing else. The Mini BT has no such key and cannot vote for now. A small detail on the way: browsers do not let a web page read a Bluetooth
+device's serial number, it is on their block list, so the instrument hands its serial over together
+with the key.
+
+The second is the person. The app is linked to Telegram through our bot, the same link that carries
+safety alerts and flyability notices. One Telegram account is one voter, whatever the number of
+instruments, and one account can bring up to three of them. An instrument belongs to one account;
+if yours changes hands, write to us.
+
+None of it asks you to do anything. Connect your instrument with a linked app and the app gets a
+pass for 30 days, renewed whenever you connect again. With the pass, hearts appear in the list.
+Without it, there are no hearts and no numbers at all, not even other people's: the list looks the
+same as before, so nobody reads a count as advice from people they cannot ask. The server keeps the
+serial and public key of each instrument, a pseudonym in place of the Telegram account, made with a key
+only the server holds, and the votes. No names and no chat.
+
+## What comes next
+
+The list is fixed for now: the entries above, in the order above. The next step is your own sounds in
+it. A profile you have tuned and saved as yours could go into the list for everyone, and then the
+hearts start to do their job: sorting the list so that the sounds pilots keep end up near the top.
+
+If you fly with a sound that is not here and you know its numbers, or you can record it the way I
+recorded XCTrack, send it. Every entry in this list started as someone's sound in their head.

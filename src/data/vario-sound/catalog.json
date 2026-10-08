@@ -1,0 +1,1662 @@
+[
+ {
+  "id": "fb.simple",
+  "group": "flybeeper",
+  "name": "Simple",
+  "body": "Our basic sound, with the pitch tuned to the FlyBeeper buzzer. Climb from +0.1 with beeps from 600 Hz, each m/s 150 Hz higher and faster. Held to +0.05, sink as a steady tone below −2.5, no early exit, 0.3 s averaging. A good start for a beginner.",
+  "curves": {
+   "varioDots": [
+    -1000,
+    -250,
+    -51,
+    -50,
+    4,
+    5,
+    100,
+    200,
+    300,
+    500,
+    700,
+    1000
+   ],
+   "freqDots": [
+    400,
+    550,
+    580,
+    600,
+    600,
+    600,
+    750,
+    900,
+    1050,
+    1300,
+    1450,
+    1550
+   ],
+   "cycleDots": [
+    100,
+    100,
+    100,
+    800,
+    800,
+    600,
+    520,
+    440,
+    370,
+    270,
+    200,
+    150
+   ],
+   "dutyDots": [
+    100,
+    100,
+    100,
+    5,
+    5,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50
+   ]
+  },
+  "trigger": {
+   "climbOn": 0.1,
+   "climbOff": 0.05,
+   "sinkOn": -2.5,
+   "sinkOff": -2.5,
+   "hyst": 0,
+   "average": 0.3
+  },
+  "approx": false
+ },
+ {
+  "id": "fb.factory",
+  "group": "flybeeper",
+  "name": "Factory",
+  "body": "As in a new FlyBeeper: a high tone that rises fast in weak lift, «zero» ticks near zero up to +0.39. Climb from +0.05, early exit 0.25, sink below −2.5.",
+  "curves": {
+   "varioDots": [
+    -1400,
+    -800,
+    -100,
+    0,
+    39,
+    40,
+    100,
+    200,
+    300,
+    450,
+    1200,
+    2000
+   ],
+   "freqDots": [
+    200,
+    250,
+    390,
+    395,
+    400,
+    470,
+    760,
+    1120,
+    1480,
+    2020,
+    4720,
+    6000
+   ],
+   "cycleDots": [
+    850,
+    790,
+    725,
+    350,
+    150,
+    595,
+    430,
+    325,
+    265,
+    210,
+    120,
+    100
+   ],
+   "dutyDots": [
+    100,
+    98,
+    95,
+    20,
+    80,
+    41,
+    43,
+    46,
+    49,
+    54,
+    78,
+    90
+   ]
+  },
+  "trigger": {
+   "climbOn": 0.05,
+   "climbOff": 0.3,
+   "sinkOn": -2.5,
+   "sinkOff": -2.7,
+   "hyst": 0.25,
+   "average": 0.1
+  },
+  "approx": false
+ },
+ {
+  "id": "fb.aggressive",
+  "group": "flybeeper",
+  "name": "Aggressive",
+  "body": "XC Tracer rhythm with higher pitches: the tone rises faster in weak lift. Sound only — «When it sounds» stays as is.",
+  "curves": {
+   "varioDots": [
+    -1000,
+    -300,
+    -55,
+    -50,
+    0,
+    10,
+    100,
+    250,
+    425,
+    600,
+    800,
+    1000
+   ],
+   "freqDots": [
+    200,
+    280,
+    300,
+    200,
+    400,
+    400,
+    920,
+    1380,
+    1600,
+    1780,
+    1880,
+    2000
+   ],
+   "cycleDots": [
+    100,
+    100,
+    500,
+    800,
+    600,
+    600,
+    550,
+    485,
+    410,
+    320,
+    240,
+    150
+   ],
+   "dutyDots": [
+    100,
+    100,
+    100,
+    5,
+    10,
+    50,
+    52,
+    55,
+    58,
+    62,
+    66,
+    70
+   ]
+  },
+  "approx": false
+ },
+ {
+  "id": "fb.maxVolume",
+  "group": "flybeeper",
+  "name": "Max volume",
+  "body": "The loudest sound on our buzzer: tones around 3.5–3.8 kHz, at the piezo resonance. Clearly higher than the usual vario sound. Sound only.",
+  "curves": {
+   "varioDots": [
+    -1400,
+    -100,
+    0,
+    40,
+    40,
+    100,
+    200,
+    300,
+    450,
+    600,
+    1000,
+    2000
+   ],
+   "freqDots": [
+    200,
+    390,
+    3500,
+    3530,
+    3560,
+    3615,
+    3665,
+    3700,
+    3730,
+    3760,
+    4000,
+    4500
+   ],
+   "cycleDots": [
+    850,
+    790,
+    320,
+    135,
+    715,
+    595,
+    430,
+    325,
+    265,
+    210,
+    120,
+    100
+   ],
+   "dutyDots": [
+    100,
+    98,
+    15,
+    75,
+    38,
+    41,
+    43,
+    46,
+    49,
+    54,
+    78,
+    90
+   ]
+  },
+  "approx": false
+ },
+ {
+  "id": "brand.xctracer",
+  "group": "brand",
+  "name": "XC Tracer",
+  "body": "XC Tracer factory sound (all models since 2017): 400 Hz at zero, 1800 Hz at +10, beat from 600 down to 150 ms. Climb from +0.2, held to +0.1, sink below −3.",
+  "curves": {
+   "varioDots": [
+    -1000,
+    -300,
+    -51,
+    -50,
+    9,
+    10,
+    116,
+    267,
+    424,
+    600,
+    800,
+    1000
+   ],
+   "freqDots": [
+    200,
+    280,
+    300,
+    200,
+    400,
+    400,
+    550,
+    763,
+    985,
+    1234,
+    1517,
+    1800
+   ],
+   "cycleDots": [
+    100,
+    100,
+    500,
+    800,
+    600,
+    600,
+    552,
+    483,
+    412,
+    332,
+    241,
+    150
+   ],
+   "dutyDots": [
+    100,
+    100,
+    100,
+    5,
+    10,
+    50,
+    52,
+    55,
+    58,
+    62,
+    66,
+    70
+   ]
+  },
+  "trigger": {
+   "climbOn": 0.2,
+   "climbOff": 0.1,
+   "sinkOn": -3,
+   "sinkOff": -3,
+   "hyst": 0
+  },
+  "source": "https://xctracer.online/downloads/User_Manual_XC_Tracer_Mini_V_Rev_02_EN.pdf",
+  "approx": false
+ },
+ {
+  "id": "brand.xctracerMini2016",
+  "group": "brand",
+  "name": "XC Tracer Mini 2016",
+  "body": "The earlier XC Tracer Mini factory sound (2016): softer, tone on for exactly half the beat throughout the climb, 510 Hz at zero. Thresholds as XC Tracer.",
+  "curves": {
+   "varioDots": [
+    -1000,
+    -300,
+    -51,
+    -50,
+    9,
+    10,
+    116,
+    267,
+    424,
+    600,
+    800,
+    1000
+   ],
+   "freqDots": [
+    200,
+    280,
+    300,
+    300,
+    510,
+    510,
+    579,
+    698,
+    824,
+    1037,
+    1314,
+    1661
+   ],
+   "cycleDots": [
+    200,
+    200,
+    200,
+    800,
+    600,
+    600,
+    527,
+    450,
+    360,
+    283,
+    219,
+    190
+   ],
+   "dutyDots": [
+    100,
+    100,
+    100,
+    5,
+    5,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50
+   ]
+  },
+  "trigger": {
+   "climbOn": 0.2,
+   "climbOff": 0.1,
+   "sinkOn": -3,
+   "sinkOff": -3,
+   "hyst": 0
+  },
+  "source": "https://xctracer.online/downloads/User_Manual_XC_Tracer_Mini_II_Rev._02_EN.pdf",
+  "approx": false
+ },
+ {
+  "id": "brand.xctrack",
+  "group": "brand",
+  "name": "XCTrack",
+  "body": "XCTrack default sound, measured on a phone: a short beep from 660 Hz at zero to 1240 Hz at +7, faster as the climb grows. Sink below −2 is a low tone once a second, a semitone lower for every 0.5 m/s. Climb from +0.1, no early exit.",
+  "curves": {
+   "varioDots": [
+    -1000,
+    -500,
+    -400,
+    -300,
+    -200,
+    0,
+    10,
+    100,
+    200,
+    300,
+    500,
+    700
+   ],
+   "freqDots": [
+    330,
+    330,
+    392,
+    466,
+    523,
+    659,
+    667,
+    741,
+    823,
+    905,
+    1069,
+    1238
+   ],
+   "cycleDots": [
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    500,
+    496,
+    460,
+    420,
+    380,
+    300,
+    220
+   ],
+   "dutyDots": [
+    49,
+    49,
+    41,
+    33,
+    26,
+    20,
+    20,
+    22,
+    24,
+    26,
+    33,
+    45
+   ]
+  },
+  "trigger": {
+   "climbOn": 0.1,
+   "climbOff": 0.1,
+   "sinkOn": -2,
+   "sinkOff": -2,
+   "hyst": 0
+  },
+  "source": "https://xctrack.org/Manual.html",
+  "approx": true
+ },
+ {
+  "id": "brand.xctrackWeakLift",
+  "group": "brand",
+  "name": "XCTrack Weak lift",
+  "body": "Same as XCTrack plus its «weak lift» buzzer: from −0.35 to +0.1 sparse low 330 Hz beeps — lift is near, not yet a climb. XCTrack plays a double beep, our vario plays single ones.",
+  "curves": {
+   "varioDots": [
+    -1000,
+    -500,
+    -400,
+    -300,
+    -200,
+    -35,
+    9,
+    10,
+    100,
+    300,
+    500,
+    700
+   ],
+   "freqDots": [
+    330,
+    330,
+    392,
+    466,
+    523,
+    330,
+    330,
+    667,
+    741,
+    905,
+    1069,
+    1238
+   ],
+   "cycleDots": [
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    525,
+    525,
+    496,
+    460,
+    380,
+    300,
+    220
+   ],
+   "dutyDots": [
+    49,
+    49,
+    41,
+    33,
+    26,
+    19,
+    19,
+    20,
+    22,
+    26,
+    33,
+    45
+   ]
+  },
+  "trigger": {
+   "climbOn": -0.35,
+   "climbOff": -0.35,
+   "sinkOn": -2,
+   "sinkOff": -2,
+   "hyst": 0
+  },
+  "source": "https://xctrack.org/Manual.html",
+  "approx": true
+ },
+ {
+  "id": "brand.seeyou",
+  "group": "brand",
+  "name": "SeeYou Navigator",
+  "body": "Similar to the Oudie (SeeYou Navigator) sound with logarithmic scale: 600 Hz at zero up to 2200 Hz at +10, pitch rises fastest near zero. Beep is 75 % of the beat, beat 600 → 100 ms. Climb from zero. Sink below −2.5 is a steady tone falling from 400 to 260 Hz at −10, fastest near the threshold.",
+  "curves": {
+   "varioDots": [
+    -1000,
+    -600,
+    -400,
+    -250,
+    0,
+    10,
+    50,
+    100,
+    250,
+    425,
+    600,
+    1000
+   ],
+   "freqDots": [
+    260,
+    300,
+    345,
+    400,
+    600,
+    664,
+    871,
+    1063,
+    1436,
+    1706,
+    1898,
+    2200
+   ],
+   "cycleDots": [
+    100,
+    100,
+    100,
+    100,
+    600,
+    580,
+    515,
+    455,
+    339,
+    254,
+    194,
+    100
+   ],
+   "dutyDots": [
+    100,
+    100,
+    100,
+    100,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75
+   ]
+  },
+  "trigger": {
+   "climbOn": 0,
+   "climbOff": 0,
+   "sinkOn": -2.5,
+   "sinkOff": -2.5,
+   "hyst": 0
+  },
+  "source": "https://kb.naviter.com/en/kb/vario-sound-2/",
+  "approx": true
+ },
+ {
+  "id": "brand.flymaster",
+  "group": "brand",
+  "name": "Flymaster",
+  "body": "Flymaster after the manual: climb 700 Hz + 100 Hz per m/s, a steady «growl» near zero (−0.2…+0.1). Beat digitised from a chart, sink tone as XC Tracer. Sink below −2.",
+  "curves": {
+   "varioDots": [
+    -1000,
+    -200,
+    -21,
+    -20,
+    9,
+    10,
+    50,
+    100,
+    200,
+    300,
+    500,
+    1000
+   ],
+   "freqDots": [
+    200,
+    300,
+    300,
+    100,
+    700,
+    710,
+    750,
+    800,
+    900,
+    1000,
+    1200,
+    1700
+   ],
+   "cycleDots": [
+    100,
+    100,
+    800,
+    10,
+    10,
+    950,
+    670,
+    450,
+    240,
+    174,
+    150,
+    150
+   ],
+   "dutyDots": [
+    100,
+    100,
+    5,
+    100,
+    100,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50
+   ]
+  },
+  "trigger": {
+   "climbOn": -0.2,
+   "climbOff": -0.2,
+   "sinkOn": -2,
+   "sinkOff": -2,
+   "hyst": 0
+  },
+  "source": "https://dnl.flymaster.net/Flymaster%20NAV%20SD%20manual%20EN%20v3.pdf",
+  "approx": true
+ },
+ {
+  "id": "brand.skytraxx",
+  "group": "brand",
+  "name": "Skytraxx",
+  "body": "Skytraxx editor default curve: high tone (≈750 Hz at zero), quiet ticks near zero. Climb from +0.2 as the manual recommends.",
+  "curves": {
+   "varioDots": [
+    -500,
+    -250,
+    -100,
+    -51,
+    -49,
+    -30,
+    -10,
+    10,
+    30,
+    100,
+    200,
+    800
+   ],
+   "freqDots": [
+    303,
+    389,
+    440,
+    531,
+    535,
+    570,
+    700,
+    755,
+    809,
+    1000,
+    1200,
+    1700
+   ],
+   "cycleDots": [
+    400,
+    400,
+    400,
+    671,
+    669,
+    650,
+    630,
+    610,
+    596,
+    545,
+    472,
+    150
+   ],
+   "dutyDots": [
+    100,
+    100,
+    100,
+    100,
+    5,
+    5,
+    5,
+    5,
+    5,
+    48,
+    48,
+    48
+   ]
+  },
+  "trigger": {
+   "climbOn": 0.2,
+   "climbOff": 0.2,
+   "sinkOn": -2.5,
+   "sinkOff": -2.5,
+   "hyst": 0
+  },
+  "source": "https://www.skytraxx.eu/en/toneditor",
+  "approx": true
+ },
+ {
+  "id": "brand.syride",
+  "group": "brand",
+  "name": "Syride Nav",
+  "body": "Pitches from the Syride configurator, rhythm from its preview. Syride does not publish thresholds: sound only.",
+  "curves": {
+   "varioDots": [
+    -500,
+    -300,
+    -200,
+    -100,
+    -50,
+    0,
+    10,
+    50,
+    100,
+    200,
+    400,
+    800
+   ],
+   "freqDots": [
+    178,
+    270,
+    326,
+    402,
+    450,
+    499,
+    509,
+    550,
+    602,
+    721,
+    973,
+    1242
+   ],
+   "cycleDots": [
+    200,
+    200,
+    200,
+    200,
+    200,
+    595,
+    590,
+    570,
+    545,
+    495,
+    395,
+    195
+   ],
+   "dutyDots": [
+    100,
+    100,
+    100,
+    100,
+    100,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50
+   ]
+  },
+  "source": "https://www.syride.com/en/variosetup",
+  "approx": true
+ },
+ {
+  "id": "brand.skydrop",
+  "group": "brand",
+  "name": "SkyDrop",
+  "body": "SkyDrop: short beeps in weak lift — the tone share of the beat rises from 16 to 50 % by +2. Climb from +0.1, sink below −2.46.",
+  "curves": {
+   "varioDots": [
+    -1000,
+    -300,
+    -246,
+    10,
+    50,
+    100,
+    150,
+    200,
+    300,
+    400,
+    600,
+    1000
+   ],
+   "freqDots": [
+    200,
+    305,
+    332,
+    508,
+    540,
+    600,
+    680,
+    800,
+    1010,
+    1120,
+    1280,
+    1600
+   ],
+   "cycleDots": [
+    1000,
+    1000,
+    1000,
+    674,
+    570,
+    520,
+    490,
+    460,
+    400,
+    344,
+    270,
+    190
+   ],
+   "dutyDots": [
+    100,
+    100,
+    100,
+    16,
+    26,
+    38,
+    46,
+    50,
+    50,
+    50,
+    50,
+    50
+   ]
+  },
+  "trigger": {
+   "climbOn": 0.1,
+   "climbOff": 0.1,
+   "sinkOn": -2.46,
+   "sinkOff": -2.46,
+   "hyst": 0
+  },
+  "source": "https://github.com/bubeck/SkyDrop/blob/944dc4ab013ad6c703da12d5acafeb716b9acf83/skydrop_configurator/app/res/audioprofile.json",
+  "approx": false
+ },
+ {
+  "id": "brand.xcsoar",
+  "group": "brand",
+  "name": "XCSoar",
+  "body": "XCSoar sound: 500 Hz at zero, beeps 2/3 of the beat. In XCSoar the sink tone always plays; here below −2. Climb from zero.",
+  "curves": {
+   "varioDots": [
+    -2000,
+    -500,
+    -250,
+    0,
+    1,
+    100,
+    200,
+    250,
+    300,
+    400,
+    500,
+    2000
+   ],
+   "freqDots": [
+    200,
+    200,
+    350,
+    500,
+    502,
+    700,
+    900,
+    1000,
+    1100,
+    1300,
+    1500,
+    1500
+   ],
+   "cycleDots": [
+    600,
+    600,
+    600,
+    600,
+    599,
+    510,
+    420,
+    375,
+    330,
+    240,
+    150,
+    150
+   ],
+   "dutyDots": [
+    100,
+    100,
+    100,
+    100,
+    67,
+    67,
+    67,
+    67,
+    67,
+    67,
+    67,
+    67
+   ]
+  },
+  "trigger": {
+   "climbOn": 0,
+   "climbOff": 0,
+   "sinkOn": -2,
+   "sinkOff": -2,
+   "hyst": 0
+  },
+  "source": "https://github.com/XCSoar/XCSoar/blob/master/src/Audio/VarioSettings.cpp",
+  "approx": false
+ },
+ {
+  "id": "brand.gnuvario",
+  "group": "brand",
+  "name": "GNUVario",
+  "body": "The classic open GNUVario: low tone (≈410 Hz at zero), tone on for half the beat. Climb from +0.2 held to +0.1, sink from −2 held to −1.9.",
+  "curves": {
+   "varioDots": [
+    -2000,
+    -1000,
+    -500,
+    -201,
+    20,
+    50,
+    100,
+    200,
+    300,
+    500,
+    700,
+    1000
+   ],
+   "freqDots": [
+    100,
+    100,
+    221,
+    320,
+    414,
+    456,
+    527,
+    668,
+    809,
+    1091,
+    1373,
+    1796
+   ],
+   "cycleDots": [
+    1000,
+    1000,
+    1000,
+    1000,
+    581,
+    533,
+    469,
+    379,
+    317,
+    240,
+    193,
+    149
+   ],
+   "dutyDots": [
+    100,
+    100,
+    100,
+    100,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50
+   ]
+  },
+  "trigger": {
+   "climbOn": 0.2,
+   "climbOff": 0.1,
+   "sinkOn": -2,
+   "sinkOff": -1.9,
+   "hyst": 0
+  },
+  "source": "https://github.com/prunkdump/arduino-variometer/blob/master/libraries/beeper/beeper.h",
+  "approx": false
+ },
+ {
+  "id": "brand.bluefly",
+  "group": "brand",
+  "name": "BlueFly",
+  "body": "BlueFly app: a high 1000 Hz base and quick beeps. Climb from +0.2 held to +0.05, sink from −2 held to −1.5.",
+  "curves": {
+   "varioDots": [
+    -2000,
+    -250,
+    -200,
+    20,
+    44,
+    103,
+    156,
+    247,
+    357,
+    500,
+    1000,
+    2000
+   ],
+   "freqDots": [
+    250,
+    250,
+    300,
+    1020,
+    1044,
+    1103,
+    1156,
+    1247,
+    1357,
+    1500,
+    2000,
+    2000
+   ],
+   "cycleDots": [
+    1000,
+    1000,
+    1000,
+    903,
+    725,
+    447,
+    313,
+    197,
+    148,
+    148,
+    148,
+    148
+   ],
+   "dutyDots": [
+    100,
+    100,
+    100,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50
+   ]
+  },
+  "trigger": {
+   "climbOn": 0.2,
+   "climbOff": 0.05,
+   "sinkOn": -2,
+   "sinkOff": -1.5,
+   "hyst": 0
+  },
+  "source": "https://github.com/alistairdickie/BlueFlyVario_Android/blob/master/src/com/bfv/hardware/HardwareParameters.java",
+  "approx": false
+ },
+ {
+  "id": "brand.leaf",
+  "group": "brand",
+  "name": "Leaf",
+  "body": "Open-source Leaf: tone from 523 Hz (C5), pulsing sink. Climb from +0.05, sink below −2.5, no holds.",
+  "curves": {
+   "varioDots": [
+    -1070,
+    -800,
+    -799,
+    -525,
+    -250,
+    5,
+    200,
+    400,
+    600,
+    799,
+    800,
+    1200
+   ],
+   "freqDots": [
+    131,
+    197,
+    197,
+    263,
+    330,
+    523,
+    779,
+    1042,
+    1305,
+    1566,
+    1567,
+    2093
+   ],
+   "cycleDots": [
+    40,
+    40,
+    1120,
+    1120,
+    1120,
+    640,
+    520,
+    400,
+    200,
+    80,
+    40,
+    40
+   ],
+   "dutyDots": [
+    100,
+    100,
+    96,
+    64,
+    29,
+    62,
+    62,
+    60,
+    60,
+    50,
+    100,
+    100
+   ]
+  },
+  "trigger": {
+   "climbOn": 0.05,
+   "climbOff": 0.05,
+   "sinkOn": -2.5,
+   "sinkOff": -2.5,
+   "hyst": 0
+  },
+  "source": "https://github.com/DangerMonkeys/leaf/blob/aa678a0d26dad14b5a373858a24ba4ec1c0710bc/src/vario/ui/audio/speaker.cpp",
+  "approx": false
+ },
+ {
+  "id": "community.timPentreath",
+  "group": "community",
+  "name": "Tim Pentreath",
+  "body": "Tim Pentreath loaded this onto every XC Tracer he sold in the UK. Always some sound: steady tone below −2, quiet sink zones, a growl from −1 to 0, full sensitivity at 0…+1.",
+  "curves": {
+   "varioDots": [
+    -1000,
+    -200,
+    -199,
+    -100,
+    -99,
+    0,
+    1,
+    40,
+    100,
+    202,
+    378,
+    1000
+   ],
+   "freqDots": [
+    200,
+    293,
+    293,
+    320,
+    320,
+    374,
+    432,
+    505,
+    579,
+    687,
+    884,
+    1637
+   ],
+   "cycleDots": [
+    200,
+    200,
+    700,
+    651,
+    400,
+    300,
+    500,
+    399,
+    335,
+    275,
+    228,
+    95
+   ],
+   "dutyDots": [
+    100,
+    100,
+    82,
+    29,
+    10,
+    5,
+    15,
+    35,
+    50,
+    50,
+    50,
+    50
+   ]
+  },
+  "trigger": {
+   "climbOn": 0.1,
+   "climbOff": 0.1,
+   "sinkOn": -0.1,
+   "sinkOff": -0.1,
+   "hyst": 0
+  },
+  "source": "http://www.windeckfalken.de/special/xctracer/handson/main.html",
+  "approx": false
+ },
+ {
+  "id": "community.luGlidz",
+  "group": "community",
+  "name": "lu-glidz Sniffer",
+  "body": "Lucian Haas's sniffer (lu-glidz): quick quiet ticks from −1 to 0 hint at lift before the climb starts. The sound never switches off — 1 % ticks make the silence.",
+  "curves": {
+   "varioDots": [
+    -1000,
+    -500,
+    -180,
+    -179,
+    -101,
+    -95,
+    8,
+    9,
+    100,
+    200,
+    500,
+    1000
+   ],
+   "freqDots": [
+    200,
+    200,
+    300,
+    300,
+    300,
+    263,
+    345,
+    350,
+    440,
+    550,
+    1030,
+    1800
+   ],
+   "cycleDots": [
+    200,
+    200,
+    200,
+    1000,
+    1000,
+    300,
+    100,
+    700,
+    500,
+    400,
+    200,
+    120
+   ],
+   "dutyDots": [
+    100,
+    100,
+    100,
+    1,
+    1,
+    3,
+    10,
+    70,
+    60,
+    50,
+    50,
+    50
+   ]
+  },
+  "trigger": {
+   "climbOn": 0.11,
+   "climbOff": 0.01,
+   "sinkOn": -0.2,
+   "sinkOff": 0.09,
+   "hyst": 0
+  },
+  "source": "http://www.windeckfalken.de/special/xctracer/handson/main.html",
+  "approx": false
+ },
+ {
+  "id": "community.matthss",
+  "group": "community",
+  "name": "Flymaster (Matthss)",
+  "body": "The «Flymaster» template from the XC Tracer editor: steady tone 550→750 Hz over −0.5…+0.5, beeps above. Sink below −2.",
+  "curves": {
+   "varioDots": [
+    -1000,
+    -500,
+    -300,
+    -199,
+    -50,
+    50,
+    51,
+    100,
+    200,
+    300,
+    500,
+    1000
+   ],
+   "freqDots": [
+    200,
+    225,
+    275,
+    351,
+    550,
+    750,
+    751,
+    825,
+    950,
+    1060,
+    1250,
+    1600
+   ],
+   "cycleDots": [
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    325,
+    225,
+    125,
+    90,
+    70,
+    50
+   ],
+   "dutyDots": [
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50
+   ]
+  },
+  "trigger": {
+   "climbOn": -0.5,
+   "climbOff": -0.5,
+   "sinkOn": -2,
+   "sinkOff": -2,
+   "hyst": 0
+  },
+  "source": "http://www.windeckfalken.de/special/xctracer/handson/main.html",
+  "approx": false
+ },
+ {
+  "id": "community.jpPhilippe",
+  "group": "community",
+  "name": "JP Philippe",
+  "body": "JP Philippe: «two piano keys per 1 m/s» — a calm rise of the tone. Steady sink tone from half the glider's own sink rate (−0.65).",
+  "curves": {
+   "varioDots": [
+    -2000,
+    -1000,
+    -300,
+    -100,
+    -10,
+    0,
+    100,
+    200,
+    300,
+    500,
+    1000,
+    2000
+   ],
+   "freqDots": [
+    200,
+    200,
+    370,
+    466,
+    517,
+    523,
+    587,
+    659,
+    740,
+    932,
+    1661,
+    1661
+   ],
+   "cycleDots": [
+    200,
+    200,
+    200,
+    200,
+    200,
+    700,
+    560,
+    450,
+    360,
+    250,
+    190,
+    190
+   ],
+   "dutyDots": [
+    100,
+    100,
+    100,
+    100,
+    100,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50
+   ]
+  },
+  "trigger": {
+   "climbOn": 0.1,
+   "climbOff": 0.05,
+   "sinkOn": -0.65,
+   "sinkOff": -0.55,
+   "hyst": 0
+  },
+  "source": "http://www.windeckfalken.de/special/xctracer/handson/JPv3.txt",
+  "approx": false
+ },
+ {
+  "id": "trig.sharp",
+  "group": "trigger",
+  "name": "Sharp",
+  "body": "Active centring and competition. Least lag: the tone stops as soon as the climb weakens, before zero — you know right away you left the core. Short averaging, sink tone earlier, from −2.0.",
+  "trigger": {
+   "climbOn": 0.1,
+   "climbOff": 0.1,
+   "sinkOn": -2,
+   "sinkOff": -2,
+   "hyst": 0.15,
+   "average": 0.1
+  },
+  "approx": false
+ },
+ {
+  "id": "trig.flatland",
+  "group": "trigger",
+  "name": "Flatland",
+  "body": "Weak broken thermals. The tone starts at +0.05 and holds down to −0.20 until the climb is fully gone — a weak core is not lost and the tone does not chatter at the threshold. Medium averaging.",
+  "trigger": {
+   "climbOn": 0.05,
+   "climbOff": -0.2,
+   "sinkOn": -2.5,
+   "sinkOff": -2.5,
+   "hyst": 0,
+   "average": 0.4
+  },
+  "approx": false
+ },
+ {
+  "id": "trig.mountain",
+  "group": "trigger",
+  "name": "Mountain",
+  "body": "Strong rough thermals. Tone from +0.30, no false beeps from turbulence; holds down to +0.10. Sink beyond −3.0. Long averaging: calmer but lagging.",
+  "trigger": {
+   "climbOn": 0.3,
+   "climbOff": 0.1,
+   "sinkOn": -3,
+   "sinkOff": -2.5,
+   "hyst": 0,
+   "average": 0.6
+  },
+  "approx": false
+ },
+ {
+  "id": "trig.sniffer",
+  "group": "trigger",
+  "name": "Sniffer",
+  "body": "Tone already from −0.30: the air is rising, though slower than the glider sinks. Helps find weak lift. Between −0.30 and zero the curve plays its own low tone — the same whichever way you came.",
+  "trigger": {
+   "climbOn": -0.3,
+   "climbOff": -0.3,
+   "sinkOn": -2.5,
+   "sinkOff": -2.5,
+   "hyst": 0,
+   "average": 0.3
+  },
+  "approx": false
+ },
+ {
+  "id": "trig.always",
+  "group": "trigger",
+  "name": "Always on",
+  "body": "Sound almost always. Climb sounds from 0 and holds down to −0.30, sink from −0.60 and holds up to −0.30. Silent only on the transitions: as a climb fades — from −0.30 to −0.60; coming out of a sink — from −0.30 to 0.",
+  "trigger": {
+   "climbOn": 0,
+   "climbOff": -0.3,
+   "sinkOn": -0.6,
+   "sinkOff": -0.3,
+   "hyst": 0,
+   "average": 0.3
+  },
+  "approx": false
+ },
+ {
+  "id": "trig.quiet",
+  "group": "trigger",
+  "name": "Quiet",
+  "body": "Minimum of sound: ridge soaring, acro, beginners. Climb from +0.30, sink only beyond −4.0 (spiral).",
+  "trigger": {
+   "climbOn": 0.3,
+   "climbOff": 0.3,
+   "sinkOn": -4,
+   "sinkOff": -4,
+   "hyst": 0.1,
+   "average": 0.5
+  },
+  "approx": false
+ },
+ {
+  "id": "trig.gaggleSensitive",
+  "group": "trigger",
+  "name": "Gaggle Sensitive",
+  "body": "As Gaggle «Sensitive»: climb from +0.1, sink already from −1.",
+  "trigger": {
+   "climbOn": 0.1,
+   "climbOff": 0.1,
+   "sinkOn": -1,
+   "sinkOff": -1,
+   "hyst": 0
+  },
+  "source": "https://flygaggle.com/help/items/instruments-variometer/",
+  "approx": false
+ },
+ {
+  "id": "trig.gaggleStandard",
+  "group": "trigger",
+  "name": "Gaggle Standard",
+  "body": "As Gaggle «Standard»: climb from +0.2, sink from −1.5.",
+  "trigger": {
+   "climbOn": 0.2,
+   "climbOff": 0.2,
+   "sinkOn": -1.5,
+   "sinkOff": -1.5,
+   "hyst": 0
+  },
+  "source": "https://flygaggle.com/help/items/instruments-variometer/",
+  "approx": false
+ },
+ {
+  "id": "trig.gaggleRelaxed",
+  "group": "trigger",
+  "name": "Gaggle Relaxed",
+  "body": "As Gaggle «Relaxed»: only clear lift, from +0.5; sink below −2.",
+  "trigger": {
+   "climbOn": 0.5,
+   "climbOff": 0.5,
+   "sinkOn": -2,
+   "sinkOff": -2,
+   "hyst": 0
+  },
+  "source": "https://flygaggle.com/help/items/instruments-variometer/",
+  "approx": false
+ },
+ {
+  "id": "trig.digifly",
+  "group": "trigger",
+  "name": "Digifly",
+  "body": "As Digifly: climb from +0.1, sink below −2.5.",
+  "trigger": {
+   "climbOn": 0.1,
+   "climbOff": 0.1,
+   "sinkOn": -2.5,
+   "sinkOff": -2.5,
+   "hyst": 0
+  },
+  "source": "https://digifly.com/AIR_Manual_620c_ENG_rev_1.pdf",
+  "approx": false
+ }
+]
