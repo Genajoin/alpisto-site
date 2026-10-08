@@ -345,7 +345,6 @@
    "sinkOff": -3,
    "hyst": 0
   },
-  "source": "https://xctracer.online/downloads/User_Manual_XC_Tracer_Mini_V_Rev_02_EN.pdf",
   "approx": false
  },
  {
@@ -418,7 +417,6 @@
    "sinkOff": -3,
    "hyst": 0
   },
-  "source": "https://xctracer.online/downloads/User_Manual_XC_Tracer_Mini_II_Rev._02_EN.pdf",
   "approx": false
  },
  {
@@ -491,7 +489,6 @@
    "sinkOff": -2,
    "hyst": 0
   },
-  "source": "https://xctrack.org/Manual.html",
   "approx": true
  },
  {
@@ -564,7 +561,6 @@
    "sinkOff": -2,
    "hyst": 0
   },
-  "source": "https://xctrack.org/Manual.html",
   "approx": true
  },
  {
@@ -637,7 +633,6 @@
    "sinkOff": -2.5,
    "hyst": 0
   },
-  "source": "https://kb.naviter.com/en/kb/vario-sound-2/",
   "approx": true
  },
  {
@@ -710,7 +705,6 @@
    "sinkOff": -2,
    "hyst": 0
   },
-  "source": "https://dnl.flymaster.net/Flymaster%20NAV%20SD%20manual%20EN%20v3.pdf",
   "approx": true
  },
  {
@@ -783,7 +777,6 @@
    "sinkOff": -2.5,
    "hyst": 0
   },
-  "source": "https://www.skytraxx.eu/en/toneditor",
   "approx": true
  },
  {
@@ -849,7 +842,6 @@
     50
    ]
   },
-  "source": "https://www.syride.com/en/variosetup",
   "approx": true
  },
  {
@@ -922,7 +914,6 @@
    "sinkOff": -2.46,
    "hyst": 0
   },
-  "source": "https://github.com/bubeck/SkyDrop/blob/944dc4ab013ad6c703da12d5acafeb716b9acf83/skydrop_configurator/app/res/audioprofile.json",
   "approx": false
  },
  {
@@ -995,7 +986,6 @@
    "sinkOff": -2,
    "hyst": 0
   },
-  "source": "https://github.com/XCSoar/XCSoar/blob/master/src/Audio/VarioSettings.cpp",
   "approx": false
  },
  {
@@ -1068,7 +1058,6 @@
    "sinkOff": -1.9,
    "hyst": 0
   },
-  "source": "https://github.com/prunkdump/arduino-variometer/blob/master/libraries/beeper/beeper.h",
   "approx": false
  },
  {
@@ -1141,7 +1130,6 @@
    "sinkOff": -1.5,
    "hyst": 0
   },
-  "source": "https://github.com/alistairdickie/BlueFlyVario_Android/blob/master/src/com/bfv/hardware/HardwareParameters.java",
   "approx": false
  },
  {
@@ -1214,7 +1202,6 @@
    "sinkOff": -2.5,
    "hyst": 0
   },
-  "source": "https://github.com/DangerMonkeys/leaf/blob/aa678a0d26dad14b5a373858a24ba4ec1c0710bc/src/vario/ui/audio/speaker.cpp",
   "approx": false
  },
  {
@@ -1287,7 +1274,6 @@
    "sinkOff": -0.1,
    "hyst": 0
   },
-  "source": "http://www.windeckfalken.de/special/xctracer/handson/main.html",
   "approx": false
  },
  {
@@ -1360,7 +1346,6 @@
    "sinkOff": 0.09,
    "hyst": 0
   },
-  "source": "http://www.windeckfalken.de/special/xctracer/handson/main.html",
   "approx": false
  },
  {
@@ -1433,7 +1418,6 @@
    "sinkOff": -2,
    "hyst": 0
   },
-  "source": "http://www.windeckfalken.de/special/xctracer/handson/main.html",
   "approx": false
  },
  {
@@ -1506,7 +1490,6 @@
    "sinkOff": -0.55,
    "hyst": 0
   },
-  "source": "http://www.windeckfalken.de/special/xctracer/handson/JPv3.txt",
   "approx": false
  },
  {
@@ -1611,7 +1594,6 @@
    "sinkOff": -1,
    "hyst": 0
   },
-  "source": "https://flygaggle.com/help/items/instruments-variometer/",
   "approx": false
  },
  {
@@ -1626,7 +1608,6 @@
    "sinkOff": -1.5,
    "hyst": 0
   },
-  "source": "https://flygaggle.com/help/items/instruments-variometer/",
   "approx": false
  },
  {
@@ -1641,7 +1622,6 @@
    "sinkOff": -2,
    "hyst": 0
   },
-  "source": "https://flygaggle.com/help/items/instruments-variometer/",
   "approx": false
  },
  {
@@ -1656,7 +1636,6 @@
    "sinkOff": -2.5,
    "hyst": 0
   },
-  "source": "https://digifly.com/AIR_Manual_620c_ENG_rev_1.pdf",
   "approx": false
  }
 ]
