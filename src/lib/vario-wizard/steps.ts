@@ -256,7 +256,7 @@ export const STEPS: Step[] = [
     optional: true,
     title: 'How should the volume behave?',
     options: [
-      { key: 'constant', label: 'Always the same' },
+      { key: 'constant', label: 'Always the same, at the level I set', hint: 'as on most varios today' },
       { key: 'climb', label: 'Louder in a stronger climb' },
       { key: 'wind', label: 'Louder when the wind is louder' },
       { key: 'sink', label: 'Quieter in sink than in lift' },
