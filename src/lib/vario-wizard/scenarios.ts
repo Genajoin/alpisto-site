@@ -5,18 +5,6 @@
  * the way it behaves in real air.
  */
 
-/** What a clip is, in a few words, for the page. */
-export const CLIP_TEXT: Record<string, string> = {
-  flight: 'a whole flight',
-  mini: 'a short thermal: in, some climb, out into sink',
-  climb: 'the climb grows from 0 to +4 m/s',
-  start: 'from a small sink into a weak climb',
-  fade: 'a +1.5 climb fades out in bumpy air',
-  near: 'the sink eases off to a small minus',
-  sink: 'into sink down to −4.5 m/s and out again',
-  bumpy: 'a +1.5 thermal in rough air',
-}
-
 export type ClipKey = 'mini' | 'flight' | 'climb' | 'start' | 'fade' | 'near' | 'sink' | 'bumpy'
 
 export interface Clip {

@@ -6,13 +6,15 @@ interface Props {
   title: string
   description: string
   ogImage?: string
+  /** Page language; the site is English, a few pages have translations. */
+  lang?: string
 }
 
-const { title, description, ogImage } = Astro.props
+const { title, description, ogImage, lang = 'en' } = Astro.props
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

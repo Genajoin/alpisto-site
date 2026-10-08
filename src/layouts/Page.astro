@@ -7,12 +7,13 @@ interface Props {
   title: string
   description: string
   ogImage?: string
+  lang?: string
 }
 
-const { title, description, ogImage } = Astro.props
+const { title, description, ogImage, lang } = Astro.props
 ---
 
-<Base title={title} description={description} ogImage={ogImage}>
+<Base title={title} description={description} ogImage={ogImage} lang={lang}>
   <slot name="head" slot="head" />
   <Header />
   <main class="flex-grow w-full max-w-[1440px] mx-auto">

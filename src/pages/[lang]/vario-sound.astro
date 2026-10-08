@@ -1,0 +1,12 @@
+---
+import VarioWizardPage from '../../components/VarioWizardPage.astro'
+import { LANGS } from '../../lib/vario-wizard/i18n/types'
+
+export function getStaticPaths() {
+  return LANGS.filter((l) => l !== 'en').map((lang) => ({ params: { lang } }))
+}
+
+const { lang } = Astro.params
+---
+
+<VarioWizardPage lang={lang!} />

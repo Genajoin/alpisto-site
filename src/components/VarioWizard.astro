@@ -1,0 +1,111 @@
+---
+/**
+ * The vario-sound wizard, in one language. Pages: /vario-sound/ (English) and
+ * /<lang>/vario-sound/. The script loads only this language's words.
+ */
+interface Props {
+  lang: string
+}
+const { lang } = Astro.props
+---
+
+<div id="vw" class="vw-app" aria-live="polite" data-lang={lang}>
+  <slot />
+</div>
+
+<style is:global>
+  .vw-app { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .vw-progress { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-ink-3); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .vw-bar { height: 4px; background: var(--color-paper-alt); margin-top: 8px; }
+  .vw-bar > i { display: block; height: 100%; background: var(--color-accent); }
+  .vw-card { border: 2px solid var(--color-ink); background: var(--color-paper-card); padding: 24px; }
+  .vw-q { font-size: clamp(22px, 3.2vw, 30px); line-height: 1.15; margin: 0 0 6px; font-weight: 600; text-wrap: balance; }
+  .vw-qlead { color: var(--color-ink-3); margin: 0 0 18px; }
+  .vw-opts { display: grid; gap: 10px; }
+  .vw-opt { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 14px; border: 1px solid var(--color-ink); background: var(--color-paper); padding: 12px 14px; min-width: 0; }
+  .vw-opt.is-shown { background: var(--color-paper-card); box-shadow: inset 6px 0 0 var(--color-accent); }
+  .vw-opt-btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .vw-preview { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; border-top: 2px solid var(--color-ink); padding: 18px 0 0; margin-top: 20px; scroll-margin-top: 16px; }
+  .vw-pv-title { font-weight: 600; font-size: 17px; margin: 0 0 4px; }
+  .vw-pv-same { color: var(--color-ink-3); font-size: 14px; margin: 0 0 8px; }
+  .vw-facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 24px; margin: 0; font-size: 15px; }
+  .vw-facts > div { min-width: 0; }
+  .vw-facts dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-ink-3); margin-top: 8px; }
+  .vw-facts dd { margin: 0; font-variant-numeric: tabular-nums; }
+  .vw-facts .was { color: var(--color-ink-3); text-decoration: line-through; }
+  .vw-facts b { font-weight: 600; }
+  .vw-pv-cliplabel { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-ink-3); margin: 8px 0 0; }
+  .vw-opt.is-picked { outline: 3px solid var(--color-accent); outline-offset: -1px; }
+  .vw-opt-text { min-width: 0; }
+  .vw-opt-label { font-size: 17px; font-weight: 500; }
+  .vw-opt-hint { font-size: 14px; color: var(--color-ink-3); }
+  .vw-btn { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; border: 2px solid var(--color-ink); background: var(--color-paper); color: var(--color-ink); padding: 9px 14px; cursor: pointer; white-space: nowrap; }
+  .vw-btn:hover, .vw-btn:focus-visible { background: var(--color-ink); color: var(--color-paper); outline: none; }
+  .vw-btn.ink { background: var(--color-ink); color: var(--color-paper); }
+  .vw-btn.ink:hover, .vw-btn.ink:focus-visible { background: var(--color-accent); color: var(--color-ink); border-color: var(--color-ink); }
+  .vw-btn.accent { background: var(--color-accent); color: var(--color-ink); }
+  .vw-btn.play { min-width: 86px; }
+  .vw-btn.play[aria-pressed='true'] { background: var(--color-accent); color: var(--color-ink); }
+  .vw-btn:disabled { opacity: 0.35; cursor: default; background: var(--color-paper); color: var(--color-ink); }
+  .vw-nav { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+  .vw-trace { display: block; width: 100%; height: auto; margin-top: 12px; }
+  .vw-trace text { font-family: var(--font-mono); font-size: 11px; fill: var(--color-ink-3); }
+  .vw-chart text { font-family: var(--font-mono); font-size: 12.5px; fill: var(--color-ink-2); paint-order: stroke; stroke: var(--color-paper-card); stroke-width: 4px; stroke-linejoin: round; }
+  .vw-chart text.t { font-size: 13px; fill: var(--color-ink); }
+  .vw-h2 { font-size: clamp(26px, 4vw, 40px); line-height: 1.05; margin: 0 0 10px; font-weight: 600; }
+  .vw-sub { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-ink-3); margin: 0 0 10px; }
+  .vw-chart { display: block; max-width: 100%; height: auto; }
+  .vw-tablewrap { overflow-x: auto; }
+  .vw-table { border-collapse: collapse; width: 100%; min-width: 520px; font-family: var(--font-mono); font-size: 14px; font-variant-numeric: tabular-nums; }
+  .vw-table th, .vw-table td { border-bottom: 1px solid var(--color-paper-alt); padding: 7px 10px; text-align: right; white-space: nowrap; }
+  .vw-table th { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-ink-3); font-weight: 500; }
+  .vw-table td:first-child, .vw-table th:first-child { text-align: left; }
+  .vw-table tr.is-silent td { color: var(--color-ink-3); }
+  .vw-note { font-size: 14px; color: var(--color-ink-3); margin: 10px 0 0; max-width: 70ch; }
+  .vw-refine { display: grid; gap: 10px; }
+  .vw-choice { display: grid; gap: 2px; text-align: left; font: inherit; font-size: 17px; font-weight: 500; color: var(--color-ink); border: 1px solid var(--color-ink); background: var(--color-paper); padding: 14px 16px; cursor: pointer; }
+  .vw-choice:hover, .vw-choice:focus-visible { background: var(--color-ink); color: var(--color-paper); outline: none; }
+  .vw-choice:hover .vw-opt-hint, .vw-choice:focus-visible .vw-opt-hint { color: var(--color-paper-alt); }
+  .vw-choice.is-picked, .vw-choice[aria-pressed='true'] { outline: 3px solid var(--color-accent); outline-offset: -1px; }
+  .vw-opts-grid { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+  .vw-text { width: 100%; font: inherit; font-size: 16px; border: 1px solid var(--color-ink); background: var(--color-paper); padding: 12px; box-sizing: border-box; }
+  .vw-h2-s { font-size: clamp(22px, 3vw, 28px); }
+  .vw-ref-text { display: grid; gap: 2px; min-width: 0; }
+  .vw-now { font-family: var(--font-mono); font-size: 13px; color: var(--color-ink-2); margin-top: 4px; }
+  .vw-now .was { color: var(--color-ink-3); text-decoration: line-through; }
+  .vw-ab { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 18px; padding-top: 16px; border-top: 2px solid var(--color-ink); }
+  .vw-seg { display: inline-flex; }
+  .vw-seg .vw-btn + .vw-btn { border-left: 0; }
+  .vw-seg .vw-btn[aria-pressed='true'] { background: var(--color-ink); color: var(--color-paper); }
+  .vw-table td.is-changed { color: var(--color-accent); font-weight: 600; }
+  .vw-ref { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 18px; align-items: center; border-top: 1px solid var(--color-paper-alt); padding-top: 12px; }
+  .vw-ref-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .vw-cta { border: 2px solid var(--color-ink); background: var(--color-ink); color: var(--color-paper); padding: 24px; }
+  .vw-cta p { margin: 0 0 14px; max-width: 62ch; font-size: 17px; line-height: 1.55; }
+  .vw-cta a { color: var(--color-accent); }
+  .vw-copied { font-family: var(--font-mono); font-size: 12px; color: var(--color-ink-3); align-self: center; }
+  .vw-langs { display: flex; flex-wrap: wrap; gap: 6px 14px; font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 28px; }
+  .vw-langs a { color: var(--color-ink-3); text-decoration: none; }
+  .vw-langs a[aria-current='page'] { color: var(--color-ink); border-bottom: 2px solid var(--color-accent); }
+  .vw-cmps { display: grid; gap: 14px; }
+  .vw-cmp { display: grid; grid-template-columns: minmax(0, 1fr) minmax(160px, 320px); gap: 8px 18px; align-items: center; border-top: 1px solid var(--color-paper-alt); padding-top: 12px; }
+  .vw-cmp-text { display: grid; gap: 2px; min-width: 0; }
+  .vw-strip { display: block; width: 100%; height: auto; }
+  .vw-barsgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 8px 28px; margin-top: 18px; }
+  .vw-barrow { display: grid; grid-template-columns: minmax(0, 1fr) 90px 44px; gap: 10px; align-items: center; font-size: 15px; padding: 3px 0; }
+  .vw-barline { height: 8px; background: var(--color-paper-alt); }
+  .vw-barline > i { display: block; height: 100%; background: var(--color-accent); }
+  .vw-barp { font-family: var(--font-mono); font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; }
+  @media (max-width: 600px) {
+    .vw-cmp { grid-template-columns: 1fr; }
+    .vw-btn { white-space: normal; max-width: 100%; }
+    .vw-card { padding: 16px; }
+    .vw-opt { grid-template-columns: 1fr; }
+    .vw-opt-btns { justify-content: flex-start; }
+    .vw-ref { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  import '../lib/vario-wizard/app'
+</script>

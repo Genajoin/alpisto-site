@@ -16,24 +16,28 @@ interface Entry {
   trigger?: { climbOn: number, climbOff: number, sinkOn: number, sinkOff: number, hyst?: number, average?: number }
 }
 
-/** What pilots fly with, as they would name it, and the list entry that sounds like it. */
-export const INSTRUMENTS: { key: string, label: string, entry: string | null }[] = [
-  { key: 'xctracer', label: 'XC Tracer', entry: 'brand.xctracer' },
-  { key: 'flymaster', label: 'Flymaster', entry: 'brand.flymaster' },
-  { key: 'skytraxx', label: 'Skytraxx', entry: 'brand.skytraxx' },
-  { key: 'syride', label: 'Syride', entry: 'brand.syride' },
-  { key: 'skydrop', label: 'SkyDrop', entry: 'brand.skydrop' },
-  { key: 'brauniger', label: 'Bräuniger / Flytec', entry: 'brand.brauniger' },
-  { key: 'bluefly', label: 'BlueFly', entry: 'brand.bluefly' },
-  { key: 'gnuvario', label: 'GNUVario', entry: 'brand.gnuvario' },
-  { key: 'leaf', label: 'Leaf', entry: 'brand.leaf' },
-  { key: 'xctrack', label: 'XCTrack on a phone', entry: 'brand.xctrack' },
-  { key: 'seeyou', label: 'SeeYou Navigator on a phone', entry: 'brand.seeyou' },
-  { key: 'xcsoar', label: 'XCSoar on a phone', entry: 'brand.xcsoar' },
-  { key: 'flybeeper', label: 'FlyBeeper', entry: 'fb.simple' },
-  { key: 'other', label: 'Another vario', entry: null },
-  { key: 'phone', label: 'A phone without a vario sensor', entry: null },
-  { key: 'none', label: 'Nothing yet', entry: null },
+/**
+ * What pilots fly with: the brand name (not translated) and the list entry that
+ * sounds like it. Phone apps and the no-vario answers are worded per language
+ * (i18n `instruments`); `name` is what a question calls it.
+ */
+export const INSTRUMENTS: { key: string, name: string, entry: string | null }[] = [
+  { key: 'xctracer', name: 'XC Tracer', entry: 'brand.xctracer' },
+  { key: 'flymaster', name: 'Flymaster', entry: 'brand.flymaster' },
+  { key: 'skytraxx', name: 'Skytraxx', entry: 'brand.skytraxx' },
+  { key: 'syride', name: 'Syride', entry: 'brand.syride' },
+  { key: 'skydrop', name: 'SkyDrop', entry: 'brand.skydrop' },
+  { key: 'brauniger', name: 'Bräuniger / Flytec', entry: 'brand.brauniger' },
+  { key: 'bluefly', name: 'BlueFly', entry: 'brand.bluefly' },
+  { key: 'gnuvario', name: 'GNUVario', entry: 'brand.gnuvario' },
+  { key: 'leaf', name: 'Leaf', entry: 'brand.leaf' },
+  { key: 'xctrack', name: 'XCTrack', entry: 'brand.xctrack' },
+  { key: 'seeyou', name: 'SeeYou Navigator', entry: 'brand.seeyou' },
+  { key: 'xcsoar', name: 'XCSoar', entry: 'brand.xcsoar' },
+  { key: 'flybeeper', name: 'FlyBeeper', entry: 'fb.simple' },
+  { key: 'other', name: '', entry: null },
+  { key: 'phone', name: '', entry: null },
+  { key: 'none', name: '', entry: null },
 ]
 
 export function instrument(key: string | undefined) {

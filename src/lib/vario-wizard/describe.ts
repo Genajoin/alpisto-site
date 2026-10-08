@@ -3,6 +3,7 @@
  */
 import { paramsOf, toneAt } from './engine'
 import type { Knobs, Sound } from './generator'
+import { fmt, type Dict } from './i18n/types'
 
 export interface Fact {
   key: string
@@ -10,49 +11,53 @@ export interface Fact {
   value: string
 }
 
-const ms = (v: number) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(2)}`
-const hz = (f: number) => `${Math.round(f / 10) * 10} Hz`
-
-function beepAt(s: Sound, cm: number): string {
-  const t = toneAt(s.curves, cm)
-  const beep = Math.round(t.cycle * t.duty / 100 / 10) * 10
-  const per = Math.round(t.cycle / 10) * 10
-  return t.duty >= 90 ? 'a steady tone' : `${beep} ms every ${per} ms`
+/** A vario value with its sign and the language's decimal mark: +0.10, −2,50. */
+export function signed(d: Dict, v: number): string {
+  return `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(2).replace('.', d.dec)}`
 }
 
-export function describe(s: Sound, k: Knobs): Fact[] {
+export function describe(d: Dict, s: Sound, k: Knobs): Fact[] {
+  const F = d.facts
+  const ms = (v: number) => signed(d, v)
+  const hz = (f: number) => `${Math.round(f / 10) * 10} ${d.u.hz}`
+  const beepAt = (cm: number) => {
+    const t = toneAt(s.curves, cm)
+    const beep = Math.round(t.cycle * t.duty / 100 / 10) * 10
+    const per = Math.round(t.cycle / 10) * 10
+    return t.duty >= 90 ? F.steady : fmt(F.beep, { beep, per })
+  }
   const p = paramsOf(s.trigger)
   const start = Math.round(k.climbStart * 100)
   const facts: Fact[] = []
   const add = (key: string, label: string, value: string) => facts.push({ key, label, value })
 
-  add('start', 'Climb beeps start above', `${ms(k.climbStart)} m/s`)
-  add('stop', 'On the way down they stop at', `${ms(p.climbOff / 100)} m/s`)
-  add('near', 'Between zero and the sink alarm',
+  add('start', F.start, `${ms(k.climbStart)} ${d.u.ms}`)
+  add('stop', F.stop, `${ms(p.climbOff / 100)} ${d.u.ms}`)
+  add('near', F.near,
     k.nearZero === 'silent'
-      ? 'silence'
+      ? F.silence
       : k.nearZero === 'ticks'
-        ? `rare ticks from ${ms(k.nearFrom)} m/s`
-        : `a soft ${hz(s.curves.freqDots[2]!)} sound from ${ms(k.nearFrom)} m/s`)
+        ? fmt(F.ticks, { v: ms(k.nearFrom) })
+        : fmt(F.soft, { f: hz(s.curves.freqDots[2]!), v: ms(k.nearFrom) }))
   const at = [start + 1, 100, 300, 500]
-  add('pitch', 'Tone at the start, +1, +3, +5 m/s', at.map((v) => hz(toneAt(s.curves, v).f)).join(' · '))
-  add('beepStart', 'Beep at the start', beepAt(s, start + 1))
-  add('beep1', 'Beep at +1 m/s', beepAt(s, 100))
-  add('beep3', 'Beep at +3 m/s', beepAt(s, 300))
-  add('beep5', 'Beep at +5 m/s', beepAt(s, 500))
+  add('pitch', F.pitch, at.map((v) => hz(toneAt(s.curves, v).f)).join(' · '))
+  add('beepStart', F.beepStart, beepAt(start + 1))
+  add('beep1', F.beep1, beepAt(100))
+  add('beep3', F.beep3, beepAt(300))
+  add('beep5', F.beep5, beepAt(500))
   if (k.sinkOn <= -10) {
-    add('sink', 'Sink alarm', 'never')
+    add('sink', F.sink, F.never)
   }
   else {
-    const style = k.sinkStyle === 'continuous' ? 'a steady tone' : k.sinkStyle === 'pulsed' ? 'a pulsing tone' : 'one short beep a second'
+    const style = k.sinkStyle === 'continuous' ? F.styleSteady : k.sinkStyle === 'pulsed' ? F.stylePulsed : F.styleSlow
     const fa = toneAt(s.curves, p.sinkOn - 1).f
     const fb = toneAt(s.curves, Math.max(-1000, p.sinkOn - 200)).f
-    const pitch = Math.abs(fa - fb) < 5 ? hz(fa) : `${hz(fa)} falling to ${hz(fb)} at ${ms((p.sinkOn - 200) / 100)}`
-    add('sink', 'Sink alarm', `below ${ms(k.sinkOn)} m/s, ${style}, ${pitch}`)
-    add('sinkStop', 'On the way out of sink it stops at', `${ms(p.sinkOff / 100)} m/s`)
+    const pitch = Math.abs(fa - fb) < 5 ? hz(fa) : fmt(F.falling, { f: hz(fa), f2: hz(fb), v: ms((p.sinkOn - 200) / 100) })
+    add('sink', F.sink, fmt(F.sinkValue, { v: ms(k.sinkOn), style, pitch }))
+    add('sinkStop', F.sinkStop, `${ms(p.sinkOff / 100)} ${d.u.ms}`)
   }
-  const react = k.average <= 0.15 ? 'instant' : k.average <= 0.4 ? 'balanced' : 'calm'
-  add('react', 'Reaction', `${react}, averaging ${k.average.toFixed(2)} s`)
+  const react = k.average <= 0.15 ? F.instant : k.average <= 0.4 ? F.balanced : F.calm
+  add('react', F.react, fmt(F.reactValue, { react, v: k.average.toFixed(2).replace('.', d.dec) }))
   return facts
 }
 

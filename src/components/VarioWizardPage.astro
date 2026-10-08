@@ -1,0 +1,47 @@
+---
+/**
+ * One language of the vario-sound wizard page: heading, language links and the
+ * wizard itself. English lives at /vario-sound/, the others at /<lang>/vario-sound/.
+ */
+import Page from '../layouts/Page.astro'
+import Eyebrow from './v5/Eyebrow.astro'
+import VarioWizard from './VarioWizard.astro'
+import { LANGS, type Dict } from '../lib/vario-wizard/i18n/types'
+
+interface Props {
+  lang: string
+}
+const { lang } = Astro.props
+const dicts = import.meta.glob<{ default: Dict }>('../lib/vario-wizard/i18n/[a-z][a-z].ts', { eager: true })
+const d = (dicts[`../lib/vario-wizard/i18n/${lang}.ts`] ?? dicts['../lib/vario-wizard/i18n/en.ts']!).default
+const NAMES: Record<string, string> = { en: 'English', ru: 'Русский', de: 'Deutsch', fr: 'Français', it: 'Italiano', sl: 'Slovenščina' }
+const pathOf = (l: string) => (l === 'en' ? '/vario-sound/' : `/${l}/vario-sound/`)
+const site = Astro.site ?? new URL('https://alpisto.eu')
+---
+
+<Page title={d.page.title} description={d.page.description} lang={d.lang}>
+  <Fragment slot="head">
+    {LANGS.map((l) => <link rel="alternate" hreflang={l} href={new URL(pathOf(l), site).toString()} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL(pathOf('en'), site).toString()} />
+  </Fragment>
+  <section class="vw-wrap">
+    <Eyebrow color="ink-3">{d.page.eyebrow}</Eyebrow>
+    <h1 class="vw-h1">{d.page.h1}</h1>
+    <nav class="vw-langs" aria-label={d.page.langs}>
+      {LANGS.map((l) => <a href={pathOf(l)} hreflang={l} lang={l} aria-current={l === d.lang ? 'page' : undefined}>{NAMES[l]}</a>)}
+    </nav>
+    <p class="vw-lead">{d.page.lead}</p>
+    <VarioWizard lang={d.lang}>
+      <noscript><p>{d.page.noscript}</p></noscript>
+    </VarioWizard>
+  </section>
+</Page>
+
+<style is:global>
+  .vw-wrap { max-width: 960px; margin: 0 auto; padding: 56px 20px 96px; font-family: var(--font-display); color: var(--color-ink); }
+  .vw-h1 { font-size: clamp(34px, 6vw, 60px); line-height: 1.02; letter-spacing: -0.02em; margin: 14px 0 16px; font-weight: 600; text-wrap: balance; }
+  .vw-lead { font-size: 18px; line-height: 1.55; max-width: 62ch; color: var(--color-ink-2); margin: 0 0 36px; }
+  @media (max-width: 600px) {
+    .vw-wrap { padding: 36px 16px 72px; }
+  }
+</style>
