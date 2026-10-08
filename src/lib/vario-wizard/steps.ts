@@ -41,10 +41,10 @@ export const STEPS: Step[] = [
     lead: 'Listen to each: the climb grows from zero to +4 m/s.',
     clip: 'climb',
     options: [
-      { key: 'tempo', label: 'The beeps come faster', hint: 'the pitch barely moves', apply: () => ({ tempoLow: 650, tempoHigh: 150, pitchLow: 650, pitchHigh: 850, dutyLow: 50, dutyHigh: 50 }) },
-      { key: 'pitch', label: 'The pitch goes up', hint: 'the rhythm barely moves', apply: () => ({ tempoLow: 450, tempoHigh: 330, pitchLow: 550, pitchHigh: 1700, dutyLow: 50, dutyHigh: 50 }) },
+      { key: 'tempo', label: 'The beeps come faster', hint: 'the pitch barely moves', apply: () => ({ tempoLow: 700, tempoHigh: 130, pitchLow: 600, pitchHigh: 800, dutyLow: 50, dutyHigh: 50 }) },
+      { key: 'pitch', label: 'The pitch goes up', hint: 'the rhythm barely moves', apply: () => ({ tempoLow: 480, tempoHigh: 400, pitchLow: 550, pitchHigh: 1800, dutyLow: 50, dutyHigh: 50 }) },
       { key: 'both', label: 'Both, faster and higher', apply: () => ({ tempoLow: 600, tempoHigh: 180, pitchLow: 600, pitchHigh: 1400, dutyLow: 50, dutyHigh: 50 }) },
-      { key: 'long', label: 'The beeps get longer', hint: 'almost a steady tone in a strong core', apply: () => ({ tempoLow: 600, tempoHigh: 200, pitchLow: 600, pitchHigh: 1300, dutyLow: 35, dutyHigh: 80 }) },
+      { key: 'long', label: 'The beeps get longer', hint: 'almost a steady tone in a strong core', apply: () => ({ tempoLow: 600, tempoHigh: 200, pitchLow: 600, pitchHigh: 1300, dutyLow: 30, dutyHigh: 85 }) },
     ],
   },
   {

@@ -41,6 +41,8 @@ export interface Knobs {
   /** Sink alarm, m/s; −10 = never. */
   sinkOn: number
   sinkStyle: SinkStyle
+  /** Sink tone at the alarm, Hz. */
+  sinkPitch: number
   /** Sink tone falls as the sink grows. */
   sinkFalls: boolean
   /** Vario averaging, s. */
@@ -61,6 +63,7 @@ export const DEFAULT_KNOBS: Knobs = {
   nearFrom: -0.5,
   sinkOn: -2.5,
   sinkStyle: 'continuous',
+  sinkPitch: 420,
   sinkFalls: true,
   average: 0.3,
 }
@@ -128,11 +131,11 @@ export function generate(input: Knobs): Sound {
   // Near zero.
   const n0 = r(k.nearFrom * 100)
   const near = k.nearZero === 'tone'
-    ? { f: Math.max(200, k.pitchLow * 0.55), cycle: 1000, duty: 15 }
+    ? { f: 330, cycle: 1000, duty: 15 }
     : { f: k.pitchLow, cycle: 800, duty: 5 }
 
   // Sink: the tone at the alarm and at −10 m/s.
-  const sinkTop = Math.max(150, k.pitchLow * 0.7)
+  const sinkTop = clamp(k.sinkPitch ?? 420, 150, 1500)
   const sinkLow = k.sinkFalls ? Math.max(120, sinkTop * 0.5) : sinkTop
   const sinkPat = k.sinkStyle === 'continuous'
     ? { cycle: 200, duty: 100 }

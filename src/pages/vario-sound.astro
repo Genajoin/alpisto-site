@@ -34,8 +34,18 @@ const description =
   .vw-q { font-size: clamp(22px, 3.2vw, 30px); line-height: 1.15; margin: 0 0 6px; font-weight: 600; text-wrap: balance; }
   .vw-qlead { color: var(--color-ink-3); margin: 0 0 18px; }
   .vw-opts { display: grid; gap: 10px; }
-  .vw-opt { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; border: 1px solid var(--color-ink); background: var(--color-paper); padding: 12px 14px; min-width: 0; }
-  .vw-opt.no-listen { grid-template-columns: 1fr auto; }
+  .vw-opt { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 14px; border: 1px solid var(--color-ink); background: var(--color-paper); padding: 12px 14px; min-width: 0; }
+  .vw-opt.is-shown { background: var(--color-paper-card); box-shadow: inset 6px 0 0 var(--color-accent); }
+  .vw-opt-btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .vw-preview { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 20px; border-top: 1px solid var(--color-paper-alt); border-bottom: 1px solid var(--color-paper-alt); padding: 16px 0; margin-bottom: 8px; scroll-margin-top: 16px; }
+  .vw-pv-title { font-weight: 600; font-size: 17px; margin: 0 0 4px; }
+  .vw-pv-same { color: var(--color-ink-3); font-size: 14px; margin: 0 0 8px; }
+  .vw-facts { display: grid; grid-template-columns: 1fr; gap: 2px 0; margin: 0; font-size: 14px; }
+  .vw-facts dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-ink-3); margin-top: 8px; }
+  .vw-facts dd { margin: 0; font-variant-numeric: tabular-nums; }
+  .vw-facts .was { color: var(--color-ink-3); text-decoration: line-through; }
+  .vw-facts b { font-weight: 600; }
+  .vw-pv-cliplabel { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-ink-3); margin: 8px 0 0; }
   .vw-opt.is-picked { outline: 3px solid var(--color-accent); outline-offset: -1px; }
   .vw-opt-text { min-width: 0; }
   .vw-opt-label { font-size: 17px; font-weight: 500; }
@@ -45,7 +55,7 @@ const description =
   .vw-btn.ink { background: var(--color-ink); color: var(--color-paper); }
   .vw-btn.ink:hover, .vw-btn.ink:focus-visible { background: var(--color-accent); color: var(--color-ink); border-color: var(--color-ink); }
   .vw-btn.accent { background: var(--color-accent); color: var(--color-ink); }
-  .vw-btn.play { min-width: 92px; }
+  .vw-btn.play { min-width: 86px; }
   .vw-btn.play[aria-pressed='true'] { background: var(--color-accent); color: var(--color-ink); }
   .vw-btn:disabled { opacity: 0.35; cursor: default; background: var(--color-paper); color: var(--color-ink); }
   .vw-nav { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
@@ -71,8 +81,9 @@ const description =
   @media (max-width: 600px) {
     .vw-wrap { padding: 36px 16px 72px; }
     .vw-card { padding: 16px; }
-    .vw-opt { grid-template-columns: 1fr auto; }
-    .vw-opt .vw-btn.play { grid-row: 2; grid-column: 1; justify-self: start; }
+    .vw-opt { grid-template-columns: 1fr; }
+    .vw-opt-btns { justify-content: flex-start; }
+    .vw-preview { grid-template-columns: 1fr; }
     .vw-ref { grid-template-columns: 1fr; }
   }
 </style>
@@ -83,6 +94,7 @@ const description =
   import { CLIPS, type ClipKey } from '../lib/vario-wizard/scenarios'
   import { REFINES, STEPS } from '../lib/vario-wizard/steps'
   import { appLink, decodeState, encodeState } from '../lib/vario-wizard/share'
+  import { describe, diff } from '../lib/vario-wizard/describe'
 
   const root = document.getElementById('vw')!
   let knobs: Knobs = { ...DEFAULT_KNOBS }
@@ -288,49 +300,96 @@ const description =
     window.history.replaceState(null, '', `#s=${encodeState({ k: tidy(knobs), a: answers })}`)
   }
 
+  function optionKnobs(step: (typeof STEPS)[number], key: string): Knobs {
+    const o = step.options.find((x) => x.key === key)!
+    return tidy({ ...knobs, ...(o.apply?.(knobs) ?? {}) })
+  }
+
+  /** What an answer changes, line by line, against the sound so far. */
+  function diffHtml(step: (typeof STEPS)[number], key: string | null): string {
+    const base = describe(generate(knobs), tidy(knobs))
+    if (key === null) {
+      return `<p class="vw-pv-title">Your sound so far</p><dl class="vw-facts">${base.map((f) => `<dt>${esc(f.label)}</dt><dd>${esc(f.value)}</dd>`).join('')}</dl>`
+    }
+    const o = step.options.find((x) => x.key === key)!
+    const k = optionKnobs(step, key)
+    const lines = diff(base, describe(generate(k), k))
+    const head = `<p class="vw-pv-title">«${esc(o.label)}»</p>`
+    if (!o.apply)
+      return `${head}<p class="vw-pv-same">This answer is only counted, it does not change the sound.</p>`
+    if (!lines.length)
+      return `${head}<p class="vw-pv-same">Sounds the same as your sound so far.</p>`
+    return `${head}<p class="vw-pv-same">Compared with your sound so far:</p><dl class="vw-facts">${lines.map(([l, x, y]) => `<dt>${esc(l)}</dt><dd><span class="was">${esc(x)}</span> → <b>${esc(y)}</b></dd>`).join('')}</dl>`
+  }
+
   function renderStep() {
     stopPlaying()
     const step = STEPS[stepIndex]!
+    const clip: ClipKey = step.clip ?? 'flight'
     const done = Math.round(stepIndex / STEPS.length * 100)
     const opts = step.options.map((o) => {
-      const listen = step.clip
-        ? `<button type="button" class="vw-btn play" data-listen="${o.key}" aria-pressed="false">▶ Listen</button>`
-        : ''
       const picked = answers[step.key] === o.key ? ' is-picked' : ''
-      return `<div class="vw-opt${picked}${step.clip ? '' : ' no-listen'}">${listen}<div class="vw-opt-text"><div class="vw-opt-label">${esc(o.label)}</div>${o.hint ? `<div class="vw-opt-hint">${esc(o.hint)}</div>` : ''}</div><button type="button" class="vw-btn ink" data-pick="${o.key}">Choose</button></div>`
+      return `<div class="vw-opt${picked}" data-opt="${o.key}">
+        <div class="vw-opt-text"><div class="vw-opt-label">${esc(o.label)}</div>${o.hint ? `<div class="vw-opt-hint">${esc(o.hint)}</div>` : ''}</div>
+        <div class="vw-opt-btns">
+          <button type="button" class="vw-btn" data-show="${o.key}">Show</button>
+          <button type="button" class="vw-btn play" data-listen="${o.key}" aria-pressed="false">▶ Play</button>
+          <button type="button" class="vw-btn ink" data-pick="${o.key}">Choose</button>
+        </div></div>`
     }).join('')
     root.innerHTML = `
       <div><div class="vw-progress"><span>Question ${stepIndex + 1} of ${STEPS.length}</span><span>${done} %</span></div><div class="vw-bar"><i style="width:${done}%"></i></div></div>
       <div class="vw-card">
         <h2 class="vw-q">${esc(step.title)}</h2>
         ${step.lead ? `<p class="vw-qlead">${esc(step.lead)}</p>` : ''}
-        ${step.clip ? `<div id="vw-trace"></div>` : ''}
+        <div class="vw-preview" id="vw-preview">
+          <div class="vw-pv-chart" id="vw-pv-chart"></div>
+          <div class="vw-pv-text" id="vw-pv-text"></div>
+        </div>
+        <p class="vw-pv-cliplabel">${step.clip ? 'Play uses this clip:' : 'Play uses a whole flight:'}</p>
+        <div id="vw-trace"></div>
         <div class="vw-opts">${opts}</div>
         <div class="vw-nav">
           <button type="button" class="vw-btn" data-back ${stepIndex === 0 ? 'disabled' : ''}>← Back</button>
           <button type="button" class="vw-btn" data-skip>Skip</button>
         </div>
       </div>`
-    const traceBox = root.querySelector<HTMLElement>('#vw-trace')
-    const showTrace = (k: Knobs) => {
-      if (traceBox && step.clip)
-        traceBox.innerHTML = traceSvg(k, step.clip)
-      return traceBox?.querySelector('svg') ?? undefined
+    const traceBox = root.querySelector<HTMLElement>('#vw-trace')!
+    const chartBox = root.querySelector<HTMLElement>('#vw-pv-chart')!
+    const textBox = root.querySelector<HTMLElement>('#vw-pv-text')!
+    const preview = root.querySelector<HTMLElement>('#vw-preview')!
+    let shown: string | null = null
+    const show = (key: string | null, scroll = false) => {
+      shown = key
+      const k = key === null ? tidy(knobs) : optionKnobs(step, key)
+      chartBox.innerHTML = curveSvg(generate(k))
+      textBox.innerHTML = diffHtml(step, key)
+      traceBox.innerHTML = traceSvg(k, clip)
+      for (const row of root.querySelectorAll<HTMLElement>('[data-opt]'))
+        row.classList.toggle('is-shown', row.dataset.opt === key)
+      if (scroll) {
+        const r = preview.getBoundingClientRect()
+        if (r.top < 0 || r.top > window.innerHeight * 0.6)
+          preview.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+      return traceBox.querySelector('svg') ?? undefined
     }
-    showTrace(knobs)
+    show(null)
+    for (const b of root.querySelectorAll<HTMLButtonElement>('[data-show]'))
+      b.addEventListener('click', () => show(shown === b.dataset.show ? null : b.dataset.show!, true))
     for (const b of root.querySelectorAll<HTMLButtonElement>('[data-listen]')) {
       b.addEventListener('click', () => {
-        const o = step.options.find((x) => x.key === b.dataset.listen)!
-        const k = { ...knobs, ...(o.apply?.(knobs) ?? {}) }
-        play(b, k, step.clip!, showTrace(k))
+        const key = b.dataset.listen!
+        const svg = shown === key ? traceBox.querySelector('svg') ?? undefined : show(key)
+        play(b, optionKnobs(step, key), clip, svg)
       })
     }
     for (const b of root.querySelectorAll<HTMLButtonElement>('[data-pick]')) {
       b.addEventListener('click', () => {
-        const o = step.options.find((x) => x.key === b.dataset.pick)!
+        const key = b.dataset.pick!
         undo.push({ ...knobs })
-        knobs = tidy({ ...knobs, ...(o.apply?.(knobs) ?? {}) })
-        answers[step.key] = o.key
+        knobs = optionKnobs(step, key)
+        answers[step.key] = key
         next()
       })
     }
