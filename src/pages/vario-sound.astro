@@ -186,7 +186,8 @@ const description =
     /** The sound to play; asked again whenever playback is rescheduled. */
     k: () => Knobs
     clip: ClipKey
-    trace?: SVGSVGElement | null
+    /** The clip's trace; looked up on every frame, so it can be redrawn while playing. */
+    trace?: () => SVGSVGElement | null | undefined
     chart?: () => SVGSVGElement | null | undefined
     loop?: boolean
   }
@@ -251,10 +252,11 @@ const description =
     const label = btn.textContent ?? '▶ Play'
     btn.setAttribute('aria-pressed', 'true')
     btn.textContent = '❚❚ Pause'
-    const head = spec.trace?.querySelector<SVGLineElement>('.vw-head')
+    const headOf = () => spec.trace?.()?.querySelector<SVGLineElement>('.vw-head')
     let raf = 0
     const tick = () => {
       const el = position()
+      const head = headOf()
       if (head) {
         const x = TR.l + Math.max(0, Math.min(1, el / len)) * (TR.w - TR.l - TR.r)
         head.setAttribute('x1', String(x))
@@ -284,6 +286,7 @@ const description =
         master?.disconnect()
         btn.setAttribute('aria-pressed', 'false')
         btn.textContent = label
+        const head = headOf()
         if (head)
           head.style.opacity = '0'
         moveCursor(spec.chart?.(), null)
@@ -591,14 +594,15 @@ const description =
     }
     show(null)
     const listen = root.querySelector<HTMLButtonElement>('#vw-listen')
-    listen?.addEventListener('click', () => play(listen, { k: () => knobs, clip, trace: traceBox.querySelector('svg'), chart: () => chartBox.querySelector('svg') }))
+    listen?.addEventListener('click', () => play(listen, { k: () => knobs, clip, trace: () => traceBox.querySelector('svg'), chart: () => chartBox.querySelector('svg') }))
     for (const b of root.querySelectorAll<HTMLButtonElement>('[data-show]'))
       b.addEventListener('click', () => show(shown === b.dataset.show ? null : b.dataset.show!, true))
     for (const b of root.querySelectorAll<HTMLButtonElement>('[data-listen]')) {
       b.addEventListener('click', () => {
         const key = b.dataset.listen!
-        const svg = shown === key ? traceBox.querySelector('svg') ?? undefined : show(key)
-        play(b, { k: () => optionKnobs(step, key), clip, trace: svg, chart: () => chartBox.querySelector('svg') })
+        if (shown !== key)
+          show(key)
+        play(b, { k: () => optionKnobs(step, key), clip, trace: () => traceBox.querySelector('svg'), chart: () => chartBox.querySelector('svg') })
       })
     }
   }
@@ -711,15 +715,15 @@ const description =
       root.querySelector<HTMLButtonElement>('#vw-ab-reset')!.disabled = !changed()
       root.querySelector('#vw-ab-clip')!.textContent = `Clip: ${CLIP_TEXT[abClip]} · loops · playing: ${abSide === 'before' ? 'before' : 'after'} fine-tuning`
       root.querySelector<HTMLAnchorElement>('#vw-app')!.href = appLink(s)
-      if (playing?.btn !== flightBtn)
-        flightBox.innerHTML = traceSvg(knobs, 'flight')
-      if (playing?.btn === abPlay)
+      // The beep strips follow every change, also while playing.
+      flightBox.innerHTML = traceSvg(knobs, 'flight')
+      abBox.innerHTML = traceSvg(abKnobs(), abClip)
+      if (playing?.btn === abPlay || playing?.btn === flightBtn)
         playing.swap()
-      else abBox.innerHTML = traceSvg(abKnobs(), abClip)
       saveHash()
     }
 
-    const startAb = () => play(abPlay, { k: abKnobs, clip: abClip, trace: abBox.querySelector('svg'), chart: () => resChart.querySelector('svg'), loop: true })
+    const startAb = () => play(abPlay, { k: abKnobs, clip: abClip, trace: () => abBox.querySelector('svg'), chart: () => resChart.querySelector('svg'), loop: true })
     abPlay.addEventListener('click', () => {
       if (playing?.btn !== abPlay)
         abBox.innerHTML = traceSvg(abKnobs(), abClip)
@@ -760,9 +764,7 @@ const description =
       update()
     })
     flightBtn.addEventListener('click', () => {
-      if (playing?.btn !== flightBtn)
-        flightBox.innerHTML = traceSvg(knobs, 'flight')
-      play(flightBtn, { k: () => knobs, clip: 'flight', trace: flightBox.querySelector('svg'), chart: () => resChart.querySelector('svg') })
+      play(flightBtn, { k: () => knobs, clip: 'flight', trace: () => flightBox.querySelector('svg'), chart: () => resChart.querySelector('svg') })
     })
     update()
 
