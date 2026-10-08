@@ -68,6 +68,19 @@ kept the points whose loss changes the curve most and dropped the rest. And nobo
 averaging in seconds: every manual has its own damping scale. So the entries of other varios leave
 the averaging as it is on your device, and the thresholds and the curve do the rest.
 
+One entry deserves a word of its own. Bräuniger's IQ varios, sold also as Flytec, were on the
+harness of a whole generation of pilots, and many schools taught on them. Their sound is often
+called the standard: a climb tone from 700 Hz that rises steadily, fast beeps of exactly half a beat
+that get faster with the climb, and a steady sink tone that drops as the sink grows. The manuals
+describe the factory steps of each setting, and the Bräuniger IQ entry plays those steps.
+
+Two more of our own entries are about loudness, not melody. A FlyBeeper instrument carries one of two
+piezo buzzers, one loudest around 4 kHz and one around 2 kHz. A piezo is loudest at its resonant
+frequency, so Buzzer 4 kHz and Buzzer 2 kHz put the whole sound right at that resonance and get the
+most volume the piezo can give. The rhythm and the half-beat beep are the same as in Simple below.
+It is higher than the usual vario sound, and in a strong wind or under a thick helmet that is the
+point.
+
 ## Simple
 
 The first entry in the list is ours, and it is the one I would give a pilot who has no sound in
@@ -91,8 +104,8 @@ choppy air, without the lag of the 0.6 s in Mountain.
   series={[
     { pts: pitch('fb.simple'), label: 'Simple' },
     { pts: pitch('brand.xctracer'), label: 'XC Tracer' },
-    { pts: pitch('brand.xctrack'), label: 'XCTrack' },
-    { pts: pitch('brand.seeyou'), label: 'SeeYou Navigator' },
+    { pts: pitch('brand.flymaster'), label: 'Flymaster' },
+    { pts: pitch('brand.brauniger'), label: 'Bräuniger IQ' },
   ]}
   x={[-4, 6]}
   y={[0, 2200]}
@@ -108,13 +121,13 @@ choppy air, without the lag of the 0.6 s in Mountain.
   series={[
     { pts: period('fb.simple'), label: 'Simple' },
     { pts: period('brand.xctracer'), label: 'XC Tracer' },
-    { pts: period('brand.xctrack'), label: 'XCTrack' },
-    { pts: period('brand.seeyou'), label: 'SeeYou Navigator' },
+    { pts: period('brand.flymaster'), label: 'Flymaster' },
+    { pts: period('brand.brauniger'), label: 'Bräuniger IQ' },
   ]}
   x={[0.1, 6]}
-  y={[0, 700]}
+  y={[0, 1000]}
   xTicks={[1, 2, 3, 4, 5, 6]}
-  yTicks={[0, 100, 200, 300, 400, 500, 600, 700]}
+  yTicks={[0, 200, 400, 600, 800, 1000]}
   xUnit="climb, m/s"
   yUnit="ms"
   height={190}
@@ -174,31 +187,18 @@ the phone, when you want it, is the bigger voice of the same vario.
 
 ## A heart that only pilots see
 
-Next to each entry of the list there can be a heart with a number. It is a vote: I like this sound.
-After a season the numbers should say which sounds pilots actually keep, and that is worth more
-than any argument about curves.
+The list now has a rating. Next to each entry there can be a heart with a number: pilots who like a
+sound vote for it, and after a season the numbers should say which sounds people actually keep in
+the air. That is worth more than any argument about curves.
 
-A vote in an app is easy to fake, and a rating that anyone can push with a script is worse than
-none. So a vote here needs two things that a script does not have: a FlyBeeper in your hand and a
-person behind it.
+Only pilots who fly with a FlyBeeper can vote. The hearts are there for owners of a FANET Vario or
+a Sun Vario with firmware 0.32.0 or later, and a vote comes from the instrument itself, so a rating
+cannot be pushed by people who have never flown the sound. There is nothing to set up: connect the
+instrument to the app and the hearts appear. Everyone else sees the same list without hearts and
+without numbers.
 
-The first is the instrument. Starting with firmware 0.32.0, each FANET and Sun vario makes itself a
-key of its own. The secret half never leaves the chip. When the app connects, the server sends a
-random challenge, the instrument signs it, and the server checks the signature against the
-instrument's public key. That proves a real FlyBeeper with current firmware is next to the phone,
-and nothing else.
-
-The second is the person. The app is linked to Telegram through our bot, the same link that carries
-safety alerts and flyability notices. One Telegram account is one voter, whatever the number of
-instruments, and one account can bring up to three of them. An instrument belongs to one account;
-if yours changes hands, write to us.
-
-None of it asks you to do anything. Connect your instrument with a linked app and the app gets a
-pass for 30 days, renewed whenever you connect again. With the pass, hearts appear in the list.
-Without it, there are no hearts and no numbers at all, not even other people's: the list looks the
-same as before, so nobody reads a count as advice from people they cannot ask. The server keeps the
-serial and public key of each instrument, a pseudonym in place of the Telegram account, made with a
-key only the server holds, and the votes. No names and no chat.
+For now the rating lives in the FlyBeeper map app, on the phone and in the browser. The
+configurator does not have it yet; it may come there later.
 
 ## What comes next
 
