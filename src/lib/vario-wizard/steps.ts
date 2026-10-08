@@ -4,9 +4,34 @@
  */
 import type { ClipKey } from './scenarios'
 import { DEFAULT_KNOBS, type Knobs } from './generator'
-import { INSTRUMENTS, instrument, knobsLike } from './fit'
+import { INSTRUMENTS, instrument, soundLike } from './fit'
 
 export type Answers = Record<string, string>
+
+/** "When it sounds" knobs, the part that comes from where a pilot flies. */
+const WHEN_DEFAULT: Partial<Knobs> = {
+  climbStart: DEFAULT_KNOBS.climbStart,
+  hold: DEFAULT_KNOBS.hold,
+  nearZero: 'silent',
+  nearFrom: DEFAULT_KNOBS.nearFrom,
+  sinkOn: DEFAULT_KNOBS.sinkOn,
+  sinkHold: DEFAULT_KNOBS.sinkHold,
+  average: DEFAULT_KNOBS.average,
+}
+
+/** "How it sounds" knobs, the part a familiar vario gives. */
+function soundOf(k: Knobs): Partial<Knobs> {
+  const { pitchLow, pitchHigh, tempoLow, tempoHigh, dutyLow, dutyHigh, shape, sinkPitch, sinkFalls, sinkStyle } = k
+  return { pitchLow, pitchHigh, tempoLow, tempoHigh, dutyLow, dutyHigh, shape, sinkPitch, sinkFalls, sinkStyle }
+}
+
+const WHERE_TEXT: Record<string, string> = {
+  mountains: 'mountain flying',
+  flatland: 'flatland flying',
+  ridge: 'coast and ridge flying',
+  comp: 'competitions',
+  learning: 'learning',
+}
 
 export interface Option {
   key: string
@@ -55,41 +80,42 @@ export const STEPS: Step[] = [
     key: 'where',
     kind: 'info',
     title: 'Where do you fly most?',
+    lead: 'This sets when the vario sounds: from what climb, from what sink, how quickly it reacts.',
     options: [
-      { key: 'mountains', label: 'Mountains', hint: 'strong, rough thermals', apply: () => ({ climbStart: 0.2, hold: 0.1, sinkOn: -3, average: 0.5 }) },
-      { key: 'flatland', label: 'Flatland', hint: 'weak, broken thermals', apply: () => ({ climbStart: 0.05, hold: 0.05, nearZero: 'ticks', nearFrom: -0.3, average: 0.3 }) },
-      { key: 'ridge', label: 'Coast and ridge', hint: 'dynamic lift', apply: () => ({ climbStart: 0.2, hold: 0.1, sinkOn: -2, average: 0.4 }) },
-      { key: 'comp', label: 'Competitions and XC', hint: 'every second counts', apply: () => ({ climbStart: 0.1, hold: 0.05, average: 0.15 }) },
-      { key: 'learning', label: 'I am learning', hint: 'first thermals', apply: () => ({ climbStart: 0.2, hold: 0.1, sinkOn: -2, average: 0.4 }) },
+      { key: 'mountains', label: 'Mountains', hint: 'strong, rough thermals', apply: () => ({ ...WHEN_DEFAULT, climbStart: 0.2, hold: 0.1, sinkOn: -3, average: 0.5 }) },
+      { key: 'flatland', label: 'Flatland', hint: 'weak, broken thermals', apply: () => ({ ...WHEN_DEFAULT, climbStart: 0.05, hold: 0.05, nearZero: 'ticks', nearFrom: -0.3, average: 0.3 }) },
+      { key: 'ridge', label: 'Coast and ridge', hint: 'dynamic lift', apply: () => ({ ...WHEN_DEFAULT, climbStart: 0.2, hold: 0.1, sinkOn: -2, average: 0.4 }) },
+      { key: 'comp', label: 'Competitions and XC', hint: 'every second counts', apply: () => ({ ...WHEN_DEFAULT, climbStart: 0.1, hold: 0.05, average: 0.15 }) },
+      { key: 'learning', label: 'I am learning', hint: 'first thermals', apply: () => ({ ...WHEN_DEFAULT, climbStart: 0.2, hold: 0.1, sinkOn: -2, average: 0.4 }) },
     ],
   },
   {
     key: 'instrument',
     kind: 'info',
-    title: 'What do you fly with now?',
-    lead: 'The vario whose sound you are used to.',
-    options: INSTRUMENTS.map((i) => ({ key: i.key, label: i.label })),
+    title: 'Which vario sound do you know best?',
+    lead: 'The one you fly with, or one you heard on a friend\'s wing and liked. We start from its tone and rhythm.',
+    options: INSTRUMENTS.map((i) => ({ key: i.key, label: i.label, apply: () => soundLike(i.key) ?? soundOf(DEFAULT_KNOBS) })),
   },
   {
-    key: 'happy',
+    key: 'why',
     kind: 'info',
-    title: (a) => `Do you like how your ${instrument(a.instrument)?.label ?? 'vario'} sounds?`,
+    title: (a) => `Why the ${instrument(a.instrument)?.label}?`,
     options: [
-      { key: 'yes', label: 'Yes, I like it', apply: (k, a) => knobsLike(a.instrument, k) ?? {} },
-      { key: 'mostly', label: 'Mostly, I would change a thing or two', apply: (k, a) => knobsLike(a.instrument, k) ?? {} },
-      { key: 'no', label: 'No' },
+      { key: 'used', label: 'I fly with it, my ears are used to it' },
+      { key: 'liked', label: 'I heard it and liked it' },
+      { key: 'both', label: 'Both' },
     ],
   },
   {
     key: 'familiar',
     kind: 'listen',
-    title: (a) => `Here is a sound close to your ${instrument(a.instrument)?.label}. Is this what you are used to?`,
-    lead: 'Play it: a glide, into a thermal, a few turns, out into sink.',
+    title: (a) => `Here is a sound close to the ${instrument(a.instrument)?.label}. Is this the one you meant?`,
+    lead: (a) => `Its tone and rhythm; it switches on as set for ${WHERE_TEXT[a.where ?? ''] ?? 'your flying'}. Play it: a glide, into a thermal, a few turns, out into sink.`,
     clip: 'flight',
     options: [
       { key: 'yes', label: 'Yes, that is it' },
       { key: 'adjust', label: 'Close; I will adjust it at the end' },
-      { key: 'no', label: 'No, let me build my own', apply: (_k, a) => fromWhere(a) },
+      { key: 'no', label: 'No, let me build my own', apply: () => soundOf(DEFAULT_KNOBS) },
     ],
   },
   {
@@ -99,9 +125,9 @@ export const STEPS: Step[] = [
     lead: 'Three complete sounds on a short thermal: in, a few seconds of climb, out into sink.',
     clip: 'mini',
     options: [
-      { key: 'both', label: 'A', hint: 'beeps get both faster and higher', apply: () => ({ tempoLow: 600, tempoHigh: 180, pitchLow: 600, pitchHigh: 1400, dutyLow: 50, dutyHigh: 50, shape: 'linear', nearZero: 'silent', average: 0.4 }) },
-      { key: 'tempo', label: 'B', hint: 'the rhythm tells the climb', apply: () => ({ tempoLow: 700, tempoHigh: 130, pitchLow: 600, pitchHigh: 800, dutyLow: 50, dutyHigh: 50, shape: 'linear', nearZero: 'silent', average: 0.4 }) },
-      { key: 'pitch', label: 'C', hint: 'the tone tells the climb', apply: () => ({ tempoLow: 480, tempoHigh: 400, pitchLow: 550, pitchHigh: 1800, dutyLow: 50, dutyHigh: 50, shape: 'linear', nearZero: 'silent', average: 0.4 }) },
+      { key: 'both', label: 'A', hint: 'beeps get both faster and higher', apply: () => ({ tempoLow: 600, tempoHigh: 180, pitchLow: 600, pitchHigh: 1400, dutyLow: 50, dutyHigh: 50, shape: 'linear' }) },
+      { key: 'tempo', label: 'B', hint: 'the rhythm tells the climb', apply: () => ({ tempoLow: 700, tempoHigh: 130, pitchLow: 600, pitchHigh: 800, dutyLow: 50, dutyHigh: 50, shape: 'linear' }) },
+      { key: 'pitch', label: 'C', hint: 'the tone tells the climb', apply: () => ({ tempoLow: 480, tempoHigh: 400, pitchLow: 550, pitchHigh: 1800, dutyLow: 50, dutyHigh: 50, shape: 'linear' }) },
     ],
   },
   {
@@ -111,7 +137,7 @@ export const STEPS: Step[] = [
     lead: 'The air goes slowly from a small sink into a weak climb.',
     clip: 'start',
     options: [
-      { key: 'real', label: 'Only when it really climbs', hint: 'from +0.2 m/s', apply: () => ({ climbStart: 0.2, hold: 0.1 }) },
+      { key: 'real', label: 'Only when it really climbs', hint: 'from +0.2 m/s', apply: () => ({ climbStart: 0.2, hold: 0.1, nearZero: 'silent' }) },
       { key: 'any', label: 'At every bit of lift', hint: 'from +0.05 m/s', apply: () => ({ climbStart: 0.05, hold: 0.05 }) },
     ],
   },
@@ -301,31 +327,26 @@ const TUNE = ['growth', 'detail', 'top', 'start', 'fade', 'near', 'sinkFrom', 's
 const BEGINNER = ['bSound', 'bStart', 'bSink']
 const FINAL = ['volume', 'sets', 'hear', 'annoy']
 
-/** The starting sound for where a pilot flies, without anything a familiar vario added. */
-function fromWhere(a: Answers): Knobs {
-  const o = STEPS.find((x) => x.key === 'where')!.options.find((x) => x.key === a.where)
-  return { ...DEFAULT_KNOBS, ...(o?.apply?.(DEFAULT_KNOBS, a) ?? {}) }
-}
-
 export function isBeginner(a: Answers): boolean {
   return a.years === '0' || a.years === '1-2' || a.where === 'learning'
 }
 
 /** The questions for these answers, in order; it grows as the answers come. */
 export function flow(a: Answers): string[] {
-  const out = ['years', 'where', 'instrument']
-  const inst = instrument(a.instrument)
-  if (a.instrument && a.instrument !== 'none' && a.instrument !== 'phone')
-    out.push('happy')
-  if (isBeginner(a)) {
-    out.push(...BEGINNER)
-  }
-  else if (inst?.entry && (a.happy === 'yes' || a.happy === 'mostly')) {
+  const out = ['years', 'instrument']
+  const known = !!instrument(a.instrument)?.entry
+  if (known)
+    out.push('why')
+  out.push('where')
+  if (known)
     out.push('familiar')
-    if (a.familiar === 'no')
-      out.push(...TUNE)
+  if (isBeginner(a)) {
+    // A beginner who knows a sound starts from it; one who does not picks one by ear.
+    if (!known || a.familiar === 'no')
+      out.push('bSound')
+    out.push('bStart', 'bSink')
   }
-  else {
+  else if (!known || a.familiar === 'no') {
     out.push(...TUNE)
   }
   out.push(...FINAL)

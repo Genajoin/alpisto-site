@@ -502,7 +502,7 @@ const description =
     const clip: ClipKey = step.clip ?? 'flight'
     const done = Math.round(pos / keys.length * 100)
     // Until the profile questions are answered the way ahead is not known: no total yet.
-    const pathKnown = answers.instrument !== undefined && (!keys.includes('happy') || answers.happy !== undefined || pos > keys.indexOf('happy'))
+    const pathKnown = answers.where !== undefined || pos > keys.indexOf('where')
     const lead = leadOf(step)
     const picked = (k: string) => (answers[step.key] ?? '').split(',').includes(k)
     let body = ''
