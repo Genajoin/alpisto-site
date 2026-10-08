@@ -266,11 +266,12 @@ export const STEPS: Step[] = [
     key: 'sets',
     kind: 'info',
     optional: true,
-    title: 'How many sounds would you use?',
+    title: 'How many sound profiles would you keep on your vario?',
+    lead: 'A sound profile is a whole set: how it beeps and when it switches on.',
     options: [
-      { key: 'one', label: 'One for everything' },
-      { key: 'sets', label: 'Two or three, for different conditions' },
-      { key: 'own', label: 'I build my own for each situation' },
+      { key: 'one', label: 'One profile for every flight' },
+      { key: 'sets', label: 'Two or three, for different conditions', hint: 'say mountains, flatland, coast' },
+      { key: 'own', label: 'Many: I tune a profile for each site or day' },
     ],
   },
   {
