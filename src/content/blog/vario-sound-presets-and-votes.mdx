@@ -219,7 +219,7 @@ A vote in an app is easy to fake, and a rating that anyone can push with a scrip
 none. So a vote here needs two things that a script does not have: a FlyBeeper in your hand and a
 person behind it.
 
-The first is the instrument. Starting with the next firmware, each FANET and Sun vario makes itself a
+The first is the instrument. Starting with firmware 0.32.0, each FANET and Sun vario makes itself a
 key of its own. The secret half never leaves the chip. When the app connects, the server
 sends a random challenge, the instrument signs it, and the server checks the signature against the
 instrument's public key. That proves a real FlyBeeper with current firmware is next to the phone,
