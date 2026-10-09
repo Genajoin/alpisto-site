@@ -338,8 +338,12 @@ const en: Dict = {
       o: { instrument: 'On the instrument', phone: 'On the phone speaker', headset: 'In earphones or a helmet headset' },
     },
     annoy: {
-      t: 'What annoys you in the sound of your vario?',
-      l: 'One line is enough.',
+      t: 'Two last questions, in your own words',
+      l: 'Both are optional. One line is enough.',
+      o: {
+        annoy: 'What annoys you in the sound of your vario?',
+        wizard: ['What would you change in this wizard?', 'a question that was unclear, an answer you missed, a sound you could not find'],
+      },
     },
   },
   refines: {

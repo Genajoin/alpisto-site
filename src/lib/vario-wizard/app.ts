@@ -199,6 +199,8 @@ function play(btn: HTMLButtonElement, spec: PlaySpec) {
 
 // ---------- drawing ----------
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!))
+/** Longest free-text answer; the worker keeps the same. */
+const TEXT_MAX = 500
 const ms = (v: number) => signed(d, v)
 const dec = (v: number, n = 2) => v.toFixed(n).replace('.', d.dec)
 /** Option label and hint in this language; brand names are not translated. */
@@ -330,7 +332,7 @@ function tableHtml(s: Sound, before?: Sound): string {
     const silent = !(v > p.climbOff || v < p.sinkOff)
     const beep = Math.trunc(c.cycleDots[i]! * c.dutyDots[i]! / 100)
     const beepWas = o ? Math.trunc(o.cycleDots[i]! * o.dutyDots[i]! / 100) : undefined
-    return `<tr class="${silent ? 'is-silent' : ''}">${cell(ms(v / 100), o ? ms(o.varioDots[i]! / 100) : undefined)}${cell(c.freqDots[i]!, o?.freqDots[i])}${cell(c.cycleDots[i]!, o?.cycleDots[i])}${cell(beep, beepWas)}${cell(c.dutyDots[i]!, o?.dutyDots[i])}<td>${silent ? esc(U.silent) : ''}</td></tr>`
+    return `<tr class="${silent ? 'is-silent' : ''}">${cell(ms(v / 100), o ? ms(o.varioDots[i]! / 100) : undefined)}${cell(c.freqDots[i]!, o?.freqDots[i])}${cell(c.cycleDots[i]!, o?.cycleDots[i])}${cell(beep, beepWas)}${cell(c.dutyDots[i]!, o?.dutyDots[i])}<td class="c-silent">${silent ? esc(U.silent) : ''}</td></tr>`
   }).join('')
   const t = s.trigger
   const w = before?.trigger
@@ -338,9 +340,9 @@ function tableHtml(s: Sound, before?: Sound): string {
   const val = (x: number) => `${ms(x)} ${d.u.ms}`
   const sec = (x: number) => `${dec(x)} ${d.u.s}`
   return `<div class="vw-tablewrap"><table class="vw-table">
-    <thead><tr><th>${esc(U.thVario)}</th><th>${esc(U.thTone)}</th><th>${esc(U.thPeriod)}</th><th>${esc(U.thBeep)}</th><th>${esc(U.thShare)}</th><th></th></tr></thead>
+    <thead><tr><th>${esc(U.thVario)}</th><th>${esc(U.thTone)}</th><th>${esc(U.thPeriod)}</th><th>${esc(U.thBeep)}</th><th>${esc(U.thShare)}</th><th class="c-silent"></th></tr></thead>
     <tbody>${rows}</tbody></table></div>
-    <div class="vw-tablewrap" style="margin-top:14px"><table class="vw-table">
+    <div class="vw-tablewrap" style="margin-top:14px"><table class="vw-table vw-when">
     <thead><tr><th>${esc(U.thWhen)}</th><th>${esc(U.thValue)}</th></tr></thead><tbody>
     <tr><td>${esc(U.rowClimbOn)}</td>${cell(val(t.climbOn), w ? val(w.climbOn) : undefined)}</tr>
     <tr><td>${esc(U.rowClimbOff)}</td>${cell(val(t.climbOff), w ? val(w.climbOff) : undefined)}</tr>
@@ -457,7 +459,12 @@ function renderStep() {
     }).join('')}</div>`
   }
   else {
-    body = `<textarea class="vw-text" id="vw-text" maxlength="300" rows="3">${esc(answers[step.key] ?? '')}</textarea>
+    // One field per option, each answer under the option's own key.
+    body = `<div class="vw-fields">${step.options.map((o) => {
+      const [label, hint] = optText(step, o.key)
+      return `<label class="vw-field"><span class="vw-opt-label">${esc(label)}</span>${hint ? `<span class="vw-opt-hint">${esc(hint)}</span>` : ''}
+        <textarea class="vw-text" data-field="${o.key}" maxlength="${TEXT_MAX}" rows="3">${esc(answers[o.key] ?? '')}</textarea></label>`
+    }).join('')}</div>
       <div class="vw-nav"><button type="button" class="vw-btn ink" id="vw-continue">${esc(d.ui.cont)}</button></div>`
   }
   const withSound = step.kind === 'sound' || step.kind === 'listen'
@@ -491,8 +498,18 @@ function renderStep() {
     b.addEventListener('click', () => b.setAttribute('aria-pressed', String(b.getAttribute('aria-pressed') !== 'true')))
   root.querySelector('#vw-continue')?.addEventListener('click', () => {
     if (step.kind === 'text') {
-      const v = root.querySelector<HTMLTextAreaElement>('#vw-text')!.value.trim().slice(0, 300)
-      answer(step, v || null)
+      stopPlaying()
+      ownRun = true
+      undo.push({ knobs: { ...knobs }, answers: { ...answers } })
+      for (const t of root.querySelectorAll<HTMLTextAreaElement>('[data-field]')) {
+        const v = t.value.trim().slice(0, TEXT_MAX)
+        if (v)
+          answers[t.dataset.field!] = v
+        else
+          delete answers[t.dataset.field!]
+      }
+      pos++
+      next()
       return
     }
     const on = [...root.querySelectorAll<HTMLButtonElement>('[data-toggle][aria-pressed="true"]')].map((b) => b.dataset.toggle!)

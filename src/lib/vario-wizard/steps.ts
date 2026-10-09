@@ -299,7 +299,8 @@ export const STEPS: Step[] = [
     key: 'annoy',
     kind: 'text',
     optional: true,
-    options: [],
+    // Two free-text fields, each kept under its own key: the vario's sound, and this wizard.
+    options: [{ key: 'annoy' }, { key: 'wizard' }],
   },
 ]
 

@@ -338,8 +338,12 @@ const sl: Dict = {
       o: { instrument: 'Na napravi', phone: 'Na zvočniku telefona', headset: 'V slušalkah ali v čeladi' },
     },
     annoy: {
-      t: 'Kaj te moti pri zvoku tvojega varia?',
-      l: 'Dovolj je ena vrstica.',
+      t: 'Še dve vprašanji, s tvojimi besedami',
+      l: 'Obe sta neobvezni. Dovolj je ena vrstica.',
+      o: {
+        annoy: 'Kaj te moti pri zvoku tvojega varia?',
+        wizard: ['Kaj bi spremenil v tem vodniku?', 'nejasno vprašanje, odgovor, ki ga je manjkalo, zvok, ki ga nisi našel'],
+      },
     },
   },
   refines: {

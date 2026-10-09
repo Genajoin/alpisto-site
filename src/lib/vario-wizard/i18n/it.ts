@@ -338,8 +338,12 @@ const it: Dict = {
       o: { instrument: 'Sullo strumento', phone: 'Dall\'altoparlante del telefono', headset: 'Negli auricolari o nella cuffia del casco' },
     },
     annoy: {
-      t: 'Cosa ti dà fastidio nel suono del tuo vario?',
-      l: 'Basta una riga.',
+      t: 'Due ultime domande, con parole tue',
+      l: 'Sono entrambe facoltative. Basta una riga.',
+      o: {
+        annoy: 'Cosa ti dà fastidio nel suono del tuo vario?',
+        wizard: ['Cosa cambieresti in questa procedura guidata?', 'una domanda poco chiara, una risposta che mancava, un suono che non hai trovato'],
+      },
     },
   },
   refines: {

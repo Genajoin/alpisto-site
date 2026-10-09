@@ -56,9 +56,10 @@ const { lang } = Astro.props
   .vw-sub { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-ink-3); margin: 0 0 10px; }
   .vw-chart { display: block; max-width: 100%; height: auto; }
   .vw-tablewrap { overflow-x: auto; }
-  .vw-table { border-collapse: collapse; width: 100%; min-width: 520px; font-family: var(--font-mono); font-size: 14px; font-variant-numeric: tabular-nums; }
+  .vw-table { border-collapse: collapse; width: 100%; font-family: var(--font-mono); font-size: 14px; font-variant-numeric: tabular-nums; }
   .vw-table th, .vw-table td { border-bottom: 1px solid var(--color-paper-alt); padding: 7px 10px; text-align: right; white-space: nowrap; }
-  .vw-table th { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-ink-3); font-weight: 500; }
+  .vw-table th { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-ink-3); font-weight: 500; white-space: normal; vertical-align: bottom; }
+  .vw-when td:first-child { white-space: normal; }
   .vw-table td:first-child, .vw-table th:first-child { text-align: left; }
   .vw-table tr.is-silent td { color: var(--color-ink-3); }
   .vw-note { font-size: 14px; color: var(--color-ink-3); margin: 10px 0 0; max-width: 70ch; }
@@ -69,6 +70,8 @@ const { lang } = Astro.props
   .vw-choice.is-picked, .vw-choice[aria-pressed='true'] { outline: 3px solid var(--color-accent); outline-offset: -1px; }
   .vw-opts-grid { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
   .vw-text { width: 100%; font: inherit; font-size: 16px; border: 1px solid var(--color-ink); background: var(--color-paper); padding: 12px; box-sizing: border-box; }
+  .vw-fields { display: grid; gap: 18px; }
+  .vw-field { display: grid; gap: 4px; }
   .vw-h2-s { font-size: clamp(22px, 3vw, 28px); }
   .vw-ref-text { display: grid; gap: 2px; min-width: 0; }
   .vw-now { font-family: var(--font-mono); font-size: 13px; color: var(--color-ink-2); margin-top: 4px; }
@@ -98,6 +101,10 @@ const { lang } = Astro.props
   .vw-barp { font-family: var(--font-mono); font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; }
   @media (max-width: 600px) {
     .vw-cmp { grid-template-columns: 1fr; }
+    .vw-table { font-size: 13px; }
+    .vw-table th, .vw-table td { padding: 6px 4px; }
+    .vw-table th { font-size: 10px; letter-spacing: 0.04em; }
+    .vw-table .c-silent { display: none; }
     .vw-btn { white-space: normal; max-width: 100%; }
     .vw-card { padding: 16px; }
     .vw-opt { grid-template-columns: 1fr; }

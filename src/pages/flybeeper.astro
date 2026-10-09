@@ -236,9 +236,17 @@ interface Integration {
   app: string
   note: string
   url?: string
+  /** Our own page: opens in the same tab. */
+  own?: boolean
 }
 
 const integrations: Integration[] = [
+  {
+    app: 'Vario sound',
+    note: 'Find your sound by ear · tone table to copy into any vario app, one tap to put it on a FlyBeeper',
+    url: '/vario-sound/',
+    own: true,
+  },
   {
     app: 'XCSoar',
     note: 'Open-source flight computer · issue #1502 — BLE PS1 support',
@@ -522,7 +530,7 @@ const integrations: Integration[] = [
             >
               <div class="font-display text-[15px] sm:text-[16px] font-bold text-accent">
                 {it.url ? (
-                  <a href={it.url} target="_blank" rel="noopener noreferrer" class="text-accent no-underline hover:underline">
+                  <a href={it.url} target={it.own ? undefined : '_blank'} rel={it.own ? undefined : 'noopener noreferrer'} class="text-accent no-underline hover:underline">
                     → {it.app}
                   </a>
                 ) : (

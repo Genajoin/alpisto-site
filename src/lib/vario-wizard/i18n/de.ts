@@ -338,8 +338,12 @@ const de: Dict = {
       o: { instrument: 'Am Gerät', phone: 'Über den Handylautsprecher', headset: 'In Ohrhörern oder im Helm-Headset' },
     },
     annoy: {
-      t: 'Was stört dich am Ton deines Varios?',
-      l: 'Eine Zeile genügt.',
+      t: 'Zwei letzte Fragen, in deinen eigenen Worten',
+      l: 'Beide sind freiwillig. Eine Zeile genügt.',
+      o: {
+        annoy: 'Was stört dich am Ton deines Varios?',
+        wizard: ['Was würdest du an diesem Assistenten ändern?', 'eine unklare Frage, eine fehlende Antwort, ein Ton, den du nicht gefunden hast'],
+      },
     },
   },
   refines: {
