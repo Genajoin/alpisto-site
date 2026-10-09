@@ -12,6 +12,7 @@ const fr: Dict = {
     lead: 'Répondez à l’oreille. Chaque réponse modifie le son, et vous pouvez écouter chaque choix avant de le prendre. À la fin, vous obtenez le son sous forme de graphique et de table des tonalités à recopier dans n’importe quel vario, ainsi qu’un lien qui l’installe d’un geste sur un FlyBeeper. Vos réponses sont conservées sans nom, pour comparer votre son à celui des autres pilotes.',
     noscript: 'Cette page a besoin de JavaScript pour jouer les sons.',
     langs: 'Langue',
+    count: 'Pilotes qui ont trouvé leur son ici : {n}',
   },
   ui: {
     progress: 'Question {n} sur {total}',

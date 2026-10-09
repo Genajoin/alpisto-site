@@ -12,6 +12,7 @@ const en: Dict = {
     lead: 'Answer by ear. Every answer changes the sound, and you can listen to each choice before you pick it. At the end you get the sound as a chart and as a tone table you can copy into any vario, and a link that puts it on a FlyBeeper in one tap. Your answers are kept without a name, to compare your sound with other pilots\' sounds.',
     noscript: 'This page needs JavaScript to play the sounds.',
     langs: 'Language',
+    count: 'Pilots who have found their sound here: {n}',
   },
   ui: {
     progress: 'Question {n} of {total}',

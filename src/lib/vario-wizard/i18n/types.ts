@@ -33,6 +33,8 @@ export interface Dict {
     lead: string
     noscript: string
     langs: string
+    /** How many pilots went through the wizard; shown once there are COUNT_FROM. */
+    count: string
   }
   ui: {
     progress: string

@@ -12,6 +12,7 @@ const de: Dict = {
     lead: 'Antworte nach Gehör. Jede Antwort ändert den Ton, und du kannst dir jede Auswahl anhören, bevor du dich entscheidest. Am Ende bekommst du den Ton als Diagramm und als Tontabelle, die du in jedes Vario übernehmen kannst, und einen Link, der ihn mit einem Tipp auf einen FlyBeeper bringt. Deine Antworten werden ohne Namen gespeichert, um deinen Ton mit dem anderer Piloten zu vergleichen.',
     noscript: 'Diese Seite braucht JavaScript, um die Töne abzuspielen.',
     langs: 'Sprache',
+    count: 'Piloten, die hier ihren Ton gefunden haben: {n}',
   },
   ui: {
     progress: 'Frage {n} von {total}',

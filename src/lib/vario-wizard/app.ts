@@ -23,6 +23,8 @@ let viaShare = false
 const canShare = typeof navigator.share === 'function'
 /** Free-text answers: kept with the pilot's answers, never put into a link to share. */
 const TEXT_STEPS = ['annoy', 'wizard']
+/** The count of pilots shows under the intro from this many on. */
+const COUNT_FROM = 20
 let knobs: Knobs = { ...DEFAULT_KNOBS }
 let answers: Answers = {}
 /** State before each answered step, so Back undoes it. */
@@ -845,6 +847,14 @@ const DICTS = import.meta.glob<{ default: Dict }>('./i18n/[a-z][a-z].ts')
 void (async () => {
   const lang = root.dataset.lang ?? 'en'
   d = (await (DICTS[`./i18n/${lang}.ts`] ?? DICTS['./i18n/en.ts']!)()).default
+  // How many went through it, under the intro; a handful would only put people off.
+  loadStats((s) => {
+    const el = document.getElementById('vw-count')
+    if (el && s.n >= COUNT_FROM) {
+      el.textContent = fmt(d.page.count, { n: s.n })
+      el.hidden = false
+    }
+  })
   const shared = decodeState(location.hash)
   viaShare = !!shared && /[#&]f=1\b/.test(location.hash)
   // A friend's link: the greeting comes first, the page's long intro would push it off the screen.

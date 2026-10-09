@@ -12,6 +12,7 @@ const sl: Dict = {
     lead: 'Odgovarjaj po posluhu. Vsak odgovor spremeni zvok, vsako izbiro pa lahko poslušaš, preden se odločiš. Na koncu dobiš zvok kot graf in kot tabelo tonov, ki jo lahko preneseš v kateri koli vario, ter povezavo, ki ga z enim dotikom naloži na FlyBeeper. Tvoji odgovori se shranijo brez imena, da lahko tvoj zvok primerjamo z zvoki drugih pilotov.',
     noscript: 'Za predvajanje zvokov ta stran potrebuje JavaScript.',
     langs: 'Jezik',
+    count: 'Pilotov, ki so tu našli svoj zvok: {n}',
   },
   ui: {
     progress: 'Vprašanje {n} od {total}',

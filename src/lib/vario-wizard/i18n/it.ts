@@ -12,6 +12,7 @@ const it: Dict = {
     lead: 'Rispondi a orecchio. Ogni risposta cambia il suono, e puoi ascoltare ogni scelta prima di sceglierla. Alla fine hai il suono come grafico e come tabella dei toni da copiare in qualsiasi vario, più un link che lo mette su un FlyBeeper con un tocco. Le tue risposte vengono salvate senza nome, per confrontare il tuo suono con quello degli altri piloti.',
     noscript: 'Questa pagina ha bisogno di JavaScript per riprodurre i suoni.',
     langs: 'Lingua',
+    count: 'Piloti che hanno trovato qui il loro suono: {n}',
   },
   ui: {
     progress: 'Domanda {n} di {total}',
