@@ -163,6 +163,7 @@ const sl: Dict = {
     near: 'spuščanje popušča do majhnega minusa',
     sink: 'v spuščanje do −4,5 m/s in spet ven',
     bumpy: 'termika +1,5 v turbulentnem zraku',
+    surge: 'dva hitra sunka dviganja do +4 m/s v mirnem zraku',
   },
   where: {
     mountains: 'letenje v gorah',
@@ -328,7 +329,7 @@ const sl: Dict = {
     },
     glide: {
       t: 'Naj pisk sledi zraku, medtem ko zveni?',
-      l: 'V turbulenci se dviganje spremeni celo med enim piskom. Vsak pisk drži ton, s katerim se je začel, ali pa ton drsi skupaj z variom.',
+      l: 'Ko dviganje hitro narašča, se spremeni celo med enim piskom. Vsak pisk drži ton, s katerim se je začel, ali pa ton drsi skupaj z variom.',
       o: {
         steady: ['En ton na pisk', 'ton se spreminja v stopnicah od piska do piska; čisto in lahko slediti'],
         glide: ['Ton drsi z variom', 'sunek dviganja se sliši sredi piska'],

@@ -256,7 +256,7 @@ export const STEPS: Step[] = [
   {
     key: 'glide',
     kind: 'sound',
-    clip: 'bumpy',
+    clip: 'surge',
     options: [
       { key: 'steady', apply: () => ({ glide: false }) },
       { key: 'glide', apply: () => ({ glide: true }) },

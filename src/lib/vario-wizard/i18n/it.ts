@@ -163,6 +163,7 @@ const it: Dict = {
     near: 'la discendenza cala fino a un piccolo meno',
     sink: 'in discendenza fino a −4,5 m/s e di nuovo fuori',
     bumpy: 'una termica di +1,5 in aria turbolenta',
+    surge: 'due rapide spinte fino a +4 m/s in aria calma',
   },
   where: {
     mountains: 'volo in montagna',
@@ -328,7 +329,7 @@ const it: Dict = {
     },
     glide: {
       t: 'Un bip deve seguire l’aria mentre suona?',
-      l: 'In aria turbolenta la salita cambia anche dentro un solo bip. O ogni bip tiene la nota con cui è partito, o la nota scivola con il vario.',
+      l: 'Quando la salita cresce in fretta, cambia anche dentro un solo bip. O ogni bip tiene la nota con cui è partito, o la nota scivola con il vario.',
       o: {
         steady: ['Una nota per bip', 'il tono cambia a gradini da un bip all’altro; pulito e facile da seguire'],
         glide: ['La nota scivola con il vario', 'una spinta si sente a metà del bip'],

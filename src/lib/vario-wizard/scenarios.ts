@@ -5,7 +5,7 @@
  * the way it behaves in real air.
  */
 
-export type ClipKey = 'mini' | 'flight' | 'climb' | 'start' | 'fade' | 'near' | 'sink' | 'bumpy'
+export type ClipKey = 'mini' | 'flight' | 'climb' | 'start' | 'fade' | 'near' | 'sink' | 'bumpy' | 'surge'
 
 export interface Clip {
   lenMs: number
@@ -90,4 +90,6 @@ export const CLIPS: Record<ClipKey, Clip> = {
   sink: clip([[0, -1], [1, -1], [8, -4.5], [10, -4.5], [17, -1], [18, -1]], 10, 400, 23, [-5, 0.5]),
   // A +1.5 thermal in rough air.
   bumpy: clip([[0, 1.5], [12, 1.5]], 70, 300, 29, [-1.5, 4]),
+  // Smooth air, two quick surges to +4 and back: a beep that follows the vario slides up and down.
+  surge: clip([[0, 0.3], [1.5, 0.3], [3, 4], [5, 4], [6.5, 0.5], [8, 0.5], [9.5, 4], [11.5, 4], [13, 0.3]], 3, 400, 37, [-1, 5]),
 }

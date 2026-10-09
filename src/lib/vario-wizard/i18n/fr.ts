@@ -163,6 +163,7 @@ const fr: Dict = {
     near: 'la descente se réduit à un petit moins',
     sink: 'dans la dégueulante jusqu’à −4,5 m/s, puis on en sort',
     bumpy: 'un thermique de +1,5 dans l’air turbulent',
+    surge: 'deux poussées rapides jusqu’à +4 m/s en air calme',
   },
   where: {
     mountains: 'le vol en montagne',
@@ -328,7 +329,7 @@ const fr: Dict = {
     },
     glide: {
       t: 'Un bip doit-il suivre l’air pendant qu’il sonne ?',
-      l: 'Dans l’air turbulent, la montée change même pendant un seul bip. Soit chaque bip garde la note de son début, soit la note glisse avec le vario.',
+      l: 'Quand la montée augmente vite, elle change même pendant un seul bip. Soit chaque bip garde la note de son début, soit la note glisse avec le vario.',
       o: {
         steady: ['Une note par bip', 'le ton change par marches d’un bip à l’autre ; net et facile à suivre'],
         glide: ['La note glisse avec le vario', 'une poussée s’entend au milieu d’un bip'],

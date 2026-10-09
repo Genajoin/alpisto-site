@@ -163,6 +163,7 @@ const en: Dict = {
     near: 'the sink eases off to a small minus',
     sink: 'into sink down to −4.5 m/s and out again',
     bumpy: 'a +1.5 thermal in rough air',
+    surge: 'two quick surges to +4 m/s in smooth air',
   },
   where: {
     mountains: 'mountain flying',
@@ -328,7 +329,7 @@ const en: Dict = {
     },
     glide: {
       t: 'Should a beep follow the air while it sounds?',
-      l: 'In rough air the climb changes even within one beep. Either each beep keeps the note it started with, or the note slides with the vario.',
+      l: 'When the climb grows fast, it changes even within one beep. Either each beep keeps the note it started with, or the note slides with the vario.',
       o: {
         steady: ['One note per beep', 'the pitch steps from beep to beep; clean and easy to follow'],
         glide: ['The note slides with the vario', 'a surge is heard in the middle of a beep'],

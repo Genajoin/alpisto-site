@@ -163,6 +163,7 @@ const de: Dict = {
     near: 'das Sinken lässt nach bis auf ein kleines Minus',
     sink: 'ins Sinken bis −4,5 m/s und wieder heraus',
     bumpy: 'eine +1,5-Thermik in turbulenter Luft',
+    surge: 'zwei schnelle Steigschübe bis +4 m/s in ruhiger Luft',
   },
   where: {
     mountains: 'Fliegen in den Bergen',
@@ -328,7 +329,7 @@ const de: Dict = {
     },
     glide: {
       t: 'Soll ein Piep der Luft folgen, während er klingt?',
-      l: 'In turbulenter Luft ändert sich das Steigen sogar innerhalb eines Pieps. Entweder hält jeder Piep den Ton, mit dem er begann, oder der Ton gleitet mit dem Vario.',
+      l: 'Wenn das Steigen schnell zunimmt, ändert es sich sogar innerhalb eines Pieps. Entweder hält jeder Piep den Ton, mit dem er begann, oder der Ton gleitet mit dem Vario.',
       o: {
         steady: ['Ein Ton pro Piep', 'der Ton springt von Piep zu Piep; klar und leicht zu verfolgen'],
         glide: ['Der Ton gleitet mit dem Vario', 'ein Schub ist mitten im Piep zu hören'],
