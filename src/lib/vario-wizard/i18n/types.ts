@@ -95,7 +95,6 @@ export interface Dict {
     chartSub: string
     tableSub: string
     cta: string
-    ctaHow: string
     toApp: string
     copyLink: string
     copied: string

@@ -74,7 +74,6 @@ const sl: Dict = {
     chartSub: 'Graf',
     tableSub: 'Tabela tonov',
     cta: 'Na FlyBeeperju ta zvok predvaja naprava, po želji pa hkrati tudi telefon: zvočnik telefona predvaja prave tone, precej glasneje kot piezo.',
-    ctaHow: 'Povezava odpre zemljevid FlyBeeper s tem zvokom. Tam poveži svoj vario in pritisni Uporabi. Varia nimaš pri roki? Zvok počaka, da ga povežeš. Na Androidu ga lahko zemljevid preda tudi aplikaciji FlyBeeper.',
     toApp: 'Naloži na moj FlyBeeper',
     copyLink: 'Kopiraj povezavo do tega zvoka',
     copied: 'Kopirano',

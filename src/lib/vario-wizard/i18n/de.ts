@@ -74,7 +74,6 @@ const de: Dict = {
     chartSub: 'Diagramm',
     tableSub: 'Tontabelle',
     cta: 'Auf einem FlyBeeper spielt dieser Ton am Gerät und, wenn du willst, gleichzeitig auf deinem Handy: Der Handylautsprecher spielt die echten Töne, viel lauter als ein Piezo.',
-    ctaHow: 'Der Link öffnet die FlyBeeper-Karte mit diesem Ton. Verbinde dort dein Vario und tippe auf Übernehmen. Kein Vario zur Hand? Der Ton wartet, bis du es verbindest. Unter Android kann die Karte ihn auch an die FlyBeeper-App weitergeben.',
     toApp: 'Auf meinen FlyBeeper',
     copyLink: 'Link zu diesem Ton kopieren',
     copied: 'Kopiert',

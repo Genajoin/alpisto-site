@@ -74,7 +74,6 @@ const it: Dict = {
     chartSub: 'Grafico',
     tableSub: 'Tabella dei toni',
     cta: 'Su un FlyBeeper questo suono esce dallo strumento e, se vuoi, anche dal telefono nello stesso momento: l\'altoparlante del telefono suona i toni veri, molto più forte di un piezo.',
-    ctaHow: 'Il link apre la mappa FlyBeeper con questo suono. Collega lì il tuo vario e premi Applica. Non hai il vario a portata di mano? Il suono aspetta finché non lo colleghi. Su Android la mappa può anche passarlo all\'app FlyBeeper.',
     toApp: 'Mettilo sul mio FlyBeeper',
     copyLink: 'Copia il link a questo suono',
     copied: 'Copiato',

@@ -74,7 +74,6 @@ const en: Dict = {
     chartSub: 'Chart',
     tableSub: 'Tone table',
     cta: 'On a FlyBeeper this sound plays on the instrument and, if you like, on your phone at the same moment: the phone speaker plays the real tones, much louder than a piezo.',
-    ctaHow: 'The link opens the FlyBeeper map with this sound. Connect your vario there and press Apply. No vario at hand? The sound waits until you connect it. On Android the map can also hand it to the FlyBeeper app.',
     toApp: 'Put it on my FlyBeeper',
     copyLink: 'Copy link to this sound',
     copied: 'Copied',

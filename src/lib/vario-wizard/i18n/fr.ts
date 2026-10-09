@@ -74,7 +74,6 @@ const fr: Dict = {
     chartSub: 'Graphique',
     tableSub: 'Table des tonalités',
     cta: 'Sur un FlyBeeper, ce son est joué par l’instrument et, si vous le souhaitez, en même temps par votre téléphone : le haut-parleur du téléphone joue les vraies tonalités, bien plus fort qu’un piézo.',
-    ctaHow: 'Le lien ouvre la carte FlyBeeper avec ce son. Connectez-y votre vario et appuyez sur Appliquer. Pas de vario sous la main ? Le son attend que vous le connectiez. Sur Android, la carte peut aussi le transmettre à l’app FlyBeeper.',
     toApp: 'L’installer sur mon FlyBeeper',
     copyLink: 'Copier le lien de ce son',
     copied: 'Copié',

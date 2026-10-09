@@ -633,7 +633,6 @@ function renderResult() {
         <button type="button" class="vw-btn" id="vw-copy" style="color:var(--color-paper);background:transparent;border-color:var(--color-paper)">${esc(U.copyLink)}</button>
         <span class="vw-copied" id="vw-copied"></span>
       </div>
-      <p style="margin-top:14px;font-size:15px">${esc(U.ctaHow)}</p>
       <p style="margin-top:14px;font-size:15px">${esc(U.noFb)} <a href="/flybeeper">${esc(U.noFbLink)}</a>.</p>
     </div>
     <div class="vw-nav">
