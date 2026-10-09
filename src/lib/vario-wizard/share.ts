@@ -12,9 +12,9 @@ import type { Knobs } from './generator'
 export const APP_BASE = 'https://maps.flybeeper.com/'
 
 // Indexes in the app's SHARE_UUIDS: 1 climb on, 2 climb off, 3 sink on,
-// 4 sink off, 5 early exit, 7 averaging, 8–11 the four curves.
+// 4 sink off, 5 early exit, 6 smooth frequency change, 7 averaging, 8–11 the four curves.
 const CODE = {
-  climbOn: '_b', climbOff: '_c', sinkOn: '_d', sinkOff: '_e', hyst: '_f', average: '_h',
+  climbOn: '_b', climbOff: '_c', sinkOn: '_d', sinkOff: '_e', hyst: '_f', glide: '_g', average: '_h',
   vario: '_i', freq: '_j', cycle: '_k', duty: '_l',
 } as const
 
@@ -45,6 +45,7 @@ export function appLink(s: Sound, name = 'My vario sound'): string {
     [CODE.sinkOff]: t.sinkOff,
     [CODE.hyst]: t.hyst,
     [CODE.average]: t.average,
+    [CODE.glide]: s.glide,
   }
   return `${APP_BASE}#preset=${b64url(JSON.stringify([name, bag]))}`
 }

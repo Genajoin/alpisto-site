@@ -72,6 +72,9 @@ export interface Dict {
     rowSinkOn: string
     rowSinkOff: string
     rowAverage: string
+    rowGlide: string
+    yes: string
+    no: string
     never: string
     was: string
     tableNote: string
@@ -135,6 +138,9 @@ export interface Dict {
     knobs: Record<string, string>
   }
   facts: {
+    glide: string
+    glideOn: string
+    glideOff: string
     start: string
     stop: string
     near: string

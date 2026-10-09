@@ -51,6 +51,9 @@ const fr: Dict = {
     rowSinkOn: 'Son de descente en dessous de',
     rowSinkOff: 'Son de descente maintenu jusqu’à',
     rowAverage: 'Lissage du vario',
+    rowGlide: 'Le ton varie pendant un bip (souvent appelé Dynamic frequency)',
+    yes: 'oui',
+    no: 'non',
     never: 'jamais',
     was: 'avant {v}',
     tableNote: 'Entre les points, le vario trace des lignes droites. La plupart des varios qui acceptent une table des tonalités prennent ces colonnes ; recopiez les chiffres dans le vôtre. Les points en gris tombent dans le silence avec ces seuils.',
@@ -121,6 +124,9 @@ const fr: Dict = {
     },
   },
   facts: {
+    glide: 'Pendant un bip',
+    glideOn: 'le ton suit le vario',
+    glideOff: 'une note par bip',
     start: 'Les bips de montée commencent au-dessus de',
     stop: 'Quand la montée faiblit, ils s’arrêtent à',
     near: 'Entre zéro et l’alarme de descente',
@@ -318,6 +324,14 @@ const fr: Dict = {
         flat: 'Un son grave continu, toujours le même',
         pulsed: 'Un son grave pulsé',
         slow: 'Un bip court par seconde',
+      },
+    },
+    glide: {
+      t: 'Un bip doit-il suivre l’air pendant qu’il sonne ?',
+      l: 'Dans l’air turbulent, la montée change même pendant un seul bip. Soit chaque bip garde la note de son début, soit la note glisse avec le vario.',
+      o: {
+        steady: ['Une note par bip', 'le ton change par marches d’un bip à l’autre ; net et facile à suivre'],
+        glide: ['La note glisse avec le vario', 'une poussée s’entend au milieu d’un bip'],
       },
     },
     reaction: {

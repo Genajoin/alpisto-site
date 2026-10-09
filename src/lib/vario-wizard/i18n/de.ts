@@ -51,6 +51,9 @@ const de: Dict = {
     rowSinkOn: 'Sinkton an unter',
     rowSinkOff: 'Sinkton hält bis',
     rowAverage: 'Vario-Mittelung',
+    rowGlide: 'Ton ändert sich im Piep (oft Dynamic frequency genannt)',
+    yes: 'ja',
+    no: 'nein',
     never: 'nie',
     was: 'vorher {v}',
     tableNote: 'Zwischen den Punkten zieht ein Vario gerade Linien. Die meisten Varios mit Tontabelle nutzen diese Spalten; übertrage die Zahlen in deins. Grau markierte Punkte liegen mit diesen Schwellen in der Stille.',
@@ -121,6 +124,9 @@ const de: Dict = {
     },
   },
   facts: {
+    glide: 'Im Piep',
+    glideOn: 'der Ton folgt dem Vario',
+    glideOff: 'ein Ton pro Piep',
     start: 'Steigton ab',
     stop: 'Beim Nachlassen endet er bei',
     near: 'Zwischen null und Sinkalarm',
@@ -318,6 +324,14 @@ const de: Dict = {
         flat: 'Ein tiefer Dauerton, immer gleich',
         pulsed: 'Ein pulsierender tiefer Ton',
         slow: 'Ein kurzer Piep pro Sekunde',
+      },
+    },
+    glide: {
+      t: 'Soll ein Piep der Luft folgen, während er klingt?',
+      l: 'In turbulenter Luft ändert sich das Steigen sogar innerhalb eines Pieps. Entweder hält jeder Piep den Ton, mit dem er begann, oder der Ton gleitet mit dem Vario.',
+      o: {
+        steady: ['Ein Ton pro Piep', 'der Ton springt von Piep zu Piep; klar und leicht zu verfolgen'],
+        glide: ['Der Ton gleitet mit dem Vario', 'ein Schub ist mitten im Piep zu hören'],
       },
     },
     reaction: {

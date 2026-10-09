@@ -56,6 +56,7 @@ export function describe(d: Dict, s: Sound, k: Knobs): Fact[] {
     add('sink', F.sink, fmt(F.sinkValue, { v: ms(k.sinkOn), style, pitch }))
     add('sinkStop', F.sinkStop, `${ms(p.sinkOff / 100)} ${d.u.ms}`)
   }
+  add('glide', F.glide, k.glide ? F.glideOn : F.glideOff)
   const react = k.average <= 0.15 ? F.instant : k.average <= 0.4 ? F.balanced : F.calm
   add('react', F.react, fmt(F.reactValue, { react, v: k.average.toFixed(2).replace('.', d.dec) }))
   return facts

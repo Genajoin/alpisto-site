@@ -254,6 +254,15 @@ export const STEPS: Step[] = [
     ],
   },
   {
+    key: 'glide',
+    kind: 'sound',
+    clip: 'bumpy',
+    options: [
+      { key: 'steady', apply: () => ({ glide: false }) },
+      { key: 'glide', apply: () => ({ glide: true }) },
+    ],
+  },
+  {
     key: 'reaction',
     kind: 'sound',
     clip: 'bumpy',
@@ -304,7 +313,7 @@ export const STEPS: Step[] = [
   },
 ]
 
-const TUNE = ['growth', 'detail', 'top', 'start', 'fade', 'near', 'sinkFrom', 'sinkHold', 'sinkStyle', 'reaction']
+const TUNE = ['growth', 'detail', 'top', 'glide', 'start', 'fade', 'near', 'sinkFrom', 'sinkHold', 'sinkStyle', 'reaction']
 /** The full path's questions that set tone and rhythm from scratch. */
 const SOUND_STEPS = ['growth', 'detail', 'top']
 const FINAL = ['volume', 'sets', 'hear', 'annoy']
@@ -329,7 +338,7 @@ export function flow(a: Answers): string[] {
       out.push('rTempo', 'rTone')
     else if (!known)
       out.push('bSound')
-    out.push('bStart', 'bSink')
+    out.push('glide', 'bStart', 'bSink')
   }
   else if (adjust) {
     // From a familiar vario: its tone, rhythm and curve are moved, not replaced.

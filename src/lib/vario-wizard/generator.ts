@@ -67,6 +67,8 @@ export interface Knobs {
   sinkFalls: boolean
   /** Vario averaging, s. */
   average: number
+  /** The firmware's "smooth frequency change": a beep's pitch follows the vario while it sounds. */
+  glide?: boolean
 }
 
 export const DEFAULT_KNOBS: Knobs = {
@@ -87,6 +89,7 @@ export const DEFAULT_KNOBS: Knobs = {
   sinkPitch: 420,
   sinkFalls: true,
   average: 0.3,
+  glide: false,
 }
 
 const clamp = (x: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, x))
@@ -152,12 +155,15 @@ export function tidy(k: Knobs): Knobs {
     sinkOn: Math.round(sinkOn * 100) / 100,
     sinkHold: clamp(Math.round((k.sinkHold ?? 0) * 100) / 100, 0, 1),
     average: clamp(Math.round(k.average * 100) / 100, 0.05, 2),
+    glide: k.glide === true,
   }
 }
 
 export interface Sound {
   curves: Curves
   trigger: Trigger
+  /** Pitch follows the vario inside a beep (the firmware's "smooth frequency change"). */
+  glide: boolean
 }
 
 export function generate(input: Knobs): Sound {
@@ -237,5 +243,5 @@ export function generate(input: Knobs): Sound {
     hyst: 0,
     average: k.average,
   }
-  return { curves, trigger }
+  return { curves, trigger, glide: k.glide === true }
 }

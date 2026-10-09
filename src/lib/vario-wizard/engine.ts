@@ -30,7 +30,13 @@ export interface Beep {
   t: number
   /** Length, s. */
   d: number
+  /** Pitch at the start, Hz. */
   f: number
+  /**
+   * With the firmware's "smooth frequency change" on: each retune while the
+   * beep sounds, [start s, Hz], one per 40 ms tick when the pitch moves.
+   */
+  g?: [number, number][]
 }
 
 export function interp(xs: number[], ys: number[], x: number): number {
@@ -104,7 +110,7 @@ function averageStep(avg: number, input: number, averageMs: number): number {
  */
 export const TICK_MS = TICK
 
-export function simulate(c: Curves, t: Trigger, air: (tMs: number) => number, lenMs: number, track?: number[]): Beep[] {
+export function simulate(c: Curves, t: Trigger, air: (tMs: number) => number, lenMs: number, track?: number[], glide = false): Beep[] {
   const p = paramsOf(t)
   const avgMs = Math.round(t.average * 1000)
   const beeps: Beep[] = []
@@ -116,9 +122,10 @@ export function simulate(c: Curves, t: Trigger, air: (tMs: number) => number, le
   let phaseEnd = 0
   let beepStart = 0
   let beepF = 0
+  let beepG: [number, number][] = []
 
   const endBeep = (now: number) => {
-    beeps.push({ t: beepStart / 1000, d: (now - beepStart) / 1000, f: beepF })
+    beeps.push({ t: beepStart / 1000, d: (now - beepStart) / 1000, f: beepF, ...(beepG.length ? { g: beepG } : {}) })
   }
   const startSample = (now: number) => {
     const tone = toneAt(c, v)
@@ -129,6 +136,7 @@ export function simulate(c: Curves, t: Trigger, air: (tMs: number) => number, le
     }
     beepStart = now
     beepF = tone.f
+    beepG = []
     phase = 'sample'
     phaseEnd = now + ms
   }
@@ -156,8 +164,15 @@ export function simulate(c: Curves, t: Trigger, air: (tMs: number) => number, le
     v = Math.round(smooth)
     track?.push(v)
     emaX10 = Math.trunc(emaX10 * 9 / 10) + v
-    if (phase === 'sample')
+    if (phase === 'sample') {
+      // The firmware retunes a sounding beep on every tick; its length stays.
+      if (glide) {
+        const f = toneAt(c, v).f
+        if (f !== (beepG.length ? beepG[beepG.length - 1]![1] : beepF))
+          beepG.push([now / 1000, f])
+      }
       continue
+    }
     side = decide(p, side, v, Math.trunc(emaX10 / 10))
     if (side === null)
       phase = 'idle'

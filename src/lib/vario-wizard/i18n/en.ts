@@ -51,6 +51,9 @@ const en: Dict = {
     rowSinkOn: 'Sink tone on below',
     rowSinkOff: 'Sink tone held up to',
     rowAverage: 'Vario averaging',
+    rowGlide: 'Pitch moves inside a beep (often called Dynamic frequency)',
+    yes: 'yes',
+    no: 'no',
     never: 'never',
     was: 'was {v}',
     tableNote: 'Between the points a vario draws straight lines. Most varios that take a tone table take these columns; copy the numbers into yours. Points in grey lie in silence with these thresholds.',
@@ -121,6 +124,9 @@ const en: Dict = {
     },
   },
   facts: {
+    glide: 'Inside a beep',
+    glideOn: 'the pitch follows the vario',
+    glideOff: 'one note per beep',
     start: 'Climb beeps start above',
     stop: 'On the way down they stop at',
     near: 'Between zero and the sink alarm',
@@ -318,6 +324,14 @@ const en: Dict = {
         flat: 'A steady low tone, always the same',
         pulsed: 'A pulsing low tone',
         slow: 'One short beep a second',
+      },
+    },
+    glide: {
+      t: 'Should a beep follow the air while it sounds?',
+      l: 'In rough air the climb changes even within one beep. Either each beep keeps the note it started with, or the note slides with the vario.',
+      o: {
+        steady: ['One note per beep', 'the pitch steps from beep to beep; clean and easy to follow'],
+        glide: ['The note slides with the vario', 'a surge is heard in the middle of a beep'],
       },
     },
     reaction: {

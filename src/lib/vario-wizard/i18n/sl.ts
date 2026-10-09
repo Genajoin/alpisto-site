@@ -51,6 +51,9 @@ const sl: Dict = {
     rowSinkOn: 'Ton spuščanja se vklopi pod',
     rowSinkOff: 'Ton spuščanja se zadrži do',
     rowAverage: 'Povprečenje varia',
+    rowGlide: 'Ton se spreminja med piskom (pogosto Dynamic frequency)',
+    yes: 'da',
+    no: 'ne',
     never: 'nikoli',
     was: 'prej {v}',
     tableNote: 'Med točkami vario potegne ravne črte. Večina variov, ki sprejmejo tabelo tonov, uporablja te stolpce; prepiši številke v svojega. Sive točke so pri teh pragovih v tišini.',
@@ -121,6 +124,9 @@ const sl: Dict = {
     },
   },
   facts: {
+    glide: 'Med piskom',
+    glideOn: 'ton sledi variu',
+    glideOff: 'en ton na pisk',
     start: 'Piski dviganja se začnejo nad',
     stop: 'Ko dviganje pojema, utihnejo pri',
     near: 'Med ničlo in alarmom za spuščanje',
@@ -318,6 +324,14 @@ const sl: Dict = {
         flat: 'Neprekinjen nizek ton, vedno enak',
         pulsed: 'Utripajoč nizek ton',
         slow: 'En kratek pisk na sekundo',
+      },
+    },
+    glide: {
+      t: 'Naj pisk sledi zraku, medtem ko zveni?',
+      l: 'V turbulenci se dviganje spremeni celo med enim piskom. Vsak pisk drži ton, s katerim se je začel, ali pa ton drsi skupaj z variom.',
+      o: {
+        steady: ['En ton na pisk', 'ton se spreminja v stopnicah od piska do piska; čisto in lahko slediti'],
+        glide: ['Ton drsi z variom', 'sunek dviganja se sliši sredi piska'],
       },
     },
     reaction: {

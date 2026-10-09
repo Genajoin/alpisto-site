@@ -25,9 +25,10 @@ const canShare = typeof navigator.share === 'function'
 const TEXT_STEPS = ['annoy', 'wizard']
 let knobs: Knobs = { ...DEFAULT_KNOBS }
 let answers: Answers = {}
-/** Knobs before each answered step, so Back undoes it. */
 /** State before each answered step, so Back undoes it. */
 const undo: { knobs: Knobs, answers: Answers }[] = []
+/** Answers Back has undone: shown as chosen again, and Next takes them. */
+let remembered: Answers = {}
 /** Position in flow(answers); past its end is the result. */
 let pos = 0
 
@@ -53,7 +54,7 @@ function runFor(k: Knobs, clip: ClipKey): Run {
   if (!r) {
     const s = generate(k)
     const track: number[] = []
-    r = { beeps: simulate(s.curves, s.trigger, CLIPS[clip].air, CLIPS[clip].lenMs, track), track }
+    r = { beeps: simulate(s.curves, s.trigger, CLIPS[clip].air, CLIPS[clip].lenMs, track, s.glide), track }
     runCache.set(key, r)
   }
   return r
@@ -138,7 +139,7 @@ function play(btn: HTMLButtonElement, spec: PlaySpec) {
     master = m
     t0 = audio.currentTime + 0.05
     from = start
-    for (const { t, d, f } of runFor(spec.k(), spec.clip).beeps) {
+    for (const { t, d, f, g: glide } of runFor(spec.k(), spec.clip).beeps) {
       if (t < start)
         continue
       const osc = audio.createOscillator()
@@ -146,6 +147,9 @@ function play(btn: HTMLButtonElement, spec: PlaySpec) {
       osc.type = 'square'
       osc.frequency.value = f
       const at = t0 + (t - start)
+      // Retuned in steps on the firmware's 40 ms tick, as the instrument does.
+      for (const [gt, gf] of glide ?? [])
+        osc.frequency.setValueAtTime(gf, at + (gt - t))
       g.gain.setValueAtTime(0, at)
       g.gain.linearRampToValueAtTime(1, at + 0.003)
       g.gain.setValueAtTime(1, at + Math.max(d - 0.003, 0.003))
@@ -237,7 +241,14 @@ function traceSvg(k: Knobs, clip: ClipKey): string {
   for (let t = 0; t <= c.lenMs; t += 100)
     pts.push(`${x(t).toFixed(1)},${y(Math.max(lo * 100, Math.min(hi * 100, c.air(t)))).toFixed(1)}`)
   const beeps = beepsFor(k, clip)
-  const marks = beeps.map((b) => `<rect x="${x(b.t * 1000).toFixed(1)}" y="66" width="${Math.max(1, x(b.d * 1000) - TR.l).toFixed(1)}" height="12" fill="${pitchColor(b.f)}"><title>${Math.round(b.f)} ${d.u.hz}</title></rect>`).join('')
+  // A beep that glides is drawn piece by piece, each in the colour of its pitch.
+  const marks = beeps.map((b) => {
+    const cuts: [number, number][] = [[b.t, b.f], ...(b.g ?? [])]
+    return cuts.map(([t0, f], i) => {
+      const t1 = i + 1 < cuts.length ? cuts[i + 1]![0] : b.t + b.d
+      return `<rect x="${x(t0 * 1000).toFixed(1)}" y="66" width="${Math.max(1, x((t1 - t0) * 1000) - TR.l).toFixed(1)}" height="12" fill="${pitchColor(f)}"><title>${Math.round(f)} ${d.u.hz}</title></rect>`
+    }).join('')
+  }).join('')
   return `<svg class="vw-trace" viewBox="0 0 ${TR.w} ${TR.h}" role="img" aria-label="${esc(d.ui.traceAria)}">
     <line x1="${TR.l}" x2="${TR.w - TR.r}" y1="${y(0)}" y2="${y(0)}" stroke="var(--color-ink-3)" stroke-dasharray="3 3" fill="none"/>
     <text x="${TR.l - 6}" y="${y(0) + 4}" text-anchor="end">0</text>
@@ -363,6 +374,7 @@ function tableHtml(s: Sound, before?: Sound): string {
     <tr><td>${esc(U.rowSinkOn)}</td>${cell(never ? U.never : val(t.sinkOn), w ? (w.sinkOn <= -10 ? U.never : val(w.sinkOn)) : undefined)}</tr>
     <tr><td>${esc(U.rowSinkOff)}</td>${cell(never ? '—' : val(t.sinkOff), w ? (w.sinkOn <= -10 ? '—' : val(w.sinkOff)) : undefined)}</tr>
     <tr><td>${esc(U.rowAverage)}</td>${cell(sec(t.average), w ? sec(w.average) : undefined)}</tr>
+    <tr><td>${esc(U.rowGlide)}</td>${cell(s.glide ? U.yes : U.no, before ? (before.glide ? U.yes : U.no) : undefined)}</tr>
     </tbody></table></div>
     <p class="vw-note">${esc(U.tableNote)}${o ? ` ${esc(U.tableNoteMoved)}` : ''}</p>`
 }
@@ -406,6 +418,8 @@ function answer(step: Step, value: string | null) {
   stopPlaying()
   ownRun = true
   undo.push({ knobs: { ...knobs }, answers: { ...answers } })
+  if (value === null)
+    delete remembered[step.key]
   if (value !== null) {
     answers[step.key] = value
     const o = step.options.find((x) => x.key === value)
@@ -420,6 +434,7 @@ function goBack() {
   const u = undo.pop()
   if (!u)
     return
+  remembered = { ...remembered, ...answers }
   knobs = u.knobs
   answers = u.answers
   pos = Math.max(0, pos - 1)
@@ -441,7 +456,12 @@ function renderStep() {
   const decided = (key: string) => !keys.includes(key) || answers[key] !== undefined || pos > keys.indexOf(key)
   const pathKnown = decided('where') && decided('familiar')
   const lead = leadOf(step)
-  const picked = (k: string) => (answers[step.key] ?? '').split(',').includes(k)
+  const prev = answers[step.key] ?? remembered[step.key]
+  const picked = (k: string) => (prev ?? '').split(',').includes(k)
+  // Back here with an answer already given: Next keeps it, in place of Skip.
+  const again = prev !== undefined && step.kind !== 'text' && !step.multi && step.options.some((o) => o.key === prev)
+  const hasContinue = step.kind === 'text' || (step.kind === 'info' && !!step.multi)
+  const known = prev !== undefined || (step.kind === 'text' && step.options.some((o) => (answers[o.key] ?? remembered[o.key]) !== undefined))
   let body = ''
   if (step.kind === 'sound') {
     body = `<div class="vw-opts">${step.options.map((o) => {
@@ -459,7 +479,7 @@ function renderStep() {
     body = `<div class="vw-nav" style="margin-top:0"><button type="button" class="vw-btn accent play" id="vw-listen" aria-pressed="false">${esc(d.ui.play)}</button></div>
       <div class="vw-opts" style="margin-top:14px">${step.options.map((o) => {
         const [label, hint] = optText(step, o.key)
-        return `<button type="button" class="vw-choice" data-pick="${o.key}">${esc(label)}${hint ? `<span class="vw-opt-hint">${esc(hint)}</span>` : ''}</button>`
+        return `<button type="button" class="vw-choice${picked(o.key) ? ' is-picked' : ''}" data-pick="${o.key}">${esc(label)}${hint ? `<span class="vw-opt-hint">${esc(hint)}</span>` : ''}</button>`
       }).join('')}</div>`
   }
   else if (step.kind === 'info' && step.multi) {
@@ -477,7 +497,7 @@ function renderStep() {
     body = `<div class="vw-fields">${step.options.map((o) => {
       const [label, hint] = optText(step, o.key)
       return `<label class="vw-field"><span class="vw-opt-label">${esc(label)}</span>${hint ? `<span class="vw-opt-hint">${esc(hint)}</span>` : ''}
-        <textarea class="vw-text" data-field="${o.key}" maxlength="${TEXT_MAX}" rows="3">${esc(answers[o.key] ?? '')}</textarea></label>`
+        <textarea class="vw-text" data-field="${o.key}" maxlength="${TEXT_MAX}" rows="3">${esc(answers[o.key] ?? remembered[o.key] ?? '')}</textarea></label>`
     }).join('')}</div>
       <div class="vw-nav"><button type="button" class="vw-btn ink" id="vw-continue">${esc(d.ui.cont)}</button></div>`
   }
@@ -493,13 +513,14 @@ function renderStep() {
       ${withSound ? `<div class="vw-preview" id="vw-preview"><div class="vw-pv-chart" id="vw-pv-chart"></div><div class="vw-pv-text" id="vw-pv-text"></div></div>` : ''}
       <div class="vw-nav">
         <button type="button" class="vw-btn" data-back ${undo.length === 0 ? 'disabled' : ''}>${esc(d.ui.back)}</button>
-        <button type="button" class="vw-btn" data-skip>${esc(d.ui.skip)}</button>
+        ${again ? `<button type="button" class="vw-btn ink" data-again>${esc(d.ui.cont)}</button>` : known && hasContinue ? '' : `<button type="button" class="vw-btn" data-skip>${esc(d.ui.skip)}</button>`}
         ${step.optional ? `<button type="button" class="vw-btn" data-finish>${esc(d.ui.skipToEnd)}</button>` : ''}
       </div>
     </div>`
 
   root.querySelector('[data-back]')!.addEventListener('click', goBack)
-  root.querySelector('[data-skip]')!.addEventListener('click', () => answer(step, null))
+  root.querySelector('[data-skip]')?.addEventListener('click', () => answer(step, null))
+  root.querySelector('[data-again]')?.addEventListener('click', () => answer(step, prev!))
   root.querySelector('[data-finish]')?.addEventListener('click', () => {
     ownRun = true
     undo.push({ knobs: { ...knobs }, answers: { ...answers } })
@@ -778,6 +799,7 @@ function renderResult() {
   const restart = () => {
     knobs = { ...DEFAULT_KNOBS }
     answers = {}
+    remembered = {}
     fineBase = null
     undo.length = 0
     pos = 0

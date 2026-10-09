@@ -51,6 +51,9 @@ const it: Dict = {
     rowSinkOn: 'Suono di discesa sotto',
     rowSinkOff: 'Il suono di discesa resta fino a',
     rowAverage: 'Media del vario',
+    rowGlide: 'Il tono cambia dentro un bip (spesso chiamato Dynamic frequency)',
+    yes: 'sì',
+    no: 'no',
     never: 'mai',
     was: 'era {v}',
     tableNote: 'Tra i punti il vario traccia linee rette. La maggior parte dei vario che accettano una tabella dei toni usa queste colonne: copia i numeri nel tuo. I punti in grigio cadono nel silenzio con queste soglie.',
@@ -121,6 +124,9 @@ const it: Dict = {
     },
   },
   facts: {
+    glide: 'Dentro un bip',
+    glideOn: 'il tono segue il vario',
+    glideOff: 'una nota per bip',
     start: 'I bip di salita partono sopra',
     stop: 'Quando la salita cala si fermano a',
     near: 'Tra lo zero e l\'allarme di discesa',
@@ -318,6 +324,14 @@ const it: Dict = {
         flat: 'Un tono basso continuo, sempre uguale',
         pulsed: 'Un tono basso pulsante',
         slow: 'Un bip breve al secondo',
+      },
+    },
+    glide: {
+      t: 'Un bip deve seguire l’aria mentre suona?',
+      l: 'In aria turbolenta la salita cambia anche dentro un solo bip. O ogni bip tiene la nota con cui è partito, o la nota scivola con il vario.',
+      o: {
+        steady: ['Una nota per bip', 'il tono cambia a gradini da un bip all’altro; pulito e facile da seguire'],
+        glide: ['La nota scivola con il vario', 'una spinta si sente a metà del bip'],
       },
     },
     reaction: {
