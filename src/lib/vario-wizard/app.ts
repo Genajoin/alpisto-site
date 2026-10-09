@@ -200,7 +200,7 @@ function play(btn: HTMLButtonElement, spec: PlaySpec) {
 // ---------- drawing ----------
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!))
 /** Longest free-text answer; the worker keeps the same. */
-const TEXT_MAX = 500
+const TEXT_MAX = 300
 const ms = (v: number) => signed(d, v)
 const dec = (v: number, n = 2) => v.toFixed(n).replace('.', d.dec)
 /** Option label and hint in this language; brand names are not translated. */
