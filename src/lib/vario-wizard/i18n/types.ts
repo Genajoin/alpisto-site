@@ -94,12 +94,25 @@ export interface Dict {
     wasNow: string
     chartSub: string
     tableSub: string
-    cta: string
+    applySub: string
+    applyH2: string
     toApp: string
+    /** {table} = the applyTable link. */
+    applyOther: string
+    applyTable: string
+    pitch: string
+    noFbLink: string
+    shareSub: string
+    shareH2: string
+    shareLead: string
+    share: string
+    shareText: string
     copyLink: string
     copied: string
-    noFb: string
-    noFbLink: string
+    sharedSub: string
+    sharedH2: string
+    sharedLead: string
+    findOwn: string
     changeLast: string
     restart: string
     appName: string

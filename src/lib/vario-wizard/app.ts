@@ -18,6 +18,11 @@ const root = document.getElementById('vw')!
 let d!: Dict
 /** True once the pilot answers here: only then are the answers sent (a shared link is someone else's). */
 let ownRun = false
+/** Opened from a link a friend sent: greet them and lead to their own sound. */
+let viaShare = false
+const canShare = typeof navigator.share === 'function'
+/** Free-text answers: kept with the pilot's answers, never put into a link to share. */
+const TEXT_STEPS = ['annoy', 'wizard']
 let knobs: Knobs = { ...DEFAULT_KNOBS }
 let answers: Answers = {}
 /** Knobs before each answered step, so Back undoes it. */
@@ -594,8 +599,14 @@ function renderResult() {
       </div></div>`
   }).join('')
   root.innerHTML = `
+    ${viaShare ? `<div class="vw-card vw-shared">
+      <p class="vw-sub">${esc(U.sharedSub)}</p>
+      <h2 class="vw-h2 vw-h2-s">${esc(U.sharedH2)}</h2>
+      <p class="vw-qlead">${esc(U.sharedLead)}</p>
+      <button type="button" class="vw-btn accent" data-own>${esc(U.findOwn)}</button>
+    </div>` : ''}
     <div class="vw-card">
-      <p class="vw-sub">${esc(U.resSub)}</p>
+      <p class="vw-sub">${esc(viaShare ? U.sharedSub : U.resSub)}</p>
       <h2 class="vw-h2">${esc(U.resH2)}</h2>
       <p class="vw-qlead">${esc(U.resLead)}</p>
       <button type="button" class="vw-btn accent play" id="vw-flight" aria-pressed="false">${esc(U.playFlight)}</button>
@@ -625,19 +636,30 @@ function renderResult() {
       <p class="vw-sub">${esc(U.tableSub)}</p>
       <div id="vw-res-table"></div>
     </div>
-    <div class="vw-card" id="vw-others" hidden></div>
     <div class="vw-cta">
-      <p>${esc(U.cta)}</p>
-      <div class="vw-nav">
-        <a class="vw-btn accent" id="vw-app" href="#" target="_blank" rel="noopener">${esc(U.toApp)}</a>
-        <button type="button" class="vw-btn" id="vw-copy" style="color:var(--color-paper);background:transparent;border-color:var(--color-paper)">${esc(U.copyLink)}</button>
+      <p class="vw-sub">${esc(U.applySub)}</p>
+      <h2 class="vw-h2 vw-h2-s">${esc(U.applyH2)}</h2>
+      <a class="vw-btn accent" id="vw-app" href="#" target="_blank" rel="noopener">${esc(U.toApp)}</a>
+      <p class="vw-cta-alt">${fmt(esc(U.applyOther), { table: `<a href="#vw-res-table" data-totable>${esc(U.applyTable)}</a>` })}</p>
+      <div class="vw-cta-pitch">
+        <p>${esc(U.pitch)}</p>
+        <a class="vw-btn vw-btn-dark" href="/flybeeper">${esc(U.noFbLink)}</a>
+      </div>
+    </div>
+    <div class="vw-card" id="vw-others" hidden></div>
+    <div class="vw-card">
+      <p class="vw-sub">${esc(U.shareSub)}</p>
+      <h2 class="vw-h2 vw-h2-s">${esc(U.shareH2)}</h2>
+      <p class="vw-qlead">${esc(U.shareLead)}</p>
+      <div class="vw-nav" style="margin-top:0">
+        ${canShare ? `<button type="button" class="vw-btn accent" id="vw-share">${esc(U.share)}</button>` : ''}
+        <button type="button" class="vw-btn${canShare ? '' : ' accent'}" id="vw-copy">${esc(U.copyLink)}</button>
         <span class="vw-copied" id="vw-copied"></span>
       </div>
-      <p style="margin-top:14px;font-size:15px">${esc(U.noFb)} <a href="/flybeeper">${esc(U.noFbLink)}</a>.</p>
     </div>
     <div class="vw-nav">
-      <button type="button" class="vw-btn" id="vw-back">${esc(U.changeLast)}</button>
-      <button type="button" class="vw-btn" id="vw-restart">${esc(U.restart)}</button>
+      ${viaShare ? '' : `<button type="button" class="vw-btn" id="vw-back">${esc(U.changeLast)}</button>`}
+      <button type="button" class="vw-btn${viaShare ? ' accent' : ''}" id="vw-restart">${esc(viaShare ? U.findOwn : U.restart)}</button>
     </div>`
 
   const resChart = root.querySelector<HTMLElement>('#vw-res-chart')!
@@ -729,14 +751,35 @@ function renderResult() {
 
   root.querySelector('#vw-copy')!.addEventListener('click', async () => {
     const out = root.querySelector('#vw-copied')!
+    const url = shareUrl()
     try {
-      await navigator.clipboard.writeText(location.href)
+      await navigator.clipboard.writeText(url)
       out.textContent = U.copied
     } catch {
-      out.textContent = location.href
+      out.textContent = url
     }
   })
-  root.querySelector('#vw-back')!.addEventListener('click', () => {
+  root.querySelector('#vw-share')?.addEventListener('click', () => {
+    navigator.share({ title: d.page.title, text: U.shareText, url: shareUrl() }).catch(() => {})
+  })
+  root.querySelector('[data-totable]')!.addEventListener('click', (e) => {
+    e.preventDefault()
+    root.querySelector('#vw-res-table')?.closest('.vw-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  })
+  const restart = () => {
+    knobs = { ...DEFAULT_KNOBS }
+    answers = {}
+    fineBase = null
+    undo.length = 0
+    pos = 0
+    viaShare = false
+    document.querySelector<HTMLElement>('.vw-lead')?.removeAttribute('hidden')
+    window.history.replaceState(null, '', location.pathname)
+    renderStep()
+    root.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+  root.querySelector('[data-own]')?.addEventListener('click', restart)
+  root.querySelector('#vw-back')?.addEventListener('click', () => {
     fineBase = null
     if (undo.length) {
       goBack()
@@ -746,15 +789,17 @@ function renderResult() {
     pos = flow(answers).length - 1
     renderStep()
   })
-  root.querySelector('#vw-restart')!.addEventListener('click', () => {
-    knobs = { ...DEFAULT_KNOBS }
-    answers = {}
-    fineBase = null
-    undo.length = 0
-    pos = 0
-    window.history.replaceState(null, '', location.pathname)
-    renderStep()
-  })
+  root.querySelector('#vw-restart')!.addEventListener('click', restart)
+}
+
+/**
+ * The link a pilot sends to a friend: the sound and the answers that shape it,
+ * without the free-text answers (those are the pilot's own feedback), marked
+ * so the page greets the friend instead of the author.
+ */
+function shareUrl(): string {
+  const a = Object.fromEntries(Object.entries(answers).filter(([k]) => !TEXT_STEPS.includes(k)))
+  return `${location.origin}${location.pathname}#s=${encodeState({ k: tidy(knobs), a })}&f=1`
 }
 
 /** Redraws the chart on screen at its current width. */
@@ -771,6 +816,10 @@ void (async () => {
   const lang = root.dataset.lang ?? 'en'
   d = (await (DICTS[`./i18n/${lang}.ts`] ?? DICTS['./i18n/en.ts']!)()).default
   const shared = decodeState(location.hash)
+  viaShare = !!shared && /[#&]f=1\b/.test(location.hash)
+  // A friend's link: the greeting comes first, the page's long intro would push it off the screen.
+  if (viaShare)
+    document.querySelector<HTMLElement>('.vw-lead')?.setAttribute('hidden', '')
   if (shared) {
     knobs = tidy({ ...DEFAULT_KNOBS, ...shared.k })
     answers = shared.a

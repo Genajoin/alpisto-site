@@ -86,7 +86,15 @@ const { lang } = Astro.props
   .vw-cta { border: 2px solid var(--color-ink); background: var(--color-ink); color: var(--color-paper); padding: 24px; }
   .vw-cta p { margin: 0 0 14px; max-width: 62ch; font-size: 17px; line-height: 1.55; }
   .vw-cta a { color: var(--color-accent); }
-  .vw-copied { font-family: var(--font-mono); font-size: 12px; color: var(--color-ink-3); align-self: center; }
+  .vw-cta .vw-sub { font-size: 12px; line-height: 1.4; margin: 0 0 10px; color: var(--color-paper-alt); opacity: 0.7; }
+  .vw-cta .vw-h2 { color: var(--color-paper); margin-bottom: 18px; }
+  .vw-cta .vw-btn.accent { display: inline-block; text-decoration: none; color: var(--color-ink); border-color: var(--color-accent); }
+  .vw-cta-alt { margin: 16px 0 0 !important; font-size: 15px !important; color: var(--color-paper-alt); }
+  .vw-cta-pitch { margin-top: 22px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.18); }
+  .vw-cta .vw-btn-dark { display: inline-block; text-decoration: none; background: transparent; color: var(--color-paper); border-color: var(--color-paper); }
+  .vw-cta .vw-btn-dark:hover, .vw-cta .vw-btn-dark:focus-visible { background: var(--color-paper); color: var(--color-ink); }
+  .vw-shared { border-color: var(--color-accent); box-shadow: inset 6px 0 0 var(--color-accent); }
+  .vw-copied { font-family: var(--font-mono); font-size: 12px; color: var(--color-ink-3); align-self: center; min-width: 0; overflow-wrap: anywhere; user-select: all; }
   .vw-langs { display: flex; flex-wrap: wrap; gap: 6px 14px; font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 28px; }
   .vw-langs a { color: var(--color-ink-3); text-decoration: none; }
   .vw-langs a[aria-current='page'] { color: var(--color-ink); border-bottom: 2px solid var(--color-accent); }
