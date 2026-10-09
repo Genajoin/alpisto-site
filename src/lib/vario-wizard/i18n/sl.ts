@@ -25,7 +25,6 @@ const sl: Dict = {
     choose: 'Izberi',
     cont: 'Naprej',
     back: '← Nazaj',
-    skip: 'Preskoči',
     skipToEnd: 'Preskoči do mojega zvoka',
     soFar: 'Tvoj zvok do zdaj',
     onlyCounted: 'Ta odgovor samo štejemo, zvoka ne spremeni.',

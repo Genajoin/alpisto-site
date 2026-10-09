@@ -25,7 +25,6 @@ const it: Dict = {
     choose: 'Scegli',
     cont: 'Continua',
     back: '← Indietro',
-    skip: 'Salta',
     skipToEnd: 'Vai al mio suono',
     soFar: 'Il tuo suono finora',
     onlyCounted: 'Questa risposta viene solo contata, non cambia il suono.',

@@ -46,7 +46,6 @@ export interface Dict {
     choose: string
     cont: string
     back: string
-    skip: string
     skipToEnd: string
     soFar: string
     onlyCounted: string

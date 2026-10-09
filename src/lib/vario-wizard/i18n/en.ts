@@ -25,7 +25,6 @@ const en: Dict = {
     choose: 'Choose',
     cont: 'Continue',
     back: '← Back',
-    skip: 'Skip',
     skipToEnd: 'Skip to my sound',
     soFar: 'Your sound so far',
     onlyCounted: 'This answer is only counted, it does not change the sound.',

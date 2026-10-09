@@ -458,10 +458,9 @@ function renderStep() {
   const lead = leadOf(step)
   const prev = answers[step.key] ?? remembered[step.key]
   const picked = (k: string) => (prev ?? '').split(',').includes(k)
-  // Back here with an answer already given: Next keeps it, in place of Skip.
-  const again = prev !== undefined && step.kind !== 'text' && !step.multi && step.options.some((o) => o.key === prev)
-  const hasContinue = step.kind === 'text' || (step.kind === 'info' && !!step.multi)
-  const known = prev !== undefined || (step.kind === 'text' && step.options.some((o) => (answers[o.key] ?? remembered[o.key]) !== undefined))
+  // Every step has the same Back and Next. Next keeps the answer given before (after Back)
+  // or the marks and fields on screen; with nothing given it goes on without an answer.
+  const prevOpt = prev !== undefined && step.options.some((o) => o.key === prev) ? prev : null
   let body = ''
   if (step.kind === 'sound') {
     body = `<div class="vw-opts">${step.options.map((o) => {
@@ -483,8 +482,7 @@ function renderStep() {
       }).join('')}</div>`
   }
   else if (step.kind === 'info' && step.multi) {
-    body = `<div class="vw-opts">${step.options.map((o) => `<button type="button" class="vw-choice" data-toggle="${o.key}" aria-pressed="${picked(o.key)}">${esc(optText(step, o.key)[0])}</button>`).join('')}</div>
-      <div class="vw-nav"><button type="button" class="vw-btn ink" id="vw-continue">${esc(d.ui.cont)}</button></div>`
+    body = `<div class="vw-opts">${step.options.map((o) => `<button type="button" class="vw-choice" data-toggle="${o.key}" aria-pressed="${picked(o.key)}">${esc(optText(step, o.key)[0])}</button>`).join('')}</div>`
   }
   else if (step.kind === 'info') {
     body = `<div class="vw-opts${step.options.length > 6 ? ' vw-opts-grid' : ''}">${step.options.map((o) => {
@@ -498,8 +496,7 @@ function renderStep() {
       const [label, hint] = optText(step, o.key)
       return `<label class="vw-field"><span class="vw-opt-label">${esc(label)}</span>${hint ? `<span class="vw-opt-hint">${esc(hint)}</span>` : ''}
         <textarea class="vw-text" data-field="${o.key}" maxlength="${TEXT_MAX}" rows="3">${esc(answers[o.key] ?? remembered[o.key] ?? '')}</textarea></label>`
-    }).join('')}</div>
-      <div class="vw-nav"><button type="button" class="vw-btn ink" id="vw-continue">${esc(d.ui.cont)}</button></div>`
+    }).join('')}</div>`
   }
   const withSound = step.kind === 'sound' || step.kind === 'listen'
   root.innerHTML = `
@@ -513,14 +510,12 @@ function renderStep() {
       ${withSound ? `<div class="vw-preview" id="vw-preview"><div class="vw-pv-chart" id="vw-pv-chart"></div><div class="vw-pv-text" id="vw-pv-text"></div></div>` : ''}
       <div class="vw-nav">
         <button type="button" class="vw-btn" data-back ${undo.length === 0 ? 'disabled' : ''}>${esc(d.ui.back)}</button>
-        ${again ? `<button type="button" class="vw-btn ink" data-again>${esc(d.ui.cont)}</button>` : known && hasContinue ? '' : `<button type="button" class="vw-btn" data-skip>${esc(d.ui.skip)}</button>`}
+        <button type="button" class="vw-btn ink" id="vw-continue">${esc(d.ui.cont)}</button>
         ${step.optional ? `<button type="button" class="vw-btn" data-finish>${esc(d.ui.skipToEnd)}</button>` : ''}
       </div>
     </div>`
 
   root.querySelector('[data-back]')!.addEventListener('click', goBack)
-  root.querySelector('[data-skip]')?.addEventListener('click', () => answer(step, null))
-  root.querySelector('[data-again]')?.addEventListener('click', () => answer(step, prev!))
   root.querySelector('[data-finish]')?.addEventListener('click', () => {
     ownRun = true
     undo.push({ knobs: { ...knobs }, answers: { ...answers } })
@@ -545,6 +540,10 @@ function renderStep() {
       }
       pos++
       next()
+      return
+    }
+    if (!step.multi) {
+      answer(step, prevOpt)
       return
     }
     const on = [...root.querySelectorAll<HTMLButtonElement>('[data-toggle][aria-pressed="true"]')].map((b) => b.dataset.toggle!)
