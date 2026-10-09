@@ -20,6 +20,8 @@ export interface Stats {
 
 /** Below this many pilots the numbers say nothing yet. */
 const MIN_PILOTS = 5
+/** Below this many the count of pilots is not shown anywhere: a handful would only put people off. */
+export const SHOW_COUNT_FROM = 30
 const ROWS = ['climbStart', 'sinkOn', 'pitchLow', 'pitchHigh', 'tempoLow', 'tempoHigh', 'average'] as const
 
 let memId = ''
@@ -128,7 +130,7 @@ export function renderOthers(box: HTMLElement, d: Dict, s: Stats, k: Knobs, save
   const O = d.others
   let body = ''
   if (s.n < MIN_PILOTS) {
-    body = `<p class="vw-qlead">${esc(fmt(O.few, { n: s.n }))}</p>`
+    body = `<p class="vw-qlead">${esc(O.few)}</p>`
   }
   else {
     const rows: string[] = []
@@ -153,6 +155,6 @@ export function renderOthers(box: HTMLElement, d: Dict, s: Stats, k: Knobs, save
         ${bars(O.instrument, s.answers.instrument, (key) => d.instruments[key] ?? INSTRUMENTS.find((i) => i.key === key)?.name ?? key)}
       </div>`
   }
-  box.innerHTML = `<p class="vw-sub">${esc(O.sub)}</p><h2 class="vw-h2 vw-h2-s">${esc(O.h2)}</h2>${body}${saved ? `<p class="vw-note">${esc(fmt(O.note, { n: s.n }))}</p>` : ''}`
+  box.innerHTML = `<p class="vw-sub">${esc(O.sub)}</p><h2 class="vw-h2 vw-h2-s">${esc(O.h2)}</h2>${body}${saved ? `<p class="vw-note">${esc(O.note)}${s.n >= SHOW_COUNT_FROM ? ` ${esc(fmt(O.total, { n: s.n }))}` : ''}</p>` : ''}`
   box.hidden = false
 }

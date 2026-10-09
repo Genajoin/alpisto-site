@@ -33,7 +33,7 @@ export interface Dict {
     lead: string
     noscript: string
     langs: string
-    /** How many pilots went through the wizard; shown once there are COUNT_FROM. */
+    /** How many pilots went through the wizard; shown from SHOW_COUNT_FROM on. */
     count: string
   }
   ui: {
@@ -130,6 +130,8 @@ export interface Dict {
     h2: string
     few: string
     note: string
+    /** Pilots so far; shown from SHOW_COUNT_FROM on. */
+    total: string
     yours: string
     half: string
     lower: string

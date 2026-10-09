@@ -105,8 +105,9 @@ const fr: Dict = {
   others: {
     sub: 'Vous et les autres pilotes',
     h2: 'Votre son comparé aux autres',
-    few: 'Pilotes allés au bout jusqu’ici : {n}. Avec quelques-uns de plus, cette carte comparera votre son au leur.',
-    note: 'Vos réponses et votre son sont enregistrés sans nom ni adresse, uniquement pour établir cette comparaison. Pilotes jusqu’ici : {n}.',
+    few: 'Dès que quelques pilotes de plus seront passés, cette carte comparera votre son au leur.',
+    note: 'Vos réponses et votre son sont enregistrés sans nom ni adresse, uniquement pour établir cette comparaison.',
+    total: 'Pilotes jusqu’ici : {n}.',
     yours: 'le vôtre',
     half: 'la moitié des pilotes : de {a} à {b}',
     lower: '{p} % des pilotes ont moins',

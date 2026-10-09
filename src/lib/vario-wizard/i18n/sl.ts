@@ -105,8 +105,9 @@ const sl: Dict = {
   others: {
     sub: 'Ti in drugi piloti',
     h2: 'Kako se tvoj zvok primerja z drugimi',
-    few: 'Do zdaj izpolnjenih vprašalnikov: {n}. Ko jih bo nekaj več, bo ta kartica tvoj zvok primerjala z zvoki drugih pilotov.',
-    note: 'Tvoji odgovori in tvoj zvok se shranijo brez imena in naslova, samo za to primerjavo. Do zdaj sodelujočih pilotov: {n}.',
+    few: 'Ko bo sodelovalo nekaj več pilotov, bo ta kartica tvoj zvok primerjala z zvoki drugih.',
+    note: 'Tvoji odgovori in tvoj zvok se shranijo brez imena in naslova, samo za to primerjavo.',
+    total: 'Do zdaj sodelujočih pilotov: {n}.',
     yours: 'tvoj',
     half: 'polovica pilotov: od {a} do {b}',
     lower: '{p} % pilotov ima manj',

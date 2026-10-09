@@ -11,7 +11,7 @@ import { INSTRUMENTS, instrument } from './fit'
 import { appLink, decodeState, encodeState } from './share'
 import { describe, diff, signed } from './describe'
 import { fmt, type Dict, type OptText } from './i18n/types'
-import { renderOthers, sendAnswers, loadStats } from './others'
+import { SHOW_COUNT_FROM, renderOthers, sendAnswers, loadStats } from './others'
 
 const root = document.getElementById('vw')!
 /** The page's language; its words load before the first screen. */
@@ -23,8 +23,6 @@ let viaShare = false
 const canShare = typeof navigator.share === 'function'
 /** Free-text answers: kept with the pilot's answers, never put into a link to share. */
 const TEXT_STEPS = ['annoy', 'wizard']
-/** The count of pilots shows under the intro from this many on. */
-const COUNT_FROM = 20
 let knobs: Knobs = { ...DEFAULT_KNOBS }
 let answers: Answers = {}
 /** State before each answered step, so Back undoes it. */
@@ -850,7 +848,7 @@ void (async () => {
   // How many went through it, under the intro; a handful would only put people off.
   loadStats((s) => {
     const el = document.getElementById('vw-count')
-    if (el && s.n >= COUNT_FROM) {
+    if (el && s.n >= SHOW_COUNT_FROM) {
       el.textContent = fmt(d.page.count, { n: s.n })
       el.hidden = false
     }
