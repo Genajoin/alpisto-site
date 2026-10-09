@@ -681,7 +681,7 @@ function renderResult() {
       const was = refineNow(r.key, fineBase!)
       root.querySelector(`[data-now="${r.key}"]`)!.innerHTML = now === was
         ? esc(fmt(U.now, { v: now }))
-        : fmt(esc(U.wasNow), { was: `<span class="was">${esc(was)}</span>`, now: `<b>${esc(now)}</b>` })
+        : fmt(U.wasNow.split('<br>').map(esc).join('<br>'), { was: `<span class="was">${esc(was)}</span>`, now: `<b>${esc(now)}</b>` })
     }
     for (const b of root.querySelectorAll<HTMLButtonElement>('[data-side]')) {
       b.setAttribute('aria-pressed', String(b.dataset.side === abSide))
