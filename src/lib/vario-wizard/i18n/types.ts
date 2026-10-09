@@ -5,7 +5,7 @@
  */
 import type { ClipKey } from '../scenarios'
 
-export const LANGS = ['en', 'ru', 'de', 'fr', 'it', 'sl'] as const
+export const LANGS = ['en', 'de', 'fr', 'it', 'ru', 'sl'] as const
 export type Lang = typeof LANGS[number]
 
 /** Option text: a label, or a label and a hint under it. */

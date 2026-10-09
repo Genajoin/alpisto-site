@@ -14,7 +14,7 @@ interface Props {
 const { lang } = Astro.props
 const dicts = import.meta.glob<{ default: Dict }>('../lib/vario-wizard/i18n/[a-z][a-z].ts', { eager: true })
 const d = (dicts[`../lib/vario-wizard/i18n/${lang}.ts`] ?? dicts['../lib/vario-wizard/i18n/en.ts']!).default
-const NAMES: Record<string, string> = { en: 'English', ru: 'Русский', de: 'Deutsch', fr: 'Français', it: 'Italiano', sl: 'Slovenščina' }
+const NAMES: Record<string, string> = { en: 'English', de: 'Deutsch', fr: 'Français', it: 'Italiano', ru: 'Русский', sl: 'Slovenščina' }
 const pathOf = (l: string) => (l === 'en' ? '/vario-sound/' : `/${l}/vario-sound/`)
 const site = Astro.site ?? new URL('https://alpisto.eu')
 ---
