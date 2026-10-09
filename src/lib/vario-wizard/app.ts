@@ -219,6 +219,15 @@ const vars = () => ({ vario: instrument(answers.instrument)?.name ?? '', where: 
 
 /** The clip's vario trace with the beeps under it. */
 const TR = { w: 640, h: 84, l: 34, r: 6 }
+/**
+ * A beep's colour by its pitch: blue at the low end of a vario's usual tones,
+ * red at the high end, on a log scale because the ear hears pitch that way.
+ */
+const HUE_HZ = [300, 2000] as const
+function pitchColor(f: number): string {
+  const p = Math.log(Math.max(HUE_HZ[0], Math.min(HUE_HZ[1], f)) / HUE_HZ[0]) / Math.log(HUE_HZ[1] / HUE_HZ[0])
+  return `hsl(${Math.round(250 * (1 - p))} 85% 42%)`
+}
 function traceSvg(k: Knobs, clip: ClipKey): string {
   const c = CLIPS[clip]
   const [lo, hi] = c.range
@@ -228,7 +237,7 @@ function traceSvg(k: Knobs, clip: ClipKey): string {
   for (let t = 0; t <= c.lenMs; t += 100)
     pts.push(`${x(t).toFixed(1)},${y(Math.max(lo * 100, Math.min(hi * 100, c.air(t)))).toFixed(1)}`)
   const beeps = beepsFor(k, clip)
-  const marks = beeps.map((b) => `<rect x="${x(b.t * 1000).toFixed(1)}" y="66" width="${Math.max(1, x(b.d * 1000) - TR.l).toFixed(1)}" height="12" fill="var(--color-ink)"/>`).join('')
+  const marks = beeps.map((b) => `<rect x="${x(b.t * 1000).toFixed(1)}" y="66" width="${Math.max(1, x(b.d * 1000) - TR.l).toFixed(1)}" height="12" fill="${pitchColor(b.f)}"><title>${Math.round(b.f)} ${d.u.hz}</title></rect>`).join('')
   return `<svg class="vw-trace" viewBox="0 0 ${TR.w} ${TR.h}" role="img" aria-label="${esc(d.ui.traceAria)}">
     <line x1="${TR.l}" x2="${TR.w - TR.r}" y1="${y(0)}" y2="${y(0)}" stroke="var(--color-ink-3)" stroke-dasharray="3 3" fill="none"/>
     <text x="${TR.l - 6}" y="${y(0) + 4}" text-anchor="end">0</text>
