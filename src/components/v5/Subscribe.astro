@@ -94,6 +94,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? ''
     render: (el: HTMLElement, opts: Record<string, unknown>) => string
     execute: (id: string) => void
     reset: (id: string) => void
+    remove: (id: string) => void
   }
   const turnstile = () => (window as unknown as { turnstile?: Turnstile }).turnstile
 
@@ -139,19 +140,20 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? ''
       const original = button.textContent
       button.textContent = 'Sending…'
 
+      let widgetId: string | undefined
       try {
         await loadTurnstile()
         const token = await new Promise<string>((resolve, reject) => {
           const slot = form.querySelector<HTMLElement>('.turnstile-slot')!
           slot.replaceChildren()
-          const id = turnstile()!.render(slot, {
+          const id = (widgetId = turnstile()!.render(slot, {
             sitekey: siteKey,
             execution: 'execute',
             appearance: 'interaction-only',
             callback: (t: string) => resolve(t),
             'error-callback': () => reject(new Error('challenge')),
             'timeout-callback': () => reject(new Error('challenge')),
-          })
+          }))
           turnstile()!.execute(id)
         })
 
@@ -179,6 +181,8 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? ''
       } catch {
         show('Network error. Try again, or write to hello@alpisto.eu.', 'err')
       } finally {
+        // Tokens are single-use; drop the widget so the next submit renders a fresh one.
+        if (widgetId) turnstile()?.remove(widgetId)
         button.disabled = false
         button.textContent = original
       }
