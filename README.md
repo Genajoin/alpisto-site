@@ -83,6 +83,9 @@ mark the two secrets as secrets):
 | `SUBSCRIBE_SECRET` | long random string, e.g. `openssl rand -base64 48` — secret |
 | `FROM_EMAIL` | `Alpisto Blog <blog@alpisto.eu>` — domain must be verified in Resend |
 | `RESEND_SEGMENT_ID` | optional — segment to file confirmed contacts under |
+| `TURNSTILE_SECRET` | Cloudflare Turnstile secret key — secret; `/api/subscribe` refuses requests without it |
+
+The form widget needs the matching **site key** at build time: set `PUBLIC_TURNSTILE_SITE_KEY` as a GitHub Actions *variable* (and in `.env` for local builds). Also add a WAF rate-limit rule on `POST /api/subscribe`.
 
 Local run: `npx wrangler pages dev dist` with the same variables in `.dev.vars` (gitignored).
 

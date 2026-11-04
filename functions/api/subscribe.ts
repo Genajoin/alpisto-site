@@ -10,11 +10,18 @@
  *   SUBSCRIBE_SECRET    long random string           (secret)
  *   FROM_EMAIL          e.g. blog@alpisto.eu (verified domain in Resend)
  *   RESEND_SEGMENT_ID   optional, set in confirm.ts to file the contact
+ *   TURNSTILE_SECRET    Cloudflare Turnstile secret key (secret) — required; the
+ *                       form widget uses PUBLIC_TURNSTILE_SITE_KEY at build time
+ *
+ * This endpoint mails an arbitrary address, so it is a list-bombing target:
+ * every request must carry a browser Origin from the allow-list and a solved
+ * Turnstile token. Add a WAF rate-limit rule on POST /api/subscribe as well.
  */
 
 interface Env {
   RESEND_API_KEY: string
   SUBSCRIBE_SECRET: string
+  TURNSTILE_SECRET: string
   FROM_EMAIL?: string
   /** Where replies go — useful when sending from a domain other than alpisto.eu. */
   REPLY_TO_EMAIL?: string
@@ -22,6 +29,25 @@ interface Env {
 
 const TOKEN_TTL_SECONDS = 60 * 60 * 24 * 3 // 3 days
 const ALLOWED_ORIGINS = ['https://alpisto.eu', 'https://www.alpisto.eu']
+
+const verifyTurnstile = async (token: string, secret: string, ip: string | null) => {
+  if (!token || token.length > 2048) return false
+  const form = new FormData()
+  form.append('secret', secret)
+  form.append('response', token)
+  if (ip) form.append('remoteip', ip)
+  try {
+    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      body: form,
+    })
+    const data = (await res.json()) as { success?: boolean }
+    return data.success === true
+  } catch (err) {
+    console.error('subscribe: turnstile verify threw', err)
+    return false
+  }
+}
 
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), {
@@ -53,7 +79,8 @@ const looksLikeEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) &&
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const origin = request.headers.get('origin')
-  if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+  // A browser always sends Origin on a cross-document POST; scripts that omit it are not ours.
+  if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
     return json({ ok: false, error: 'bad_origin' }, 403)
   }
 
@@ -74,10 +101,17 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     return json({ ok: false, error: 'invalid_email' }, 400)
   }
 
-  if (!env.RESEND_API_KEY || !env.SUBSCRIBE_SECRET) {
+  if (!env.RESEND_API_KEY || !env.SUBSCRIBE_SECRET || !env.TURNSTILE_SECRET) {
     console.error('subscribe: missing environment configuration')
     return json({ ok: false, error: 'not_configured' }, 500)
   }
+
+  const human = await verifyTurnstile(
+    String(body.turnstile ?? ''),
+    env.TURNSTILE_SECRET,
+    request.headers.get('cf-connecting-ip'),
+  )
+  if (!human) return json({ ok: false, error: 'challenge_failed' }, 403)
 
   const payload = b64url(
     new TextEncoder().encode(
@@ -132,16 +166,14 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     })
   } catch (err) {
     console.error('subscribe: fetch to resend threw', err)
-    return json({ ok: false, error: 'send_failed', detail: String(err) }, 422)
+    return json({ ok: false, error: 'send_failed' }, 422)
   }
 
   if (!res.ok) {
-    // Resend's own message is the only useful diagnostic here (unverified domain,
-    // bad key, wrong from-address), and it contains no secrets — surface it.
+    // Resend's message goes to the log only; the client gets nothing to probe with.
     // 422 rather than 502: Cloudflare replaces a 502 body with its own error page.
-    const detail = await res.text()
-    console.error('subscribe: resend failed', res.status, detail)
-    return json({ ok: false, error: 'send_failed', status: res.status, detail, from }, 422)
+    console.error('subscribe: resend failed', res.status, await res.text())
+    return json({ ok: false, error: 'send_failed' }, 422)
   }
 
   return json({ ok: true })

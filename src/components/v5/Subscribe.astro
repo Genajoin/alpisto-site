@@ -15,6 +15,7 @@ interface Props {
 }
 
 const { compact = false, class: className = '' } = Astro.props
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? ''
 ---
 
 <form
@@ -24,6 +25,7 @@ const { compact = false, class: className = '' } = Astro.props
     className,
   ]}
   novalidate
+  data-turnstile-sitekey={turnstileSiteKey}
 >
   {!compact && (
     <>
@@ -56,6 +58,7 @@ const { compact = false, class: className = '' } = Astro.props
         <input name="company" type="text" tabindex="-1" autocomplete="off" />
       </label>
     </div>
+    <div class="turnstile-slot"></div>
     <button
       type="submit"
       class="inline-flex items-center gap-[10px] font-display font-bold text-[14px] tracking-[0.02em] px-5 py-3 border-2 bg-ink text-paper border-ink hover:bg-accent hover:text-ink transition-colors disabled:opacity-60"
@@ -87,6 +90,26 @@ const { compact = false, class: className = '' } = Astro.props
 </style>
 
 <script>
+  type Turnstile = {
+    render: (el: HTMLElement, opts: Record<string, unknown>) => string
+    execute: (id: string) => void
+    reset: (id: string) => void
+  }
+  const turnstile = () => (window as unknown as { turnstile?: Turnstile }).turnstile
+
+  // Loaded once, on first use, so pages without a touched form pay nothing.
+  let loading: Promise<void> | null = null
+  const loadTurnstile = () =>
+    (loading ??= new Promise<void>((resolve, reject) => {
+      if (turnstile()) return resolve()
+      const s = document.createElement('script')
+      s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
+      s.async = true
+      s.onload = () => resolve()
+      s.onerror = () => reject(new Error('turnstile'))
+      document.head.appendChild(s)
+    }))
+
   document.querySelectorAll<HTMLFormElement>('.subscribe-form').forEach(form => {
     const status = form.querySelector<HTMLParagraphElement>('.subscribe-status')!
     const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!
@@ -106,16 +129,38 @@ const { compact = false, class: className = '' } = Astro.props
         return
       }
 
+      const siteKey = form.dataset.turnstileSitekey ?? ''
+      if (!siteKey) {
+        show('Subscriptions are temporarily unavailable. Write to hello@alpisto.eu.', 'err')
+        return
+      }
+
       button.disabled = true
       const original = button.textContent
       button.textContent = 'Sending…'
 
       try {
+        await loadTurnstile()
+        const token = await new Promise<string>((resolve, reject) => {
+          const slot = form.querySelector<HTMLElement>('.turnstile-slot')!
+          slot.replaceChildren()
+          const id = turnstile()!.render(slot, {
+            sitekey: siteKey,
+            execution: 'execute',
+            appearance: 'interaction-only',
+            callback: (t: string) => resolve(t),
+            'error-callback': () => reject(new Error('challenge')),
+            'timeout-callback': () => reject(new Error('challenge')),
+          })
+          turnstile()!.execute(id)
+        })
+
         const res = await fetch('/api/subscribe', {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({
             email,
+            turnstile: token,
             company: form.querySelector<HTMLInputElement>('input[name="company"]')?.value ?? '',
           }),
         })
@@ -124,6 +169,8 @@ const { compact = false, class: className = '' } = Astro.props
         if (res.ok && data.ok) {
           form.reset()
           show('Check your inbox — click the link in the email to confirm.', 'ok')
+        } else if (data.error === 'challenge_failed') {
+          show('Could not verify you are human. Reload the page and try again.', 'err')
         } else if (data.error === 'invalid_email') {
           show('That address does not look right — check it and try again.', 'err')
         } else {
